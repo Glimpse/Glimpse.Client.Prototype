@@ -1,26 +1,25 @@
 'use strict';
 
 var glimpse = require('glimpse');
+var request = require('superagent');
 
-// TODO: get data from server and publish notifications
+//Not sure where the best place for this is
+if(FAKE_SERVER){
+    //TODO: override request
+}
 
 module.exports = {
     triggerGetLastestSummaries: function () {
-        // TODO: Need to complete
-        //       Ajax call to REST endpoint
-
-        // simulate success callback
-        setTimeout(function () {
-            glimpse.emit('data.request.summary.found.remote', []);
-        }, 0);
+        var glimpseUrl = 'NOTSURE';
+        request.get(glimpseUrl, function(res){
+            glimpse.emit('data.request.summary.found.remote', res);
+        });
     },
     triggerGetDetailsFor: function (requestId) {
-        // TODO: Need to complete
-        //       Ajax call to REST endpoint
 
-        // simulate success callback
-        setTimeout(function () {
-            glimpse.emit('data.request.detail.found.remote', []);
-        }, 0);
+        var glimpseUrl = 'NOTSURE?' + requestId;
+        request.get(glimpseUrl, function(res){
+            glimpse.emit('data.request.detail.found.remote', res);
+        });
     }
 };
