@@ -70,6 +70,28 @@ var RequestHeaders = React.createClass({
     }
 });
 
+var RequestHeadersSummary = React.createClass({
+    render: function() {
+        return (
+            <div>
+                <div className="tab-section tab-section-execution-headers">
+                    <div className="flex flex-row flex-inherit tab-section-header">
+                        <div className="tab-title col-10">{this.props.title}</div>
+                    </div>
+                    <div className="tab-section-boxing tab-section-listing">
+                        {_.map(this.props.headers, function(value, key) {
+                            return (<section className="flex flex-row">
+                                    <div className="col-2">{key}</div>
+                                    <div className="col-8">{value}</div>
+                                </section>);
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
 var CommandItem = React.createClass({
     getInitialState: function() {
         return { show: false };
@@ -332,10 +354,20 @@ module.exports = React.createClass({
                 postCommands = <CommandList beforeExecuteCommandMessages={beforeExecuteCommandMessages} afterExecuteCommandMessages={afterExecuteCommandMessages} beginMessage={afterActionResultMessage} endMessage={endRequestMessage} isRoot={true} />            
             }
             
+            //process headers
+            var requestHeaders = null;
+            if (beginRequestPayload && beginRequestPayload.requestHeaders) {
+                requestHeaders = <RequestHeadersSummary title="Request Headers" headers={beginRequestPayload.requestHeaders} />;
+            }
+            var responseHeaders = null;
+            if (endRequestPayload && endRequestPayload.responseHeaders) {
+                responseHeaders = <RequestHeadersSummary title="Response Headers" headers={endRequestPayload.responseHeaders} />;
+            }
+            
             content = (
                 <div>
                     <div className="tab-section text-minor">Execution on Server</div>
-                    {preCommands}{route}{action}{view}{postCommands}
+                    {requestHeaders}{preCommands}{route}{action}{view}{postCommands}{responseHeaders}
                 </div>
             );
         }   
