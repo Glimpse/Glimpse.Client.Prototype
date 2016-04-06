@@ -4,10 +4,10 @@ node_js:
 install:
 - npm install -g gulp
 - npm install
-- cd _temp/hud && npm install && cd ..
+- cd _temp/hud && npm install && cd ../..
 script:
 - gulp ci
-- cd _temp/hud && gulp ci && cd ..
+- cd _temp/hud && gulp ci && cd ../..
 deploy:
   provider: releases
   api_key:
