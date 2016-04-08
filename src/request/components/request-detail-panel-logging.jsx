@@ -97,9 +97,9 @@ module.exports = React.createClass({
         var logWriteMessages = payload.logWrite; 
 
         var content = null;
-        if (logWriteMessages && logWriteMessages.length > 0) {
+        if (!_.isEmpty(logWriteMessages)) {
             // intial processing of messages
-            logWriteMessages = logWriteMessages.sort(function(a, b) { return a.ordinal - b.ordinal; });
+            logWriteMessages = _.sortBy(logWriteMessages, 'ordinal');
             for (var i = 0; i < logWriteMessages.length; i++) {
                 logWriteMessages[i].payload.index = i + 1;
             }            
