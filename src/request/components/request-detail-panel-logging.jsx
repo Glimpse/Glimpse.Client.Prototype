@@ -126,7 +126,7 @@ module.exports = React.createClass({
 
     requestTabController.registerTab({
         key: 'tab.logging',
-        title: 'Events',
+        title: 'Trace',
         component: module.exports
     });
 })();
