@@ -20,7 +20,11 @@ const getPayloads = (function() {
     };
 })();
 
-class RequestUrl extends React.Component<{url: string}, {}> {
+interface IRequestUrlProps {
+    url: string;
+}
+
+class RequestUrl extends React.Component<IRequestUrlProps, {}> {
     public render() {
         return (
             <div>
@@ -35,7 +39,12 @@ class RequestUrl extends React.Component<{url: string}, {}> {
     }
 }
 
-class RequestHeaders extends React.Component<{headers: { [key: string]: string }, title: string}, {}> {
+interface IRequestHeadersProps {
+    headers: { [key: string]: string };
+    title: string;
+}
+
+class RequestHeaders extends React.Component<IRequestHeadersProps, {}> {
     public render() {
         return (
             <div>
@@ -57,7 +66,11 @@ class RequestHeaders extends React.Component<{headers: { [key: string]: string }
     }
 }
 
-export class Request extends React.Component<{request}, {}> {
+export interface IRequestProps {
+    request;
+}
+
+export class Request extends React.Component<IRequestProps, {}> {
     public getInitialState() {
         return { checkedState: false };
     }
