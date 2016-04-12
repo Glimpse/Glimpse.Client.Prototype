@@ -115,6 +115,8 @@
         
         .request-holder-content {
             margin: 5px 4px 0 5px;
+            display: flex;
+            flex-direction: column;
         }
         > div {
             min-width: 65vw;
@@ -146,7 +148,6 @@
     
     .request-holder-content {
         flex: 1 1 auto;
-        height: 100px;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -285,6 +286,15 @@
 .request-summary-facets {
     white-space: nowrap;
 }
+.request-detail-group-item {
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    
+    .tab-content {
+        overflow-y: scroll;
+    }
+}
 
 .request-title {
     font-size: 140%;
@@ -374,7 +384,8 @@
     width: 25px;
     height: 25px;
     text-align: center;
-    float: right;
+    position: absolute;
+    right: 5px;
 }
 
 //******* Forms *******
