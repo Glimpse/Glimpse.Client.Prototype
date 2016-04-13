@@ -85,8 +85,6 @@ export class Logging extends React.Component<ILoggingProps, {}> {
     }
 
     public render() {
-        this.props.viewModel.init(this.props.request);
-
         if (!_.isEmpty(this.props.viewModel.messages)) {
             return (
                 <div className='tab-content'>
