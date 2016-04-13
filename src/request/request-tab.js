@@ -34,7 +34,8 @@ module.exports = {
 // TODO: Need to come up with a better self registration process
 require('./components/request-detail-panel-execution');
 var request = require('./components/request-detail-panel-request');
-var logging = require('./components/request-detail-panel-logging');
+var LoggingComponent = require('./components/request-detail-panel-logging').Logging;
+var LoggingViewModel = require('./view-models/LoggingViewModel').LoggingViewModel;
 //require('./components/request-detail-panel-trace');
 require('./components/request-detail-panel-messages');
 
@@ -47,5 +48,6 @@ module.exports.registerTab({
 module.exports.registerTab({
     key: 'tab.logging',
     title: 'Trace',
-    component: logging.Logging
+    component: LoggingComponent,
+    viewModel: LoggingViewModel
 });

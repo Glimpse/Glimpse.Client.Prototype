@@ -1,52 +1,12 @@
 'use strict';
 
-/*tslint:disable:no-var-requires */
-const messageProcessor = require('../util/request-message-processor');
-/*tslint:enable:no-var-requires */
+import { ILogMessage } from '../messages/ILogMessage';
+import { ILoggingViewModel } from '../view-models/ILoggingViewModel';
 
-import _ = require('lodash');
 import React = require('react');
 
-interface ILogMessage {
-    level: string;
-    message: string;
-}
-
-interface IMessageEnvelope {
-    ordinal: number;
-    payload: ILogMessage;
-}
-
-class LoggingViewModel {
-    private static getList = messageProcessor.getTypeMessageList;
-
-    private static options = {
-        'log-write': LoggingViewModel.getList
-    };
-
-    private _messages: ILogMessage[];
-
-    public get messages() {
-        return this._messages;
-    }
-
-    public init(request) {
-        const allMessages = messageProcessor.getTypeStucture(request, LoggingViewModel.options);
-
-        if (allMessages) {
-            this._messages = _(allMessages.logWrite as IMessageEnvelope[])
-                .sortBy('ordinal')
-                .map(message => message.payload)
-                .value();
-        }
-        else {
-            this._messages = [];
-        };
-    }
-}
-
 interface ILogMessagesProps {
-    messages: ILogMessage[]
+    messages: ILogMessage[];
 }
 
 /**
@@ -113,28 +73,25 @@ class LogMessages extends React.Component<ILogMessagesProps, {}> {
 
 export interface ILoggingProps {
     request;
+    viewModel: ILoggingViewModel;
 }
 
 /**
  * React class to for the console log messages tab
  */
 export class Logging extends React.Component<ILoggingProps, {}> {
-    private viewModel = new LoggingViewModel();
-
     public getInitialState() {
         return { checkedState: false };
     }
 
     public render() {
-        const request = this.props.request;
+        this.props.viewModel.init(this.props.request);
 
-        this.viewModel.init(request);
-
-        if (!_.isEmpty(this.viewModel.messages)) {
+        if (!_.isEmpty(this.props.viewModel.messages)) {
             return (
                 <div className='tab-content'>
-                    <h3>{this.viewModel.messages.length} {this.viewModel.messages.length === 1 ? 'Message' : 'Messages'}</h3>
-                    <LogMessages messages={this.viewModel.messages} />
+                    <h3>{this.props.viewModel.messages.length} {this.props.viewModel.messages.length === 1 ? 'Message' : 'Messages'}</h3>
+                    <LogMessages messages={this.props.viewModel.messages} />
                 </div>
             );
         }
