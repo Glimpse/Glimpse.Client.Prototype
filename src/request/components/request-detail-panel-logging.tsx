@@ -7,51 +7,52 @@ const messageProcessor = require('../util/request-message-processor');
 import _ = require('lodash');
 import React = require('react');
 
-/**
- * Return the messages to be used by the view.
- */
-const getMessages = (function() {
-    const getList = messageProcessor.getTypeMessageList;
+interface ILogMessage {
+    level: string;
+    message: string;
+}
 
-    const options = {
-        'log-write': getList
+interface IMessageEnvelope {
+    ordinal: number;
+    payload: ILogMessage;
+}
+
+class LoggingViewModel {
+    private static getList = messageProcessor.getTypeMessageList;
+
+    private static options = {
+        'log-write': LoggingViewModel.getList
     };
 
-    return function(request) {
-        return messageProcessor.getTypeStucture(request, options);
-    };
-})();
+    private _messages: ILogMessage[];
 
-/**
- * Return the CSS class name to use for the given message
- */
-function getRowClass(message) {
-    'use strict';
-
-    let rowClass = 'tab-logs-data-default';
-    switch (message.level) {
-        case 'Verbose':
-        case 'Info':
-            rowClass = 'tab-logs-data-default';
-            break;
-        case 'Critical':
-        case 'Error':
-            rowClass = 'tab-logs-data-error';
-            break;
-        case 'Warning':
-            rowClass = 'tab-logs-data-warning';
-            break;
-        default:
-            rowClass = 'tab-logs-data-default';
-            break;
+    public get messages() {
+        return this._messages;
     }
-    return rowClass;
+
+    public init(request) {
+        const allMessages = messageProcessor.getTypeStucture(request, LoggingViewModel.options);
+
+        if (allMessages) {
+            this._messages = _(allMessages.logWrite as IMessageEnvelope[])
+                .sortBy('ordinal')
+                .map(message => message.payload)
+                .value();
+        }
+        else {
+            this._messages = [];
+        };
+    }
+}
+
+interface ILogMessagesProps {
+    messages: ILogMessage[]
 }
 
 /**
  * React class to display console messages
  */
-class LogMessages extends React.Component<{logWriteMessages}, {}> {
+class LogMessages extends React.Component<ILogMessagesProps, {}> {
     public render() {
         return (
             <table className='table table-bordered table-striped tab-content-item'>
@@ -64,15 +65,14 @@ class LogMessages extends React.Component<{logWriteMessages}, {}> {
                         <th width='10%'><span className='table-col-title'>Duration</span></th>
                     </tr>
                 </thead>
-                {this.props.logWriteMessages.map(function(message) {
-                    const payload = message.payload;
-                    const className = getRowClass(message);
+                {this.props.messages.map(function(message, index) {
+                    const className = LogMessages.getRowClass(message);
 
                     return (
                         <tr className={className}>
-                            <td>{payload.index}</td>
-                            <td>{payload.level}</td>
-                            <td>{payload.message}</td>
+                            <td>{index + 1}</td>
+                            <td>{message.level}</td>
+                            <td>{message.message}</td>
                             <td>-</td>
                             <td>-</td>
                         </tr>);
@@ -83,12 +83,44 @@ class LogMessages extends React.Component<{logWriteMessages}, {}> {
             </table>
         );
     }
+
+    /**
+     * Return the CSS class name to use for the given message
+     */
+    private static getRowClass(message: ILogMessage) {
+        'use strict';
+
+        let rowClass = 'tab-logs-data-default';
+        switch (message.level) {
+            case 'Verbose':
+            case 'Info':
+                rowClass = 'tab-logs-data-default';
+                break;
+            case 'Critical':
+            case 'Error':
+                rowClass = 'tab-logs-data-error';
+                break;
+            case 'Warning':
+                rowClass = 'tab-logs-data-warning';
+                break;
+            default:
+                rowClass = 'tab-logs-data-default';
+                break;
+        }
+        return rowClass;
+    }
+}
+
+export interface ILoggingProps {
+    request;
 }
 
 /**
  * React class to for the console log messages tab
  */
-export class Logging extends React.Component<{request}, {}> {
+export class Logging extends React.Component<ILoggingProps, {}> {
+    private viewModel = new LoggingViewModel();
+
     public getInitialState() {
         return { checkedState: false };
     }
@@ -96,30 +128,18 @@ export class Logging extends React.Component<{request}, {}> {
     public render() {
         const request = this.props.request;
 
-        // get messages 
-        const payload = getMessages(request);
-        let logWriteMessages = payload.logWrite;
+        this.viewModel.init(request);
 
-        // TODO: Is undefined ok for React?
-        let content;
-        if (!_.isEmpty(logWriteMessages)) {
-            // intial processing of messages
-            logWriteMessages = _.sortBy(logWriteMessages, 'ordinal');
-            for (let i = 0; i < logWriteMessages.length; i++) {
-                logWriteMessages[i].payload.index = i + 1;
-            }
-
-            content = (
+        if (!_.isEmpty(this.viewModel.messages)) {
+            return (
                 <div className='tab-content'>
-                    <h3>{logWriteMessages.length} Logs</h3>
-                    <LogMessages logWriteMessages={logWriteMessages} />
+                    <h3>{this.viewModel.messages.length} {this.viewModel.messages.length === 1 ? 'Message' : 'Messages'}</h3>
+                    <LogMessages messages={this.viewModel.messages} />
                 </div>
             );
         }
         else {
-            content = <div className='tab-section text-minor'>Could not find any data.</div>;
+            return <div className='tab-section text-minor'>Could not find any data.</div>;
         }
-
-        return content;
     }
 }
