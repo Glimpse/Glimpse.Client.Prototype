@@ -137,6 +137,11 @@ $table-background-alt-color: #fafafa;
         border-left: 0px;
     }
 }
+.table-selectable {
+    > tbody > tr {
+        cursor: pointer;
+    }
+}
 
 
 //****** LISTS *******

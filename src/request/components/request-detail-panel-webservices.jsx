@@ -57,7 +57,7 @@ var ServiceMessages = React.createClass({
         }
         
         return (
-            <table className="table table-bordered table-striped tab-content-item">
+            <table className="table table-bordered table-striped tab-content-item table-selectable">
                 <thead>
                     <tr className="table-col-title-group">
                         <th><span className="table-col-title">Name/Path</span></th>
