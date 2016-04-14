@@ -5,6 +5,7 @@ var messageProcessor = require('../util/request-message-processor');
 var moment = require('moment');
 var _ = require('lodash');
 var React = require('react');
+var Icon = require('react-fa');
 
 /**
  * Return the messages to be used by the view.
@@ -27,15 +28,15 @@ var getMessages = (function() {
 function getRowClass(message) {
     var rowClass = 'tab-logs-data-default';
     switch (message.level) {
-        case 'Verbose':
-        case 'Info':
+        case 'verbose':
+        case 'information':
             rowClass = 'tab-logs-data-default';
             break;
-        case 'Critical':
-        case 'Error':
+        case 'critical':
+        case 'error':
             rowClass = 'tab-logs-data-error';
             break;
-        case 'Warning':
+        case 'warning':
             rowClass = 'tab-logs-data-warning';
             break;
         default:
@@ -43,6 +44,26 @@ function getRowClass(message) {
             break;
     }
     return rowClass;
+}
+
+function getDisplayText(level) {
+    return _.startCase(level);
+}
+
+function getIconName(level) {
+    switch (level) {
+        case 'critical':
+        case 'error':
+            return 'times-circle';
+
+        case 'warning':
+            return 'exclamation-triangle';
+
+        case 'verbose':
+        case 'information':
+        default:
+            return '';
+    }
 }
 
 /**
@@ -55,22 +76,22 @@ var LogMessages = React.createClass({
                 <thead>
                     <tr className="table-col-title-group">
                         <th width="5%"><span className="table-col-title">#</span></th>
-                        <th width="10%"><span className="table-col-title">Level</span></th>
+                        <th width="15%"><span className="table-col-title"><Icon fixedWidth="true" /> Level</span></th>
                         <th><span className="table-col-title">Message</span></th>
-                        <th width="10%"><span className="table-col-title">From Start</span></th>
-                        <th width="10%"><span className="table-col-title">Duration</span></th>
+                        <th width="15%"><span className="table-col-title">From Start</span></th>
+                        <th width="15%"><span className="table-col-title">Duration</span></th>
                     </tr>
                 </thead>
                 {this.props.logWriteMessages.map(function(message) {
                     var payload = message.payload;
-                    var className = getRowClass(message);
+                    var className = getRowClass(payload);
 
                     return (
                         <tr className={className}>
                             <td>{payload.index}</td>
-                            <td>{payload.level}</td>
+                            <td><Icon name={getIconName(payload.level)} fixedWidth="true" /> {getDisplayText(payload.level)}</td>
                             <td>{payload.message}</td>
-                            <td>-</td>
+                            <td>{message.context.offset ? message.context.offset + ' ms' : '-'}</td>
                             <td>-</td>
                         </tr>);
                 }) }
@@ -101,12 +122,14 @@ module.exports = React.createClass({
             // intial processing of messages
             logWriteMessages = _.sortBy(logWriteMessages, 'ordinal');
             for (var i = 0; i < logWriteMessages.length; i++) {
-                logWriteMessages[i].payload.index = i + 1;
+                var logWriteMessage = logWriteMessages[i];
+                logWriteMessage.payload.index = i + 1;
+                logWriteMessage.payload.level = logWriteMessage.payload.level.toLowerCase();
             }            
             
             content = (
                 <div className="tab-content">
-                    <h3>{logWriteMessages.length} Logs</h3>
+                    <h3>{logWriteMessages.length + ((logWriteMessages.length === 1) ? ' Message' : ' Messages')}</h3>
                     <LogMessages logWriteMessages={logWriteMessages} />
                 </div>
             );
