@@ -40,10 +40,8 @@ module.exports = React.createClass({
                         <ul className="nav nav-tabs">
                             {navigation}
                         </ul>
-                    </div>
-                    <div className="tab-content">
-                        {panel}
-                    </div>
+                    </div> 
+                    {panel}
                 </div>
             );
         }
