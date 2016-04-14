@@ -1,5 +1,5 @@
 'use strict';
 
-export interface IViewModel {
+export interface IComponentModel {
     init(request): void;
 }

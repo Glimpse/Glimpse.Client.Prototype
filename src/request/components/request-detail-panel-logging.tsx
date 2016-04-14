@@ -1,13 +1,13 @@
 'use strict';
 
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingViewModel } from '../view-models/ILoggingViewModel';
+import { ILoggingComponentModel } from '../component-models/ILoggingComponentModel';
 
 import React = require('react');
 
 export interface ILoggingProps {
     request;
-    viewModel: ILoggingViewModel;
+    viewModel: ILoggingComponentModel;
 }
 
 /**

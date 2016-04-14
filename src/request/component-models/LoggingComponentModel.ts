@@ -4,16 +4,17 @@
 const messageProcessor = require('../util/request-message-processor');
 /*tslint:enable:no-var-requires */
 
+import { ILoggingComponentModel } from './ILoggingComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 
 import _ = require('lodash');
 
-export class LoggingViewModel {
+export class LoggingComponentModel implements ILoggingComponentModel {
     private static getList = messageProcessor.getTypeMessageList;
 
     private static options = {
-        'log-write': LoggingViewModel.getList
+        'log-write': LoggingComponentModel.getList
     };
 
     private _messages: ILogMessage[];
@@ -23,7 +24,7 @@ export class LoggingViewModel {
     }
 
     public init(request) {
-        const allMessages = messageProcessor.getTypeStucture(request, LoggingViewModel.options);
+        const allMessages = messageProcessor.getTypeStucture(request, LoggingComponentModel.options);
 
         if (allMessages) {
             this._messages = _(allMessages.logWrite)

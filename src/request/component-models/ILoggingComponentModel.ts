@@ -1,8 +1,8 @@
 'use strict';
 
+import { IComponentModel } from './IComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
-import { IViewModel } from './IViewModel';
 
-export interface ILoggingViewModel extends IViewModel {
+export interface ILoggingComponentModel extends IComponentModel {
     messages: ILogMessage[];
 }

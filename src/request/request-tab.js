@@ -44,11 +44,11 @@ module.exports.registerTab({
 });
 
 var LoggingComponent = require('./components/request-detail-panel-logging').Logging;
-var LoggingViewModel = require('./view-models/LoggingViewModel').LoggingViewModel;
+var LoggingComponentModel = require('./component-models/LoggingComponentModel').LoggingComponentModel;
 
 module.exports.registerTab({
     key: 'tab.logging',
     title: 'Trace',
     component: LoggingComponent,
-    viewModel: LoggingViewModel
+    viewModel: LoggingComponentModel
 });
