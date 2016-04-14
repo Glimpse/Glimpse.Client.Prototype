@@ -14,10 +14,6 @@ export interface ILoggingProps {
  * React class to for the console log messages tab
  */
 export class Logging extends React.Component<ILoggingProps, {}> {
-    public getInitialState() {
-        return { checkedState: false };
-    }
-
     public render() {
         if (!_.isEmpty(this.props.viewModel.messages)) {
             return (
