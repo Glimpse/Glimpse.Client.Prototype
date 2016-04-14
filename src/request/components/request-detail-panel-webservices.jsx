@@ -27,9 +27,6 @@ var getMessages = (function() {
  * React class to display console messages
  */
 var ServiceMessages = React.createClass({
-    _changeSelected: function(index) {
-        
-    },
     render: function() {
         var dataHttpRequestMessages = this.props.dataHttpRequestMessages;
         var dataHttpResponseMessages = this.props.dataHttpResponseMessages;
@@ -63,7 +60,7 @@ var ServiceMessages = React.createClass({
                         <th><span className="table-col-title">Name/Path</span></th>
                         <th width="10%"><span className="table-col-title">Status</span></th>
                         <th width="10%"><span className="table-col-title">Method</span></th>
-                        <th width="10%"><span className="table-col-title">Protocal</span></th>
+                        <th width="10%"><span className="table-col-title">Protocol</span></th>
                         <th width="10%"><span className="table-col-title">Type</span></th>
                         <th width="10%"><span className="table-col-title">Duration</span></th>
                         <th width="20%" className="table-col-featured"><span className="table-col-title">Timeline</span></th>
