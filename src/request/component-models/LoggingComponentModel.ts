@@ -32,8 +32,8 @@ class LoggingLevelModel implements ILoggingLevelModel {
         return this._shown;
     }
 
-    public set shown(value: boolean) {
-        this._shown = value;
+    public toggleShown() {
+        this._shown = !this._shown;
     }
 }
 
@@ -104,7 +104,9 @@ export class LoggingComponentModel implements ILoggingComponentModel {
 
     public toggleAll(): void {
         this._levels.forEach(level => {
-            level.shown = true;
+            if (!level.shown) {
+                level.toggleShown();
+            };
         });
     }
 

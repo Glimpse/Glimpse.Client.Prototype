@@ -11,6 +11,8 @@ export interface ILoggingLevelModel {
     level: string;
     messages: ILogModel[];
     shown: boolean;
+
+    toggleShown(): void;
 }
 
 export interface ILoggingComponentModel extends IComponentModel {
@@ -20,5 +22,4 @@ export interface ILoggingComponentModel extends IComponentModel {
     showAll: boolean;
 
     toggleAll(): void;
-    toggleLevel(level: ILoggingLevelModel): void;
 }

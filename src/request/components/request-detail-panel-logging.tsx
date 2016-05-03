@@ -18,18 +18,6 @@ export interface ILoggingState {
  * React class to for the console log messages tab
  */
 export class Logging extends React.Component<ILoggingProps, ILoggingState> {
-    private toggleLevel(level: ILoggingLevelModel) {
-        this.state.viewModel.toggleLevel(level);
-
-        this.setState({ viewModel: this.state.viewModel });
-    }
-
-    private toggleAll() {
-        this.state.viewModel.toggleAll();
-
-        this.setState({ viewModel: this.state.viewModel });
-    }
-
     public constructor(props?: ILoggingProps) {
         super(props);
 
@@ -116,5 +104,17 @@ export class Logging extends React.Component<ILoggingProps, ILoggingState> {
                 break;
         }
         return rowClass;
+    }
+
+    private toggleLevel(level: ILoggingLevelModel) {
+        level.toggleShown();
+
+        this.forceUpdate();
+    }
+
+    private toggleAll() {
+        this.state.viewModel.toggleAll();
+
+        this.forceUpdate();
     }
 }
