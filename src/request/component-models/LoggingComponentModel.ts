@@ -4,6 +4,7 @@
 const messageProcessor = require('../util/request-message-processor');
 /*tslint:enable:no-var-requires */
 
+import { ComponentModel } from './ComponentModel';
 import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
@@ -58,7 +59,7 @@ class LoggingLevelModel implements ILoggingLevelModel {
     }
 }
 
-export class LoggingComponentModel implements ILoggingComponentModel {
+export class LoggingComponentModel extends ComponentModel implements ILoggingComponentModel {
     private static getList = messageProcessor.getTypeMessageList;
 
     private static options = {
@@ -91,6 +92,8 @@ export class LoggingComponentModel implements ILoggingComponentModel {
     }
 
     public init(request) {
+        super.init(request);
+
         const allMessages = messageProcessor.getTypeStucture(request, LoggingComponentModel.options);
 
         if (allMessages) {
@@ -124,14 +127,20 @@ export class LoggingComponentModel implements ILoggingComponentModel {
     }
 
     public toggleAll(): void {
-        this._levels.forEach(level => {
-            if (!level.shown) {
+        const notShown = _.filter(this._levels, level => !level.shown);
+
+        if (notShown.length > 0) {
+            notShown.forEach(level => {
                 level.toggleShown();
-            };
-        });
+            });
+
+            this.emitUpdate();
+        }
     }
 
-    public toggleLevel(level: ILoggingLevelModel) {
-        level.shown = !level.shown;
+    public toggleLevel(level: ILoggingLevelModel): void {
+        (<LoggingLevelModel>level).toggleShown();
+
+        this.emitUpdate();
     }
 }

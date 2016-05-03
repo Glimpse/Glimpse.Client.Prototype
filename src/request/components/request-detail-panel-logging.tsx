@@ -1,5 +1,6 @@
 'use strict';
 
+import { ComponentModelComponent } from './ComponentModelComponent';
 import { ILogMessage } from '../messages/ILogMessage';
 import { ILoggingComponentModel, ILoggingLevelModel } from '../component-models/ILoggingComponentModel';
 
@@ -13,7 +14,7 @@ export interface ILoggingProps {
 /**
  * React class to for the console log messages tab
  */
-export class Logging extends React.Component<ILoggingProps, {}> {
+export class Logging extends ComponentModelComponent<ILoggingProps, {}> {
     public render() {
         const totalMessages = this.props.viewModel.totalMessageCount;
 
@@ -102,14 +103,10 @@ export class Logging extends React.Component<ILoggingProps, {}> {
     }
 
     private toggleLevel(level: ILoggingLevelModel) {
-        level.toggleShown();
-
-        this.forceUpdate();
+        this.props.viewModel.toggleLevel(level);
     }
 
     private toggleAll() {
         this.props.viewModel.toggleAll();
-
-        this.forceUpdate();
     }
 }
