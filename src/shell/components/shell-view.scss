@@ -62,9 +62,9 @@ h1, h2, h3, h4, h5, h6 {
 
 
 //****** TABLE *******
-$table-border-color: #dbdbdb;
+$table-border-color: #ccc;
 $table-border-width: 1px;
-$table-background-alt-color: #fafafa;
+$table-background-alt-color: #f9f9f9;
 
 .table {
     width: 100%;
@@ -102,12 +102,7 @@ $table-background-alt-color: #fafafa;
     thead {
         .table-col-title-group th {
             border-bottom: $table-border-width solid $table-border-color;
-        }
-        
-        th:first-child .table-col-title,
-        .table-col-featured .table-col-title {
-            border-left: 0px;
-        }
+        }        
     }
     tfoot {
         .table-col-title-group th { 

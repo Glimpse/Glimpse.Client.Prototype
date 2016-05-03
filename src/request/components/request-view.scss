@@ -64,9 +64,15 @@
 }
 
 //***** LIST FILTERS *****
+.filter-bar {
+    margin-bottom: 2px;
+    margin-top: 2px;
+}
+
 .filter-show-all {
     background: transparent;
     border: none;
+    border-right: 1px solid #ccc;
     color: #26688e;
     padding-left: 0;
 }
@@ -84,32 +90,27 @@
 }
 
 .filter-button {
-    border: 1px solid transparent;
+    background-color: transparent;
+    margin-left: 5px;
 }
 
 .filter-button-shown {
     @extend .filter-button;
 
-    background-color: #fafafa;   
+    background-color: #e4f4ff;   
     border: 1px solid #a0daff;
 }
 
 .filter-button-not-shown {
     @extend .filter-button;
     
-    background-color: transparent;
+    border: 1px solid #e3e3e3;
 }
 
 .filter-button-not-shown:hover {
     @extend .filter-button;
     
-    background-color: #a0daff;
-}
-
-.filter-button-container {
-    border-left: 1px solid #ccc;
-    padding-left: 5px;
-    padding-right: 5px;
+    border: 1px solid #26688e;
 }
 
     //***** SECTION LAYOUTS *******

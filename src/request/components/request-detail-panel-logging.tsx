@@ -24,17 +24,13 @@ export class Logging extends ComponentModelComponent<ILoggingProps, {}> {
                 <div className='tab-content'>
                     <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
                     <br/>
-                    <div className='flex'>
-                        <button className='filter-show-all' onClick={e => this.toggleAll()}>Show all</button>
+                    <div className='flex filter-bar'>
+                        <button className='filter-show-all' onClick={e => this.toggleAll()}>Show All</button>
                         <div className='flex'>
                         {
                             this.props.viewModel.levels.map(
                                 level => {
-                                    return (
-                                        <div className='filter-button-container'>
-                                            <button className={level.shown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</button>
-                                        </div>
-                                    );
+                                    return <button className={level.shown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</button>;
                                 })
                         }
                         </div>
