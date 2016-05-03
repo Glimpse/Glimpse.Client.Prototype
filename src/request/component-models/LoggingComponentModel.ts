@@ -4,18 +4,35 @@
 const messageProcessor = require('../util/request-message-processor');
 /*tslint:enable:no-var-requires */
 
-import { ILoggingComponentModel, ILoggingLevelModel, ILogModel } from './ILoggingComponentModel';
+import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 
 import _ = require('lodash');
 
+class LogMessageModel implements ILogMessageModel {
+    public constructor(private _message: IMessageEnvelope<ILogMessage>) {
+    }
+
+    public get id(): string {
+        return this._message.id;
+    }
+
+    public get level(): string {
+        return this._message.payload.level;
+    }
+
+    public get message(): string {
+        return this._message.payload.message;
+    }
+}
+
 class LoggingLevelModel implements ILoggingLevelModel {
     private _level: string;
-    private _messages: ILogModel[];
+    private _messages: ILogMessageModel[];
     private _shown: boolean = true;
 
-    public constructor(level: string, messages: ILogModel[]) {
+    public constructor(level: string, messages: ILogMessageModel[]) {
         this._level = level;
         this._messages = messages;
     }
@@ -24,7 +41,7 @@ class LoggingLevelModel implements ILoggingLevelModel {
         return this._level;
     }
 
-    public get messages(): ILogModel[] {
+    public get messages(): ILogMessageModel[] {
         return this._messages;
     }
 
@@ -45,7 +62,7 @@ export class LoggingComponentModel implements ILoggingComponentModel {
     };
 
     private _levels: LoggingLevelModel[];
-    private _messages: ILogModel[];
+    private _messages: ILogMessageModel[];
 
     public get isEmpty(): boolean {
         return this._messages.length === 0;
@@ -75,10 +92,10 @@ export class LoggingComponentModel implements ILoggingComponentModel {
         if (allMessages) {
             this._messages = _(allMessages.logWrite)
                 .sortBy<IMessageEnvelope<ILogMessage>>('ordinal')
-                .map(message => <ILogModel>_.assign({ id: message.id }, message.payload))
+                .map(message => new LogMessageModel(message))
                 .value();
 
-            const levels: { [key: string]: ILogModel[] } = {};
+            const levels: { [key: string]: ILogMessageModel[] } = {};
 
             _.defaults(levels, _.groupBy(this._messages, message => message.level), {
                 Debug: [],
