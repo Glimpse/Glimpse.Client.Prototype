@@ -27,49 +27,56 @@ export class Logging extends React.Component<ILoggingProps, ILoggingState> {
     }
 
     public render() {
+        const totalMessages = this.state.viewModel.totalMessageCount;
 
-        if (!this.state.viewModel.isEmpty) {
+        if (totalMessages !== 0) {
             const messages = this.state.viewModel.messages;
             return (
                 <div className='tab-content'>
-                    <h3>{messages.length} {messages.length === 1 ? 'Message' : 'Messages'}</h3>
+                    <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
+                    <br/>
                     <div className='flex'>
-                        <input type='checkbox' checked={this.state.viewModel.showAll} onChange={e => this.toggleAll()}>Show all</input>
+                        <button className='filter-show-all' onClick={e => this.toggleAll()}>Show all</button>
                         <div className='flex'>
-                            {
-                                _.map(this.state.viewModel.levels,
-                                    level => {
-                                        return <input type='checkbox' checked={level.shown} onChange={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</input>;
-                                    })
-                            }
+                        {
+                            this.state.viewModel.levels.map(
+                                level => {
+                                    return (
+                                        <div className='filter-button-container'>
+                                            <button className={level.shown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</button>
+                                        </div>
+                                    );
+                                })
+                        }
                         </div>
                     </div>
+                    <br/>
                     <table className='table table-bordered table-striped tab-content-item'>
                         <thead>
                             <tr className='table-col-title-group'>
-                                <th width='5%'><span className='table-col-title'>#</span></th>
+                                <th width='5%'><span className='table-col-title'>Ordinal</span></th>
                                 <th width='10%'><span className='table-col-title'>Level</span></th>
-                                <th><span className='table-col-title'>Message</span></th>
+                                <th width='40%'><span className='table-col-title'>Message</span></th>
                                 <th width='10%'><span className='table-col-title'>From Start</span></th>
-                                <th width='10%'><span className='table-col-title'>Duration</span></th>
+                                <th><span className='table-col-title'>Duration</span></th>
                             </tr>
                         </thead>
                         <tfoot>
                             <tr className='table-body-padding table-col-title-group'><th colSpan='5'></th></tr>
                         </tfoot>
                         <tbody>
-                        {messages.map(function(message, index) {
-                            const className = Logging.getRowClass(message);
-
-                            return (
-                                <tr className={className} key={message.id}>
-                                    <td>{index + 1}</td>
-                                    <td>{message.level}</td>
-                                    <td>{message.message}</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                </tr>);
-                        }) }
+                        {
+                            messages.map(message => {
+                                return (
+                                    <tr className='tab-logs-data-default' key={message.id}>
+                                        <td>{message.ordinal}</td>
+                                        <td className={Logging.getRowClass(message)}>{message.level}</td>
+                                        <td>{message.message}</td>
+                                        <td>-</td>
+                                        <td>-</td>
+                                    </tr>);
+                            })
+                        }
                         </tbody>
                     </table>
                 </div>

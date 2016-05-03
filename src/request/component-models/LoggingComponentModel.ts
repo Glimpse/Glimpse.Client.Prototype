@@ -11,7 +11,7 @@ import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 import _ = require('lodash');
 
 class LogMessageModel implements ILogMessageModel {
-    public constructor(private _message: IMessageEnvelope<ILogMessage>) {
+    public constructor(private _message: IMessageEnvelope<ILogMessage>, private _ordinal: number) {
     }
 
     public get id(): string {
@@ -24,6 +24,10 @@ class LogMessageModel implements ILogMessageModel {
 
     public get message(): string {
         return this._message.payload.message;
+    }
+
+    public get ordinal(): number {
+        return this._ordinal;
     }
 }
 
@@ -64,10 +68,6 @@ export class LoggingComponentModel implements ILoggingComponentModel {
     private _levels: LoggingLevelModel[];
     private _messages: ILogMessageModel[];
 
-    public get isEmpty(): boolean {
-        return this._messages.length === 0;
-    }
-
     public get levels(): ILoggingLevelModel[] {
         return this._levels;
     }
@@ -86,13 +86,17 @@ export class LoggingComponentModel implements ILoggingComponentModel {
         return _.all(this._levels, level => level.shown);
     }
 
+    public get totalMessageCount(): number {
+        return this._messages.length;
+    }
+
     public init(request) {
         const allMessages = messageProcessor.getTypeStucture(request, LoggingComponentModel.options);
 
         if (allMessages) {
             this._messages = _(allMessages.logWrite)
                 .sortBy<IMessageEnvelope<ILogMessage>>('ordinal')
-                .map(message => new LogMessageModel(message))
+                .map((message, index) => new LogMessageModel(message, index + 1))
                 .value();
 
             const levels: { [key: string]: ILogMessageModel[] } = {};

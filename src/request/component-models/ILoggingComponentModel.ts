@@ -5,6 +5,7 @@ import { ILogMessage } from '../messages/ILogMessage';
 
 export interface ILogMessageModel extends ILogMessage {
     id: string;
+    ordinal: number;
 }
 
 export interface ILoggingLevelModel {
@@ -16,10 +17,10 @@ export interface ILoggingLevelModel {
 }
 
 export interface ILoggingComponentModel extends IComponentModel {
-    isEmpty: boolean;
     levels: ILoggingLevelModel[];
     messages: ILogMessageModel[];
     showAll: boolean;
+    totalMessageCount: number;
 
     toggleAll(): void;
 }

@@ -11,6 +11,11 @@
     src: url('../../../assets/selawkl.woff2') format('woff2'),
          url('../../../assets/selawkl.woff') format('woff');
 }
+@font-face {
+    font-family: 'Selawik Semibold';
+    src: url('../../../assets/selawkl.woff2') format('woff2'),
+         url('../../../assets/selawkl.woff') format('woff');
+}
 
 body, html {
     margin: 0;
@@ -129,7 +134,7 @@ $table-background-alt-color: #fafafa;
     }
     
     td, th {
-        border-left: 1px solid #eee;
+        border-left: 1px solid #ccc;
     }
     
     tr th:first-child,
