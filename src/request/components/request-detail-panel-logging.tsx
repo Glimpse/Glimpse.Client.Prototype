@@ -1,7 +1,7 @@
 'use strict';
 
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingComponentModel } from '../component-models/ILoggingComponentModel';
+import { ILoggingComponentModel, ILoggingLevelModel } from '../component-models/ILoggingComponentModel';
 
 import React = require('react');
 
@@ -10,15 +10,52 @@ export interface ILoggingProps {
     viewModel: ILoggingComponentModel;
 }
 
+export interface ILoggingState {
+    viewModel: ILoggingComponentModel;
+}
+
 /**
  * React class to for the console log messages tab
  */
-export class Logging extends React.Component<ILoggingProps, {}> {
+export class Logging extends React.Component<ILoggingProps, ILoggingState> {
+    private toggleLevel(level: ILoggingLevelModel) {
+        this.state.viewModel.toggleLevel(level);
+
+        this.setState({ viewModel: this.state.viewModel });
+    }
+
+    private toggleAll() {
+        this.state.viewModel.toggleAll();
+
+        this.setState({ viewModel: this.state.viewModel });
+    }
+
+    public constructor(props?: ILoggingProps) {
+        super(props);
+
+        this.state = {
+            viewModel: props.viewModel
+        };
+    }
+
     public render() {
-        if (!_.isEmpty(this.props.viewModel.messages)) {
+
+        if (!this.state.viewModel.isEmpty) {
+            const messages = this.state.viewModel.messages;
             return (
                 <div className='tab-content'>
-                    <h3>{this.props.viewModel.messages.length} {this.props.viewModel.messages.length === 1 ? 'Message' : 'Messages'}</h3>
+                    <h3>{messages.length} {messages.length === 1 ? 'Message' : 'Messages'}</h3>
+                    <div className='flex'>
+                        <input type='checkbox' checked={this.state.viewModel.showAll} onChange={e => this.toggleAll()}>Show all</input>
+                        <div className='flex'>
+                            {
+                                _.map(this.state.viewModel.levels,
+                                    level => {
+                                        return <input type='checkbox' checked={level.shown} onChange={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</input>;
+                                    })
+                            }
+                        </div>
+                    </div>
                     <table className='table table-bordered table-striped tab-content-item'>
                         <thead>
                             <tr className='table-col-title-group'>
@@ -29,11 +66,15 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                 <th width='10%'><span className='table-col-title'>Duration</span></th>
                             </tr>
                         </thead>
-                        {this.props.viewModel.messages.map(function(message, index) {
+                        <tfoot>
+                            <tr className='table-body-padding table-col-title-group'><th colSpan='5'></th></tr>
+                        </tfoot>
+                        <tbody>
+                        {messages.map(function(message, index) {
                             const className = Logging.getRowClass(message);
 
                             return (
-                                <tr className={className}>
+                                <tr className={className} key={message.id}>
                                     <td>{index + 1}</td>
                                     <td>{message.level}</td>
                                     <td>{message.message}</td>
@@ -41,9 +82,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                     <td>-</td>
                                 </tr>);
                         }) }
-                        <tfoot>
-                            <tr className='table-body-padding table-col-title-group'><th colSpan='5'></th></tr>
-                        </tfoot>
+                        </tbody>
                     </table>
                 </div>
             );
