@@ -10,27 +10,15 @@ export interface ILoggingProps {
     viewModel: ILoggingComponentModel;
 }
 
-export interface ILoggingState {
-    viewModel: ILoggingComponentModel;
-}
-
 /**
  * React class to for the console log messages tab
  */
-export class Logging extends React.Component<ILoggingProps, ILoggingState> {
-    public constructor(props?: ILoggingProps) {
-        super(props);
-
-        this.state = {
-            viewModel: props.viewModel
-        };
-    }
-
+export class Logging extends React.Component<ILoggingProps, {}> {
     public render() {
-        const totalMessages = this.state.viewModel.totalMessageCount;
+        const totalMessages = this.props.viewModel.totalMessageCount;
 
         if (totalMessages !== 0) {
-            const messages = this.state.viewModel.messages;
+            const messages = this.props.viewModel.messages;
             return (
                 <div className='tab-content'>
                     <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
@@ -39,7 +27,7 @@ export class Logging extends React.Component<ILoggingProps, ILoggingState> {
                         <button className='filter-show-all' onClick={e => this.toggleAll()}>Show all</button>
                         <div className='flex'>
                         {
-                            this.state.viewModel.levels.map(
+                            this.props.viewModel.levels.map(
                                 level => {
                                     return (
                                         <div className='filter-button-container'>
@@ -120,7 +108,7 @@ export class Logging extends React.Component<ILoggingProps, ILoggingState> {
     }
 
     private toggleAll() {
-        this.state.viewModel.toggleAll();
+        this.props.viewModel.toggleAll();
 
         this.forceUpdate();
     }
