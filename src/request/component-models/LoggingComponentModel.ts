@@ -31,7 +31,6 @@ class LogMessageModel implements ILogMessageModel {
 class LoggingLevelModel implements ILoggingLevelModel {
     private _level: string;
     private _messages: ILogMessageModel[];
-    private _shown: boolean = true;
 
     public constructor(level: string, messages: ILogMessageModel[]) {
         this._level = level;
@@ -44,14 +43,6 @@ class LoggingLevelModel implements ILoggingLevelModel {
 
     public get messages(): ILogMessageModel[] {
         return this._messages;
-    }
-
-    public get shown(): boolean {
-        return this._shown;
-    }
-
-    public toggleShown() {
-        this._shown = !this._shown;
     }
 }
 
@@ -103,12 +94,14 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
                 Critical: []
             });
 
-            this._levels = _.transform(
-                levels,
-                (result, messages, level) => {
-                    result.push(new LoggingLevelModel(level, messages));
-                },
-                []);
+            this._levels = _(levels)
+                .transform(
+                    (result: LoggingLevelModel[], messages, level) => {
+                        result.push(new LoggingLevelModel(level, messages));
+                    },
+                    [])
+                .sortBy(level => LoggingComponentModel.getOrderOfLevel(level.level))
+                .value();
         }
         else {
             this._levels = [];
@@ -146,5 +139,17 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
         }
 
         this.emitUpdate();
+    }
+
+    private static getOrderOfLevel(level: string): number {
+        switch (level) {
+            case 'Critical': return 1;
+            case 'Error': return 2;
+            case 'Warning': return 3;
+            case 'Information': return 4;
+            case 'Verbose': return 5;
+            case 'Debug': return 6;
+            default: return 7;
+        }
     }
 }

@@ -11,7 +11,6 @@ export interface ILogMessageModel extends ILogMessage {
 export interface ILoggingLevelModel {
     level: string;
     messages: ILogMessageModel[];
-    shown: boolean;
 }
 
 export interface ILoggingComponentState {
