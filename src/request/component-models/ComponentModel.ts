@@ -2,16 +2,20 @@
 
 import { IComponentModel } from './IComponentModel';
 
-export abstract class ComponentModel implements IComponentModel {
-    private callbacks: ((model: IComponentModel) => void)[] = [];
+export abstract class ComponentModel<S> implements IComponentModel<S> {
+    private callbacks: ((model: IComponentModel<S>) => void)[] = [];
+
+    public createState(oldState?: S): S {
+        return oldState;
+    }
 
     public abstract init(request);
 
-    public onUpdate(callback: (model: IComponentModel) => void) {
+    public onUpdate(callback: (model: IComponentModel<S>) => void) {
         this.callbacks.push(callback);
     }
 
-    public removeUpdateListener(callback: (model: IComponentModel) => void) {
+    public removeUpdateListener(callback: (model: IComponentModel<S>) => void) {
         const index = this.callbacks.indexOf(callback);
 
         if (index >= 0) {

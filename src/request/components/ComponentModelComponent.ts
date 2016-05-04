@@ -4,12 +4,12 @@ import { IComponentModel } from '../component-models/IComponentModel';
 
 import React = require('react');
 
-export interface IGlimpseComponentProps {
-    viewModel: IComponentModel;
+export interface IComponentModelComponentProps<S> {
+    viewModel: IComponentModel<S>;
 }
 
-export class ComponentModelComponent<P extends IGlimpseComponentProps, S> extends React.Component<P, S> {
-    private callback: (model: IComponentModel) => void;
+export class ComponentModelComponent<P extends IComponentModelComponentProps<S>, S> extends React.Component<P, S> {
+    private callback: (model: IComponentModel<S>) => void;
 
     public constructor(props?) {
         super(props);
@@ -22,11 +22,15 @@ export class ComponentModelComponent<P extends IGlimpseComponentProps, S> extend
 
     public componentWillMount() {
         this.props.viewModel.onUpdate(this.callback);
+
+        this.setState(this.props.viewModel.createState());
     }
 
     public componentWillReceiveProps(nextProps: P) {
         this.props.viewModel.removeUpdateListener(this.callback);
         nextProps.viewModel.onUpdate(this.callback);
+
+        this.setState(nextProps.viewModel.createState(this.state));
     }
 
     public componentWillUnmount() {

@@ -1,7 +1,7 @@
 'use strict';
 
 import { ComponentModel } from './ComponentModel';
-import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
+import { ILoggingComponentModel, ILoggingComponentState, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 
@@ -55,7 +55,7 @@ class LoggingLevelModel implements ILoggingLevelModel {
     }
 }
 
-export class LoggingComponentModel extends ComponentModel implements ILoggingComponentModel {
+export class LoggingComponentModel extends ComponentModel<ILoggingComponentState> implements ILoggingComponentModel {
     private _levels: LoggingLevelModel[];
     private _messages: ILogMessageModel[];
 
@@ -67,22 +67,16 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
         return this._levels;
     }
 
-    public get messages() {
-        let filteredMessages = _(this._messages);
-
-        _.filter(this._levels, level => !level.shown).forEach(level => {
-            filteredMessages = filteredMessages.filter(message => message.level !== level.level);
-        });
-
-        return filteredMessages.value();
-    }
-
-    public get showAll(): boolean {
-        return _.all(this._levels, level => level.shown);
-    }
-
     public get totalMessageCount(): number {
         return this._messages.length;
+    }
+
+    public createState(oldState?: ILoggingComponentState): ILoggingComponentState {
+        if (oldState) {
+            return oldState;
+        }
+
+        return _.transform(this._levels, (result, level) => result[level.level] = true, {});
     }
 
     public init(request) {
@@ -122,20 +116,34 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
         };
     }
 
-    public toggleAll(): void {
-        const notShown = _.filter(this._levels, level => !level.shown);
+    public getMessages(state: ILoggingComponentState): ILogMessageModel[] {
+        let filteredMessages = _(this._messages);
 
-        if (notShown.length > 0) {
-            notShown.forEach(level => {
-                level.toggleShown();
+        if (state) {
+            _.filter(this._levels, level => {
+                return state[level.level] === false;
+            })
+            .forEach(level => {
+                filteredMessages = filteredMessages.filter(message => message.level !== level.level);
             });
-
-            this.emitUpdate();
         }
+
+        return filteredMessages.value();
     }
 
-    public toggleLevel(level: ILoggingLevelModel): void {
-        (<LoggingLevelModel>level).toggleShown();
+    public toggleAll(state: ILoggingComponentState): void {
+        _.forIn(state, (shown, level) => state[level] = true);
+
+        this.emitUpdate();
+    }
+
+    public toggleLevel(state: ILoggingComponentState, level: ILoggingLevelModel): void {
+        if (state[level.level] === false) {
+            state[level.level] = true;
+        }
+        else {
+            state[level.level] = false;
+        }
 
         this.emitUpdate();
     }

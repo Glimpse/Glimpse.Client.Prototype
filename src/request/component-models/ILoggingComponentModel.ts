@@ -14,12 +14,16 @@ export interface ILoggingLevelModel {
     shown: boolean;
 }
 
-export interface ILoggingComponentModel extends IComponentModel {
+export interface ILoggingComponentState {
+    [key: string]: boolean;
+}
+
+export interface ILoggingComponentModel extends IComponentModel<ILoggingComponentState> {
     levels: ILoggingLevelModel[];
-    messages: ILogMessageModel[];
-    showAll: boolean;
     totalMessageCount: number;
 
-    toggleAll(): void;
-    toggleLevel(level: ILoggingLevelModel): void;
+    getMessages(state: ILoggingComponentState): ILogMessageModel[];
+
+    toggleAll(state: ILoggingComponentState): void;
+    toggleLevel(state: ILoggingComponentState, level: ILoggingLevelModel): void;
 }

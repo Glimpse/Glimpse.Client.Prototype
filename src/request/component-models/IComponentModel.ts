@@ -1,7 +1,8 @@
 'use strict';
 
-export interface IComponentModel {
+export interface IComponentModel<S> {
+    createState(oldState?: S): S;
     init(request): void;
-    onUpdate(callback: (model: IComponentModel) => void);
-    removeUpdateListener(callback: (model: IComponentModel) => void);
+    onUpdate(callback: (model: IComponentModel<S>) => void);
+    removeUpdateListener(callback: (model: IComponentModel<S>) => void);
 }
