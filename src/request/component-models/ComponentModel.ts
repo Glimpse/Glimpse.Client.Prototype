@@ -2,12 +2,10 @@
 
 import { IComponentModel } from './IComponentModel';
 
-export class ComponentModel implements IComponentModel {
+export abstract class ComponentModel implements IComponentModel {
     private callbacks: ((model: IComponentModel) => void)[] = [];
 
-    public init(request) {
-        // NOTE: No-op.
-    }
+    public abstract init(request);
 
     public onUpdate(callback: (model: IComponentModel) => void) {
         this.callbacks.push(callback);

@@ -92,8 +92,6 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public init(request) {
-        super.init(request);
-
         const allMessages = messageProcessor.getTypeStucture(request, LoggingComponentModel.options);
 
         if (allMessages) {
