@@ -19,8 +19,8 @@ module.exports = React.createClass({
 
         var viewModel;
         
-        if (tab.viewModel) {
-            viewModel = new tab.viewModel();
+        if (tab.viewModelFactory) {
+            viewModel = tab.viewModelFactory();
             
             viewModel.init(request);
         }

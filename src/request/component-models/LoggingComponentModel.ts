@@ -1,9 +1,5 @@
 'use strict';
 
-/*tslint:disable:no-var-requires */
-const messageProcessor = require('../util/request-message-processor');
-/*tslint:enable:no-var-requires */
-
 import { ComponentModel } from './ComponentModel';
 import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
@@ -60,14 +56,12 @@ class LoggingLevelModel implements ILoggingLevelModel {
 }
 
 export class LoggingComponentModel extends ComponentModel implements ILoggingComponentModel {
-    private static getList = messageProcessor.getTypeMessageList;
-
-    private static options = {
-        'log-write': LoggingComponentModel.getList
-    };
-
     private _levels: LoggingLevelModel[];
     private _messages: ILogMessageModel[];
+
+    public constructor(private _messageProcessor) {
+        super();
+    }
 
     public get levels(): ILoggingLevelModel[] {
         return this._levels;
@@ -92,7 +86,11 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public init(request) {
-        const allMessages = messageProcessor.getTypeStucture(request, LoggingComponentModel.options);
+        const options = {
+            'log-write': this._messageProcessor.getTypeMessageList
+        };
+
+        const allMessages = this._messageProcessor.getTypeStucture(request, options);
 
         if (allMessages) {
             this._messages = _(allMessages.logWrite)
