@@ -125,9 +125,19 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
     }
 
     public toggleAll(state: ILoggingComponentState): void {
-        _.forIn(state, (shown, level) => state[level] = true);
+        let updated = false;
 
-        this.emitUpdate();
+        _.forIn(state, (shown, level) => {
+            if (state[level] === false) {
+                state[level] = true;
+
+                updated = true;
+            }
+        });
+
+        if (updated) {
+            this.emitUpdate();
+        }
     }
 
     public toggleLevel(state: ILoggingComponentState, level: ILoggingLevelModel): void {
