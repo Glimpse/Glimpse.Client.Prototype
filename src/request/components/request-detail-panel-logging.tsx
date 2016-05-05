@@ -29,7 +29,7 @@ export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComp
                         {
                             this.props.viewModel.levels.map(
                                 level => {
-                                    return <button className={this.state[level.level] ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messages.length})</button>;
+                                    return <button className={this.props.viewModel.isShown(this.state, level) ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messageCount})</button>;
                                 })
                         }
                         </div>

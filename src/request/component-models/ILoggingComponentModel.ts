@@ -10,7 +10,7 @@ export interface ILogMessageModel extends ILogMessage {
 
 export interface ILoggingLevelModel {
     level: string;
-    messages: ILogMessageModel[];
+    messageCount: number;
 }
 
 export interface ILoggingComponentState {
@@ -22,6 +22,8 @@ export interface ILoggingComponentModel extends IComponentModel<ILoggingComponen
     totalMessageCount: number;
 
     getMessages(state: ILoggingComponentState): ILogMessageModel[];
+
+    isShown(state: ILoggingComponentState, level: ILoggingLevelModel): boolean;
 
     toggleAll(state: ILoggingComponentState): void;
     toggleLevel(state: ILoggingComponentState, level: ILoggingLevelModel): void;

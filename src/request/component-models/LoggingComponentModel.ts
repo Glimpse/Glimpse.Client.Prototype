@@ -29,20 +29,15 @@ class LogMessageModel implements ILogMessageModel {
 }
 
 class LoggingLevelModel implements ILoggingLevelModel {
-    private _level: string;
-    private _messages: ILogMessageModel[];
-
-    public constructor(level: string, messages: ILogMessageModel[]) {
-        this._level = level;
-        this._messages = messages;
+    public constructor(private _level: string, private _messageCount: number) {
     }
 
     public get level(): string {
         return this._level;
     }
 
-    public get messages(): ILogMessageModel[] {
-        return this._messages;
+    public get messageCount(): number {
+        return this._messageCount;
     }
 }
 
@@ -97,7 +92,7 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
             this._levels = _(levels)
                 .transform(
                     (result: LoggingLevelModel[], messages, level) => {
-                        result.push(new LoggingLevelModel(level, messages));
+                        result.push(new LoggingLevelModel(level, messages.length));
                     },
                     [])
                 .sortBy(level => LoggingComponentModel.getOrderOfLevel(level.level))
@@ -122,6 +117,10 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
         }
 
         return filteredMessages.value();
+    }
+
+    public isShown(state: ILoggingComponentState, level: ILoggingLevelModel): boolean {
+        return state === undefined || state[level.level] !== false;
     }
 
     public toggleAll(state: ILoggingComponentState): void {

@@ -41,8 +41,7 @@ describe('LoggingComponentModel', () => {
             levels.length.should.equal(6);
 
             levels.forEach(level => {
-                should.exist(level.messages);
-                level.messages.length.should.equal(0);
+                level.messageCount.should.equal(0);
             });
 
             levels[0].level.should.equal('Critical');
@@ -88,8 +87,7 @@ describe('LoggingComponentModel', () => {
             levels.length.should.equal(6);
 
             levels.forEach(level => {
-                should.exist(level.messages);
-                level.messages.length.should.equal(2);
+                level.messageCount.should.equal(2);
             });
         });
 
@@ -121,13 +119,11 @@ describe('LoggingComponentModel', () => {
             levels.length.should.equal(6);
 
             levels.forEach(level => {
-                should.exist(level.messages);
-
                 if (level.level === 'Critical') {
-                    level.messages.length.should.equal(1);
+                    level.messageCount.should.equal(1);
                 }
                 else {
-                    level.messages.length.should.equal(0);
+                    level.messageCount.should.equal(0);
                 }
             });
         });
@@ -298,6 +294,69 @@ describe('LoggingComponentModel', () => {
         });
     });
 
+    describe('#isShown', () => {
+        it('should return true if there is no state', () => {
+            const mockMessageProcessor = {
+                getTypeMessageList: 'list',
+                getTypeStucture: (request, options) => {
+                    return {};
+                }
+            };
+
+            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+
+            const state: ILoggingComponentState = {};
+            const mockLevel: ILoggingLevelModel = {
+               level: 'Critical',
+               messageCount: 0
+            };
+
+            componentModel.isShown(state, mockLevel).should.equal(true);
+        });
+
+        it('should return true if there the state is true', () => {
+            const mockMessageProcessor = {
+                getTypeMessageList: 'list',
+                getTypeStucture: (request, options) => {
+                    return {};
+                }
+            };
+
+            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+
+            const state: ILoggingComponentState = {
+                'Critical': true
+            };
+            const mockLevel: ILoggingLevelModel = {
+               level: 'Critical',
+               messageCount: 0
+            };
+
+            componentModel.isShown(state, mockLevel).should.equal(true);
+        });
+
+        it('should return false if there the state is false', () => {
+            const mockMessageProcessor = {
+                getTypeMessageList: 'list',
+                getTypeStucture: (request, options) => {
+                    return {};
+                }
+            };
+
+            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+
+            const state: ILoggingComponentState = {
+                'Critical': false
+            };
+            const mockLevel: ILoggingLevelModel = {
+               level: 'Critical',
+               messageCount: 0
+            };
+
+            componentModel.isShown(state, mockLevel).should.equal(false);
+        });
+    });
+
     describe('#toggleLevel', () => {
         it('should toggle a default value to false', () => {
             const mockMessageProcessor = {
@@ -320,7 +379,7 @@ describe('LoggingComponentModel', () => {
             const state: ILoggingComponentState = {};
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
-               messages: []
+               messageCount: 0
             };
 
             componentModel.toggleLevel(state, mockLevel);
@@ -353,7 +412,7 @@ describe('LoggingComponentModel', () => {
             };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
-               messages: []
+               messageCount: 0
             };
 
             componentModel.toggleLevel(state, mockLevel);
@@ -386,7 +445,7 @@ describe('LoggingComponentModel', () => {
             };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
-               messages: []
+               messageCount: 0
             };
 
             componentModel.toggleLevel(state, mockLevel);
