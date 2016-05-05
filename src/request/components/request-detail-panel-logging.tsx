@@ -7,7 +7,7 @@ import { ILoggingComponentModel, ILoggingComponentState, ILoggingLevelModel } fr
 import React = require('react');
 
 export interface ILoggingProps {
-    viewModel: ILoggingComponentModel;
+    componentModel: ILoggingComponentModel;
 }
 
 /**
@@ -15,10 +15,10 @@ export interface ILoggingProps {
  */
 export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComponentState> {
     public render() {
-        const totalMessages = this.props.viewModel.totalMessageCount;
+        const totalMessages = this.props.componentModel.totalMessageCount;
 
         if (totalMessages !== 0) {
-            const messages = this.props.viewModel.getMessages(this.state);
+            const messages = this.props.componentModel.getMessages(this.state);
             return (
                 <div className='tab-content'>
                     <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
@@ -27,9 +27,9 @@ export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComp
                         <button className='filter-show-all' onClick={e => this.toggleAll()}>Show All</button>
                         <div className='flex'>
                         {
-                            this.props.viewModel.levels.map(
+                            this.props.componentModel.levels.map(
                                 level => {
-                                    return <button className={this.props.viewModel.isShown(this.state, level) ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messageCount})</button>;
+                                    return <button className={this.props.componentModel.isShown(this.state, level) ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messageCount})</button>;
                                 })
                         }
                         </div>
@@ -98,10 +98,10 @@ export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComp
     }
 
     private toggleLevel(level: ILoggingLevelModel) {
-        this.props.viewModel.toggleLevel(this.state, level);
+        this.props.componentModel.toggleLevel(this.state, level);
     }
 
     private toggleAll() {
-        this.props.viewModel.toggleAll(this.state);
+        this.props.componentModel.toggleAll(this.state);
     }
 }

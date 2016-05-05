@@ -52,5 +52,5 @@ module.exports.registerTab({
     key: 'tab.logging',
     title: 'Trace',
     component: LoggingComponent,
-    viewModelFactory: function() { return new LoggingComponentModel(messageProcessor); }
+    componentModelFactory: function() { return new LoggingComponentModel(messageProcessor); }
 });

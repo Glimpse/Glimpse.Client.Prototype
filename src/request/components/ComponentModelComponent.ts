@@ -5,7 +5,7 @@ import { IComponentModel } from '../component-models/IComponentModel';
 import React = require('react');
 
 export interface IComponentModelComponentProps<S> {
-    viewModel: IComponentModel<S>;
+    componentModel: IComponentModel<S>;
 }
 
 export class ComponentModelComponent<P extends IComponentModelComponentProps<S>, S> extends React.Component<P, S> {
@@ -21,19 +21,19 @@ export class ComponentModelComponent<P extends IComponentModelComponentProps<S>,
     }
 
     public componentWillMount() {
-        this.props.viewModel.onUpdate(this.callback);
+        this.props.componentModel.onUpdate(this.callback);
 
-        this.setState(this.props.viewModel.createState());
+        this.setState(this.props.componentModel.createState());
     }
 
     public componentWillReceiveProps(nextProps: P) {
-        this.props.viewModel.removeUpdateListener(this.callback);
-        nextProps.viewModel.onUpdate(this.callback);
+        this.props.componentModel.removeUpdateListener(this.callback);
+        nextProps.componentModel.onUpdate(this.callback);
 
-        this.setState(nextProps.viewModel.createState(this.state));
+        this.setState(nextProps.componentModel.createState(this.state));
     }
 
     public componentWillUnmount() {
-        this.props.viewModel.removeUpdateListener(this.callback);
+        this.props.componentModel.removeUpdateListener(this.callback);
     }
 }
