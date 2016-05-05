@@ -35,13 +35,13 @@ export class LogMessage extends React.Component<ILogMessageProps, {}> {
             }
 
             if (region.end < region.start) {
-                console.warn('The region [%d,%d) is not a contiguous span in the log message (length = %d).', region.start, region.end, message.length);
+                console.warn('The region [%d,%d) is not a contiguous span in the log message (length === %d).', region.start, region.end, message.length);
 
                 continue;
             }
 
             if (region.start < messageIndex) {
-                console.warn('The region [%d,%d) overlaps a previous span in the log message (length = %d).', region.start, region.end, message.length);
+                console.warn('The region [%d,%d) overlaps a previous span in the log message (length === %d).', region.start, region.end, message.length);
 
                 continue;
             }
