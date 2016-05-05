@@ -12,9 +12,9 @@ export interface ILogMessageProps {
 }
 
 export class LogMessage extends React.Component<ILogMessageProps, {}> {
-    public render() {
-        const message = this.props.message || '';
-        const replacedRegions = _.sortBy(this.props.replacedRegions || [], region => region.start);
+    private static getSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ({ text: string, wasReplaced?: boolean })[] {
+        message = message || '';
+        replacedRegions = _.sortBy(replacedRegions || [], region => region.start);
 
         let messageIndex = 0;
         const messageStructure = [];
@@ -22,20 +22,56 @@ export class LogMessage extends React.Component<ILogMessageProps, {}> {
         for (let i = 0; i < replacedRegions.length; i++) {
             const region = replacedRegions[i];
 
-            if (messageIndex < replacedRegions[i].start) {
-                messageStructure.push(<span>{message.substring(messageIndex, region.start)}</span>);
+            if (region.start < 0 || region.start >= message.length) {
+                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
             }
 
-            messageStructure.push(<span className='tab-logs-data-replaced-region'>{message.substring(region.start, region.end)}</span>);
+            if (region.end < 0 || region.end > message.length) {
+                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.end < region.start) {
+                console.warn('The region [%d,%d) is not a contiguous span in the log message (length = %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.start < messageIndex) {
+                console.warn('The region [%d,%d) overlaps a previous span in the log message (length = %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (messageIndex < region.start) {
+                messageStructure.push({ text: message.substring(messageIndex, region.start) });
+            }
+
+            messageStructure.push({ text: message.substring(region.start, region.end), wasReplaced: true });
 
             messageIndex = region.end;
         }
 
         if (messageIndex < message.length) {
-            messageStructure.push(<span>{message.substring(messageIndex, message.length)}</span>);
+            messageStructure.push({ text: message.substring(messageIndex, message.length) });
         }
 
-        return <div>{messageStructure}</div>;
+        return messageStructure;
+    }
+
+    public render() {
+        const spans = LogMessage.getSpans(this.props.message, this.props.replacedRegions);
+
+        return (
+            <div>
+            {
+                spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)
+            }
+            </div>
+        );
     }
 }
 
