@@ -3,7 +3,41 @@
 import { ILogMessage } from '../messages/ILogMessage';
 import { ILoggingComponentModel } from '../component-models/ILoggingComponentModel';
 
+import _ = require('lodash');
 import React = require('react');
+
+export interface ILogMessageProps {
+    message: string;
+    replacedRegions?: ({ start: number, end: number })[];
+}
+
+export class LogMessage extends React.Component<ILogMessageProps, {}> {
+    public render() {
+        const message = this.props.message || '';
+        const replacedRegions = _.sortBy(this.props.replacedRegions || [], region => region.start);
+
+        let messageIndex = 0;
+        const messageStructure = [];
+
+        for (let i = 0; i < replacedRegions.length; i++) {
+            const region = replacedRegions[i];
+
+            if (messageIndex < replacedRegions[i].start) {
+                messageStructure.push(<span>{message.substring(messageIndex, region.start)}</span>);
+            }
+
+            messageStructure.push(<span className='tab-logs-data-replaced-region'>{message.substring(region.start, region.end)}</span>);
+
+            messageIndex = region.end;
+        }
+
+        if (messageIndex < message.length) {
+            messageStructure.push(<span>{message.substring(messageIndex, message.length)}</span>);
+        }
+
+        return <div>{messageStructure}</div>;
+    }
+}
 
 export interface ILoggingProps {
     request;
@@ -36,7 +70,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                 <tr className={className}>
                                     <td>{index + 1}</td>
                                     <td>{message.level}</td>
-                                    <td>{message.message}</td>
+                                    <td><LogMessage message={message.message} replacedRegions={message.replacedRegions} /></td>
                                     <td>-</td>
                                     <td>-</td>
                                 </tr>);
