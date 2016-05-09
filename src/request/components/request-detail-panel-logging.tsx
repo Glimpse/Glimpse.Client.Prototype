@@ -45,9 +45,6 @@ export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComp
                                 <th><span className='table-col-title'>Duration</span></th>
                             </tr>
                         </thead>
-                        <tfoot>
-                            <tr className='table-body-padding table-col-title-group'><th colSpan='5'></th></tr>
-                        </tfoot>
                         <tbody>
                         {
                             messages.map(message => {
@@ -62,6 +59,9 @@ export class Logging extends ComponentModelComponent<ILoggingProps, ILoggingComp
                             })
                         }
                         </tbody>
+                        <tfoot>
+                            <tr className='table-body-padding table-col-title-group'><th colSpan='5'></th></tr>
+                        </tfoot>
                     </table>
                 </div>
             );
