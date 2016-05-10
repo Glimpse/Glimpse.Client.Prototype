@@ -99,10 +99,11 @@ $table-background-alt-color: #f9f9f9;
 
 .table-bordered {
     .table-col-featured {
-        border-left: $table-border-width solid $table-border-color;
+        border-right: $table-border-width solid $table-border-color;
     }
     .table-col-title {
-        border-left: $table-border-width solid $table-border-color;
+        border-right: $table-border-width solid $table-border-color;
+        display: block
     }
     thead {
         .table-col-title-group th {
