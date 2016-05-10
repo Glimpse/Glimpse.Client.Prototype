@@ -1,7 +1,9 @@
 'use strict';
 
-import { ILoggingComponentState, ILoggingLevelModel } from '../../../src/request/component-models/ILoggingComponentModel';
+import { ILoggingLevelModel } from '../../../src/request/component-models/ILoggingComponentModel';
 import { LoggingComponentModel } from '../../../src/request/component-models/LoggingComponentModel';
+import { MockGlimpse } from '../../mocks/MockGlimpse';
+import { MockRequestDetailStore } from '../mocks/MockRequestDetailStore';
 
 import * as _ from 'lodash';
 import * as chai from 'chai';
@@ -20,6 +22,8 @@ describe('LoggingComponentModel', () => {
 
     describe('#init', () => {
         it('should create a default set of levels with no messages', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore();
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -27,7 +31,7 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
@@ -64,6 +68,8 @@ describe('LoggingComponentModel', () => {
                 messages.push(createMessage(messages.length + 1, 'Debug'));
             }
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore();
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -73,7 +79,7 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
@@ -96,6 +102,8 @@ describe('LoggingComponentModel', () => {
 
             messages.push(createMessage(messages.length + 1, 'Critical'));
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore();
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -105,7 +113,7 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
@@ -142,6 +150,8 @@ describe('LoggingComponentModel', () => {
                 messages.push(createMessage(messages.length + 1, 'Debug'));
             }
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore();
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -151,12 +161,12 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
 
-            const filteredMessages = componentModel.getMessages(/* state: */ undefined);
+            const filteredMessages = componentModel.getMessages();
 
             should.exist(filteredMessages);
 
@@ -179,6 +189,8 @@ describe('LoggingComponentModel', () => {
                 messages.push(createMessage(messages.length + 1, 'Debug'));
             }
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({});
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -188,12 +200,12 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
 
-            const filteredMessages = componentModel.getMessages({});
+            const filteredMessages = componentModel.getMessages();
 
             should.exist(filteredMessages);
 
@@ -216,6 +228,15 @@ describe('LoggingComponentModel', () => {
                 messages.push(createMessage(messages.length + 1, 'Debug'));
             }
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                Critical: true,
+                Error: true,
+                Warning: true,
+                Information: true,
+                Verbose: true,
+                Debug: true
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -225,19 +246,12 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
 
-            const filteredMessages = componentModel.getMessages({
-                Critical: true,
-                Error: true,
-                Warning: true,
-                Information: true,
-                Verbose: true,
-                Debug: true
-            });
+            const filteredMessages = componentModel.getMessages();
 
             should.exist(filteredMessages);
 
@@ -260,6 +274,15 @@ describe('LoggingComponentModel', () => {
                 messages.push(createMessage(messages.length + 1, 'Debug'));
             }
 
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                Critical: false,
+                Error: true,
+                Warning: false,
+                Information: false,
+                Verbose: true,
+                Debug: false
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -269,19 +292,12 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
             const mockRequest = {};
 
             componentModel.init(mockRequest);
 
-            const filteredMessages = componentModel.getMessages({
-                Critical: false,
-                Error: true,
-                Warning: false,
-                Information: false,
-                Verbose: true,
-                Debug: false
-            });
+            const filteredMessages = componentModel.getMessages();
 
             should.exist(filteredMessages);
 
@@ -296,6 +312,8 @@ describe('LoggingComponentModel', () => {
 
     describe('#isShown', () => {
         it('should return true if there is no state', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({});
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -303,18 +321,21 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const state: ILoggingComponentState = {};
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.isShown(state, mockLevel).should.equal(true);
+            componentModel.isShown(mockLevel).should.equal(true);
         });
 
         it('should return true if there the state is true', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': true
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -322,20 +343,21 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const state: ILoggingComponentState = {
-                'Critical': true
-            };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.isShown(state, mockLevel).should.equal(true);
+            componentModel.isShown(mockLevel).should.equal(true);
         });
 
         it('should return false if there the state is false', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': false
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -343,22 +365,21 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const state: ILoggingComponentState = {
-                'Critical': false
-            };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.isShown(state, mockLevel).should.equal(false);
+            componentModel.isShown(mockLevel).should.equal(false);
         });
     });
 
     describe('#toggleLevel', () => {
         it('should toggle a default value to false', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({});
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -366,30 +387,25 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
-            };
-
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
-
-            componentModel.onUpdate(callback);
-
-            const state: ILoggingComponentState = {};
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.toggleLevel(state, mockLevel);
+            componentModel.toggleLevel(mockLevel);
 
-            state.should.have.property('Critical').equal(false);
-
-            wasCalled.should.equal(true);
+            mockGlimpse.emitted.length.should.equal(1);
+            mockGlimpse.emitted[0].eventName = 'data.request.detail.logging.filter';
+            mockGlimpse.emitted[0].eventData.should.have.property('Critical').equal(false);
         });
 
         it('should toggle a true value to false', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': true
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -397,32 +413,25 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
-            };
-
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
-
-            componentModel.onUpdate(callback);
-
-            const state: ILoggingComponentState = {
-                'Critical': true
-            };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.toggleLevel(state, mockLevel);
+            componentModel.toggleLevel(mockLevel);
 
-            state.should.have.property('Critical').equal(false);
-
-            wasCalled.should.equal(true);
+            mockGlimpse.emitted.length.should.equal(1);
+            mockGlimpse.emitted[0].eventName = 'data.request.detail.logging.filter';
+            mockGlimpse.emitted[0].eventData.should.have.property('Critical').equal(false);
         });
 
         it('should toggle a false value to true', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': false
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -430,34 +439,25 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
-            };
-
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
-
-            componentModel.onUpdate(callback);
-
-            const state: ILoggingComponentState = {
-                'Critical': false
-            };
             const mockLevel: ILoggingLevelModel = {
                level: 'Critical',
                messageCount: 0
             };
 
-            componentModel.toggleLevel(state, mockLevel);
+            componentModel.toggleLevel(mockLevel);
 
-            state.should.have.property('Critical').equal(true);
-
-            wasCalled.should.equal(true);
+            mockGlimpse.emitted.length.should.equal(1);
+            mockGlimpse.emitted[0].eventName = 'data.request.detail.logging.filter';
+            mockGlimpse.emitted[0].eventData.should.have.property('Critical').equal(true);
         });
     });
 
     describe('#toggleAll', () => {
-        it('should do nothing if given an empty state', () => {
+        it('should do nothing if given no state', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore();
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -465,26 +465,35 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
+            componentModel.toggleAll();
+
+            mockGlimpse.emitted.length.should.equal(0);
+        });
+
+        it('should do nothing if given an empty state', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({});
+            const mockMessageProcessor = {
+                getTypeMessageList: 'list',
+                getTypeStucture: (request, options) => {
+                    return {};
+                }
             };
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            componentModel.onUpdate(callback);
+            componentModel.toggleAll();
 
-            const state: ILoggingComponentState = {};
-
-            componentModel.toggleAll(state);
-
-            _.isEmpty(state).should.equal(true);
-
-            wasCalled.should.equal(false);
+            mockGlimpse.emitted.length.should.equal(0);
         });
 
         it('should do nothing if given an all-selected state', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': true
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -492,28 +501,19 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
-            };
+            componentModel.toggleAll();
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
-
-            componentModel.onUpdate(callback);
-
-            const state: ILoggingComponentState = {
-                'Critical': true
-            };
-
-            componentModel.toggleAll(state);
-
-            _.all(state, shown => shown).should.equal(true);
-
-            wasCalled.should.equal(false);
+            mockGlimpse.emitted.length.should.equal(0);
         });
 
         it('should toggle un-selected state', () => {
+            const mockGlimpse = new MockGlimpse();
+            const mockStore = new MockRequestDetailStore({
+                'Critical': true,
+                'Error': false
+            });
             const mockMessageProcessor = {
                 getTypeMessageList: 'list',
                 getTypeStucture: (request, options) => {
@@ -521,26 +521,14 @@ describe('LoggingComponentModel', () => {
                 }
             };
 
-            let wasCalled = false;
+            const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            const callback = model => {
-                wasCalled = true;
-            };
+            componentModel.toggleAll();
 
-            const componentModel = new LoggingComponentModel(mockMessageProcessor);
+            mockGlimpse.emitted.length.should.equal(1);
+            mockGlimpse.emitted[0].eventName = 'data.request.detail.logging.filter';
 
-            componentModel.onUpdate(callback);
-
-            const state: ILoggingComponentState = {
-                'Critical': true,
-                'Error': false
-            };
-
-            componentModel.toggleAll(state);
-
-            _.all(state, shown => shown).should.equal(true);
-
-            wasCalled.should.equal(true);
+            _.every(mockGlimpse.emitted[0].eventData, shown => shown).should.equal(true);
         });
     });
 });

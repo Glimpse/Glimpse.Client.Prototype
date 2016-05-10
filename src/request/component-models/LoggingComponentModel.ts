@@ -1,9 +1,12 @@
 'use strict';
 
 import { ComponentModel } from './ComponentModel';
-import { ILoggingComponentModel, ILoggingComponentState, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
+import { IGlimpse } from '../../IGlimpse';
+import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
+import { ILoggingComponentState } from './ILoggingComponentState';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
+import { IRequestDetailStore } from '../stores/IRequestDetailStore';
 
 import _ = require('lodash');
 
@@ -41,11 +44,11 @@ class LoggingLevelModel implements ILoggingLevelModel {
     }
 }
 
-export class LoggingComponentModel extends ComponentModel<ILoggingComponentState> implements ILoggingComponentModel {
+export class LoggingComponentModel extends ComponentModel implements ILoggingComponentModel {
     private _levels: LoggingLevelModel[];
     private _messages: ILogMessageModel[];
 
-    public constructor(private _messageProcessor) {
+    public constructor(private _glimpse: IGlimpse, private _requestDetailStore: IRequestDetailStore, private _messageProcessor) {
         super();
     }
 
@@ -55,14 +58,6 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
 
     public get totalMessageCount(): number {
         return this._messages.length;
-    }
-
-    public createState(oldState?: ILoggingComponentState): ILoggingComponentState {
-        if (oldState) {
-            return oldState;
-        }
-
-        return _.transform(this._levels, (result, level) => result[level.level] = true, {});
     }
 
     public init(request) {
@@ -104,7 +99,9 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
         };
     }
 
-    public getMessages(state: ILoggingComponentState): ILogMessageModel[] {
+    public getMessages(): ILogMessageModel[] {
+        const state = this._requestDetailStore.getState().logging.filter;
+
         let filteredMessages = _(this._messages);
 
         if (state) {
@@ -119,11 +116,15 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
         return filteredMessages.value();
     }
 
-    public isShown(state: ILoggingComponentState, level: ILoggingLevelModel): boolean {
+    public isShown(level: ILoggingLevelModel): boolean {
+        const state = this._requestDetailStore.getState().logging.filter;
+
         return state === undefined || state[level.level] !== false;
     }
 
-    public toggleAll(state: ILoggingComponentState): void {
+    public toggleAll(): void {
+        const state = this._requestDetailStore.getState().logging.filter;
+
         let updated = false;
 
         _.forIn(state, (shown, level) => {
@@ -135,11 +136,13 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
         });
 
         if (updated) {
-            this.emitUpdate();
+            this.emitUpdate(state);
         }
     }
 
-    public toggleLevel(state: ILoggingComponentState, level: ILoggingLevelModel): void {
+    public toggleLevel(level: ILoggingLevelModel): void {
+        const state = this._requestDetailStore.getState().logging.filter;
+
         if (state[level.level] === false) {
             state[level.level] = true;
         }
@@ -147,7 +150,12 @@ export class LoggingComponentModel extends ComponentModel<ILoggingComponentState
             state[level.level] = false;
         }
 
-        this.emitUpdate();
+        this.emitUpdate(state);
+    }
+
+    // TODO: State should be immutable.
+    private emitUpdate(state: ILoggingComponentState) {
+        this._glimpse.emit('data.request.detail.logging.filter', state);
     }
 
     private static getOrderOfLevel(level: string): number {
