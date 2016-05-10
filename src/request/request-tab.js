@@ -39,7 +39,6 @@ require('./components/request-detail-panel-webservices');
 require('./components/request-detail-panel-messages');
 
 var Request = require('./components/request-detail-panel-request').Request;
-
 module.exports.registerTab({
     key: 'tab.request',
     title: 'Request',
@@ -48,10 +47,22 @@ module.exports.registerTab({
 
 var LoggingComponent = require('./components/request-detail-panel-logging').Logging;
 var LoggingComponentModel = require('./component-models/LoggingComponentModel').LoggingComponentModel;
-
 module.exports.registerTab({
     key: 'tab.logging',
     title: 'Trace',
     component: LoggingComponent,
-    componentModelFactory: function() { return new LoggingComponentModel(glimpse, requestDetailStore, messageProcessor); }
+    componentModelFactory: function() { 
+        return new LoggingComponentModel(glimpse, requestDetailStore, messageProcessor); 
+    }
+});
+
+var WebServicesComponent = require('./components/request-detail-panel-webservices').WebServices;
+var WebServicesComponentModel = require('./component-models/WebServicesComponentModel').WebServicesComponentModel;
+module.exports.registerTab({
+    key: 'tab.webservices',
+    title: 'Web Services',
+    component: WebServicesComponent,
+    componentModelFactory: function() { 
+        return new WebServicesComponentModel(glimpse, requestDetailStore, messageProcessor); 
+    }
 });
