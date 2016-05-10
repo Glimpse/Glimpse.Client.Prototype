@@ -123,7 +123,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public toggleAll(): void {
-        const state = this._requestDetailStore.getState().logging.filter;
+        const state = _.clone(this._requestDetailStore.getState().logging.filter);
 
         let updated = false;
 
@@ -141,7 +141,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public toggleLevel(level: ILoggingLevelModel): void {
-        const state = this._requestDetailStore.getState().logging.filter;
+        const state = _.clone(this._requestDetailStore.getState().logging.filter);
 
         if (state[level.level] === false) {
             state[level.level] = true;
@@ -153,7 +153,6 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
         this.emitUpdate(state);
     }
 
-    // TODO: State should be immutable.
     private emitUpdate(state: ILoggingComponentState) {
         this._glimpse.emit('data.request.detail.logging.filter', state);
     }
