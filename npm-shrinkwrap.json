@@ -3884,6 +3884,11 @@
       "from": "redux@latest",
       "resolved": "https://registry.npmjs.org/redux/-/redux-3.5.2.tgz"
     },
+    "redux-immutable": {
+      "version": "3.0.6",
+      "from": "redux-immutable@latest",
+      "resolved": "https://registry.npmjs.org/redux-immutable/-/redux-immutable-3.0.6.tgz"
+    },
     "regex-cache": {
       "version": "0.4.3",
       "from": "regex-cache@>=0.4.2 <0.5.0",

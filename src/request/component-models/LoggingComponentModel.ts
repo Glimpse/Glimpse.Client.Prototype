@@ -54,7 +54,9 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public get levels(): ILoggingLevelModel[] {
-        return this._levels;
+        const selectedRequestId = store.getState().get('selectedRequestId');
+
+        return store.getState().get('requests').get(selectedRequestId).get('logging').get('levels');
     }
 
     public get totalMessageCount(): number {
@@ -107,7 +109,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
 
         if (state) {
             _.filter(this._levels, level => {
-                return state.get(level.level) === false;
+                return state.get('logging').get('filter').get(level.level) === false;
             })
             .forEach(level => {
                 filteredMessages = filteredMessages.filter(message => message.level !== level.level);
@@ -120,7 +122,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     public isShown(level: ILoggingLevelModel): boolean {
         const state = store.getState();
 
-        return state === undefined || state.get(level.level) !== false;
+        return state === undefined || state.get('logging').get('filter').get(level.level) !== false;
     }
 
     public toggleAll(): void {
