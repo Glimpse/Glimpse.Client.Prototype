@@ -11,10 +11,21 @@ var Summary = require('./request-detail-summary-view');
 var Content = require('./request-detail-content-view');
 var Loading = require('lib/components/loading');
 
+var store = require('../stores/RequestStore');
+
 module.exports = React.createClass({
+    _storeSubscription: undefined,
     mixins: [ EmitterMixin ],
     componentDidMount: function () {
+        var that = this;
         this.addListener('shell.request.detail.changed', this._requestDetailChanged);
+        this._storeSubscription = store.default.subscribe(this._storeChanged);
+    },
+    componentWillUnmount: function() {
+        if (this._storeSubscription) {
+            this._storeSubscription();
+            this._storeSubscription = undefined;
+        }  
     },
     render: function () {
         var model = this.state;
@@ -46,5 +57,8 @@ module.exports = React.createClass({
     },
     _requestDetailChanged: function (state) {
         this.setState(state);
+    },
+    _storeChanged: function() {
+        this.setState(this.state);
     }
 });

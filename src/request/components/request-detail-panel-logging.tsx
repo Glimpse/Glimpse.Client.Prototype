@@ -13,6 +13,9 @@ export interface ILoggingProps {
  * React class to for the console log messages tab
  */
 export class Logging extends React.Component<ILoggingProps, {}> {
+    constructor(props?) {
+        super(props);
+    }
     public render() {
         const totalMessages = this.props.componentModel.totalMessageCount;
 

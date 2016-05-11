@@ -3,10 +3,11 @@
 import { ComponentModel } from './ComponentModel';
 import { IGlimpse } from '../../IGlimpse';
 import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
-import { ILoggingComponentState } from './ILoggingComponentState';
 import { ILogMessage } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 import { IRequestDetailStore } from '../stores/IRequestDetailStore';
+
+import store, { createLoggingShowAllAction, createLoggingToggleLevelAction } from '../stores/RequestStore';
 
 import _ = require('lodash');
 
@@ -100,13 +101,13 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public getMessages(): ILogMessageModel[] {
-        const state = this._requestDetailStore.getState().logging.filter;
+        const state = store.getState();
 
         let filteredMessages = _(this._messages);
 
         if (state) {
             _.filter(this._levels, level => {
-                return state[level.level] === false;
+                return state.get(level.level) === false;
             })
             .forEach(level => {
                 filteredMessages = filteredMessages.filter(message => message.level !== level.level);
@@ -117,44 +118,17 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public isShown(level: ILoggingLevelModel): boolean {
-        const state = this._requestDetailStore.getState().logging.filter;
+        const state = store.getState();
 
-        return state === undefined || state[level.level] !== false;
+        return state === undefined || state.get(level.level) !== false;
     }
 
     public toggleAll(): void {
-        const state = _.clone(this._requestDetailStore.getState().logging.filter);
-
-        let updated = false;
-
-        _.forIn(state, (shown, level) => {
-            if (state[level] === false) {
-                state[level] = true;
-
-                updated = true;
-            }
-        });
-
-        if (updated) {
-            this.emitUpdate(state);
-        }
+        store.dispatch(createLoggingShowAllAction());
     }
 
     public toggleLevel(level: ILoggingLevelModel): void {
-        const state = _.clone(this._requestDetailStore.getState().logging.filter);
-
-        if (state[level.level] === false) {
-            state[level.level] = true;
-        }
-        else {
-            state[level.level] = false;
-        }
-
-        this.emitUpdate(state);
-    }
-
-    private emitUpdate(state: ILoggingComponentState) {
-        this._glimpse.emit('data.request.detail.logging.filter', state);
+        store.dispatch(createLoggingToggleLevelAction(level.level));
     }
 
     private static getOrderOfLevel(level: string): number {

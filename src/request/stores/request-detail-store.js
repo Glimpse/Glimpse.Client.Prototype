@@ -105,18 +105,3 @@ function getTabs(request) {
 
     glimpse.on('data.request.detail.requested', triggerRequest);
 })();
-
-// Toggle Logging Filter Level
-(function () {
-    function triggerRequest(payload) {
-        _viewModel.logging.filter = payload;
-
-        requestChanged(_viewModel);
-    }
-
-    glimpse.on('data.request.detail.logging.filter', triggerRequest);
-})();
-
-exports.getState = function getState() {
-    return _viewModel;
-}
