@@ -6,75 +6,6 @@ import { ILoggingComponentModel, ILoggingLevelModel } from '../component-models/
 import _ = require('lodash');
 import React = require('react');
 
-export interface ILogMessageProps {
-    message: string;
-    replacedRegions?: ({ start: number, end: number })[];
-}
-
-export class LogMessage extends React.Component<ILogMessageProps, {}> {
-    private static getSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ({ text: string, wasReplaced?: boolean })[] {
-        message = message || '';
-        replacedRegions = _.sortBy(replacedRegions || [], region => region.start);
-
-        let messageIndex = 0;
-        const messageStructure = [];
-
-        for (let i = 0; i < replacedRegions.length; i++) {
-            const region = replacedRegions[i];
-
-            if (region.start < 0 || region.start >= message.length) {
-                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
-
-                continue;
-            }
-
-            if (region.end < 0 || region.end > message.length) {
-                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
-
-                continue;
-            }
-
-            if (region.end < region.start) {
-                console.warn('The region [%d,%d) is not a contiguous span in the log message (length === %d).', region.start, region.end, message.length);
-
-                continue;
-            }
-
-            if (region.start < messageIndex) {
-                console.warn('The region [%d,%d) overlaps a previous span in the log message (length === %d).', region.start, region.end, message.length);
-
-                continue;
-            }
-
-            if (messageIndex < region.start) {
-                messageStructure.push({ text: message.substring(messageIndex, region.start) });
-            }
-
-            messageStructure.push({ text: message.substring(region.start, region.end), wasReplaced: true });
-
-            messageIndex = region.end;
-        }
-
-        if (messageIndex < message.length) {
-            messageStructure.push({ text: message.substring(messageIndex, message.length) });
-        }
-
-        return messageStructure;
-    }
-
-    public render() {
-        const spans = LogMessage.getSpans(this.props.message, this.props.replacedRegions);
-
-        return (
-            <div>
-            {
-                spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)
-            }
-            </div>
-        );
-    }
-}
-
 export interface ILoggingProps {
     componentModel: ILoggingComponentModel;
 }
@@ -122,7 +53,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                     <tr className='tab-logs-data-default' key={message.id}>
                                         <td>{message.ordinal}</td>
                                         <td className={Logging.getRowClass(message)}>{message.level}</td>
-                                        <td><LogMessage message={message.message} replacedRegions={message.replacedRegions} /></td>
+                                        <td>{message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)}</td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td />
