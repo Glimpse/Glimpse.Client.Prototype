@@ -2,7 +2,6 @@
 
 import { IComponentModel } from './IComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingComponentState } from './ILoggingComponentState';
 
 export interface ILogMessageModel extends ILogMessage {
     id: string;
@@ -22,6 +21,6 @@ export interface ILoggingComponentModel extends IComponentModel {
 
     isShown(level: ILoggingLevelModel): boolean;
 
-    toggleAll(): void;
+    showAll(): void;
     toggleLevel(level: ILoggingLevelModel): void;
 }

@@ -103,6 +103,6 @@ export class Logging extends React.Component<ILoggingProps, {}> {
     }
 
     private toggleAll() {
-        this.props.componentModel.toggleAll();
+        this.props.componentModel.showAll();
     }
 }

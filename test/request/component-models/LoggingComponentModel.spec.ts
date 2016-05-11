@@ -454,7 +454,7 @@ describe('LoggingComponentModel', () => {
         });
     });
 
-    describe('#toggleAll', () => {
+    describe('#showAll', () => {
         it('should do nothing if given no state', () => {
             const mockGlimpse = new MockGlimpse();
             const mockStore = new MockRequestDetailStore();
@@ -467,7 +467,7 @@ describe('LoggingComponentModel', () => {
 
             const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            componentModel.toggleAll();
+            componentModel.showAll();
 
             mockGlimpse.emitted.length.should.equal(0);
         });
@@ -484,7 +484,7 @@ describe('LoggingComponentModel', () => {
 
             const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            componentModel.toggleAll();
+            componentModel.showAll();
 
             mockGlimpse.emitted.length.should.equal(0);
         });
@@ -503,7 +503,7 @@ describe('LoggingComponentModel', () => {
 
             const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            componentModel.toggleAll();
+            componentModel.showAll();
 
             mockGlimpse.emitted.length.should.equal(0);
         });
@@ -523,7 +523,7 @@ describe('LoggingComponentModel', () => {
 
             const componentModel = new LoggingComponentModel(mockGlimpse, mockStore, mockMessageProcessor);
 
-            componentModel.toggleAll();
+            componentModel.showAll();
 
             mockGlimpse.emitted.length.should.equal(1);
             mockGlimpse.emitted[0].eventName = 'data.request.detail.logging.filter';

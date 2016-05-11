@@ -122,7 +122,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
         return state === undefined || state[level.level] !== false;
     }
 
-    public toggleAll(): void {
+    public showAll(): void {
         const state = _.clone(this._requestDetailStore.getState().logging.filter);
 
         let updated = false;
