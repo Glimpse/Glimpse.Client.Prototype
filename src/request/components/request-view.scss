@@ -376,6 +376,30 @@
     border-bottom-width: 2px;
 }
 
+.tab-logs-message-object {
+    > pre {
+            margin: 0;
+            
+            > code {
+                background: transparent;
+                padding: 0;
+            }
+        }
+}
+
+.tab-logs-message-inline {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    
+    > * {
+        display: table-cell;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
 .tab-logs-message-count {
     font-family: 'Segoe UI', 'Selawik Semibold', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 175%;

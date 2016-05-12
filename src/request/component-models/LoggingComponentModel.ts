@@ -18,6 +18,12 @@ class LogMessageModel implements ILogMessageModel {
         return this._message.id;
     }
 
+    public get isObject(): boolean {
+        const length = this._message.payload.message.length;
+
+        return length > 0 && this._message.payload.message[length - 1] === '}';
+    }
+
     public get level(): string {
         return this._message.payload.level;
     }

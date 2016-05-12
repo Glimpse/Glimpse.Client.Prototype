@@ -5,6 +5,7 @@ import { ILogMessage } from '../messages/ILogMessage';
 
 export interface ILogMessageModel extends ILogMessage {
     id: string;
+    isObject: boolean;
     ordinal: number;
 }
 

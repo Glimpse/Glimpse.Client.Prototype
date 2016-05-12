@@ -1,9 +1,45 @@
 'use strict';
 
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingComponentModel, ILoggingLevelModel } from '../component-models/ILoggingComponentModel';
+import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from '../component-models/ILoggingComponentModel';
 
 import React = require('react');
+import Highlight = require('react-highlight');
+
+interface ILogMessageProps {
+    message: ILogMessageModel;
+}
+
+interface ILogMessageState {
+    isExpanded: boolean;
+}
+
+class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
+    constructor(props?) {
+        super(props);
+
+        this.state = {
+            isExpanded: false
+        };
+    }
+
+    public render() {
+        return (
+            <div onClick={e => this.onToggleExpansion()}>
+            {
+                (this.state.isExpanded && this.props.message.isObject)
+                    ? <div className='tab-logs-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
+                    : <div className='tab-logs-message-inline'><span>{this.props.message.message}</span></div>
+            }
+            </div>);
+    }
+
+    private onToggleExpansion(): void {
+        this.setState({
+            isExpanded: !this.state.isExpanded
+        });
+    }
+}
 
 export interface ILoggingProps {
     componentModel: ILoggingComponentModel;
@@ -52,7 +88,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                     <tr className='tab-logs-data-default' key={message.id}>
                                         <td>{message.ordinal}</td>
                                         <td className={Logging.getRowClass(message)}>{message.level}</td>
-                                        <td>{message.message}</td>
+                                        <td><LogMessage message={message} /></td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td />
