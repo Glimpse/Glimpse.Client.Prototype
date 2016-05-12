@@ -70,6 +70,20 @@ describe('LogMessageModel', () => {
             should.not.exist(spans[0].wasReplaced);
         });
 
+        it('should return one replaced span for entirely replaced message', () => {
+            const model = createModel('message',
+            [
+                { start: 0, end: 7 }
+            ]);
+
+            const spans = model.spans;
+
+            should.exist(spans);
+            spans.length.should.equal(1);
+            spans[0].text.should.equal('message');
+            spans[0].wasReplaced.should.equal(true);
+        });
+
         it('should return a beginning replaced span', () => {
             const model = createModel(
                 'spanmessage',
@@ -162,6 +176,34 @@ describe('LogMessageModel', () => {
 
             spans[4].text.should.equal('end');
             should.not.exist(spans[4].wasReplaced);
+        });
+
+        it('should return multiple, back-to-back replaced spans', () => {
+            const model = createModel(
+                'beginspan1span2end',
+                [
+                    { start: 5, end: 10},
+                    { start: 10, end: 15}
+                ]);
+
+            const spans = model.spans;
+
+            should.exist(spans);
+            spans.length.should.equal(4);
+
+            spans[0].text.should.equal('begin');
+            should.not.exist(spans[0].wasReplaced);
+
+            spans[1].text.should.equal('span1');
+            should.exist(spans[1].wasReplaced);
+            spans[1].wasReplaced.should.equal(true);
+
+            spans[2].text.should.equal('span2');
+            should.exist(spans[2].wasReplaced);
+            spans[2].wasReplaced.should.equal(true);
+
+            spans[3].text.should.equal('end');
+            should.not.exist(spans[3].wasReplaced);
         });
 
         it('should return sorted replaced spans', () => {
