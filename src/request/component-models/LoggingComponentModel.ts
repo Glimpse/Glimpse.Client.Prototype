@@ -10,7 +10,7 @@ import { IRequestDetailStore } from '../stores/IRequestDetailStore';
 
 import _ = require('lodash');
 
-class LogMessageModel implements ILogMessageModel {
+export class LogMessageModel implements ILogMessageModel {
     private _spans: ILogMessageSpan[];
 
     public constructor(private _message: IMessageEnvelope<ILogMessage>, private _ordinal: number) {
@@ -45,7 +45,10 @@ class LogMessageModel implements ILogMessageModel {
     }
 
     private static createSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ILogMessageSpan[] {
-        message = message || '';
+        if (!message || message.length === 0) {
+            return [{ text: '' }];
+        }
+
         replacedRegions = _.sortBy(replacedRegions || [], region => region.start);
 
         let messageIndex = 0;
@@ -74,6 +77,12 @@ class LogMessageModel implements ILogMessageModel {
 
             if (region.start < messageIndex) {
                 console.warn('The region [%d,%d) overlaps a previous span in the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.start === region.end) {
+                // Ignore zero-length regions (to prevent creating three spans when one will do).
 
                 continue;
             }
