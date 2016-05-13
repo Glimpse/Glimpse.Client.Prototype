@@ -1,9 +1,5 @@
 'use strict';
 
-/*tslint:disable:no-var-requires */
-const messageProcessor = require('../util/request-message-processor');
-/*tslint:enable:no-var-requires */
-
 import _ = require('lodash');
 
 import { ComponentModel } from './ComponentModel';
@@ -14,7 +10,7 @@ import { IWebServicesComponentModel, IWebServicesRequest } from './IWebServicesC
 import { IDataHttpResponseMessage } from '../messages/IDataHttpResponseMessage';
 import { IDataHttpRequestMessage } from '../messages/IDataHttpRequestMessage';
 
-class WebServicesRequest implements IWebServicesRequest {
+export class WebServicesRequest implements IWebServicesRequest {
     public constructor(
             private _requestMessage: IDataHttpRequestMessage,
             private _responseMessage: IDataHttpResponseMessage, 
@@ -35,12 +31,6 @@ class WebServicesRequest implements IWebServicesRequest {
 }
 
 export class WebServicesComponentModel extends ComponentModel implements IWebServicesComponentModel {
-    private static getList = messageProcessor.getTypeMessageList; 
-    private static options = {
-        'data-http-request': WebServicesComponentModel.getList,
-        'data-http-response': WebServicesComponentModel.getList
-    };    
-    
     private _requestMessages: IDataHttpRequestMessage[];
     private _responseMessages: IDataHttpResponseMessage[];
     private _messages: IWebServicesRequest[];
@@ -63,11 +53,15 @@ export class WebServicesComponentModel extends ComponentModel implements IWebSer
     }
     
     public get selectedMessage(): IWebServicesRequest {
-        return this._messages[this._selectedIndex];
+        return this._messages && this._messages[this._selectedIndex] || undefined;
     }
     
     public init(request) {
-        const messagesByType = messageProcessor.getTypeStucture(request, WebServicesComponentModel.options);
+        const options = {
+            'data-http-request': this._messageProcessor.getList,
+            'data-http-response': this._messageProcessor.getList
+        };
+        const messagesByType = this._messageProcessor.getTypeStucture(request, options);
         if (messagesByType) {
             this._requestMessages = _(messagesByType.dataHttpRequest)
                                         .sortBy<IMessageEnvelope<IDataHttpRequestMessage>>('ordinal')
