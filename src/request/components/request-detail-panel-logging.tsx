@@ -27,12 +27,13 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 
     public render() {
         return (
-            <div onClick={e => this.onToggleExpansion()}>
-            {
-                (this.state.isExpanded && this.props.message.isObject)
-                    ? <div className='tab-logs-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
-                    : <div className='tab-logs-message-inline'>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)}</div>
-            }
+            <div className='tab-logs-table-message' onClick={e => this.onToggleExpansion()}>
+                <div><FontAwesomeIcon path={this.getIconPath()} /></div>
+                {
+                    (this.state.isExpanded && this.props.message.isObject)
+                        ? <div className='tab-logs-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
+                        : <div className='tab-logs-message-inline'>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)}</div>
+                }
             </div>);
     }
 
@@ -40,6 +41,18 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
         this.setState({
             isExpanded: !this.state.isExpanded
         });
+    }
+
+    private getIconPath() {
+        if (!this.props.message.isObject) {
+            return '';
+        }
+        else if (this.state.isExpanded) {
+            return FontAwesomeIcon.paths.CaretDown;
+        }
+        else {
+            return FontAwesomeIcon.paths.CaretRight;
+        }
     }
 }
 
@@ -72,15 +85,15 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                         </div>
                     </div>
                     <br/>
-                    <table className='table table-bordered table-striped tab-content-item'>
+                    <table className='table table-bordered table-striped tab-content-item tab-logs-table'>
                         <thead>
                             <tr className='table-col-title-group'>
                                 <th width='5%'><span className='table-col-title'>Ordinal</span></th>
-                                <th width='10%'><span className='table-col-title'><FontAwesomeIcon path=''/>Level</span></th>
-                                <th width='40%'><span className='table-col-title'>Message</span></th>
+                                <th width='10%'><span className='table-col-title tab-logs-table-icon-column'><FontAwesomeIcon path=''/>Level</span></th>
+                                <th><span className='table-col-title tab-logs-table-icon-column'><FontAwesomeIcon path=''/>Message</span></th>
                                 <th width='10%'><span className='table-col-title'>From Start</span></th>
                                 <th width='10%'><span className='table-col-title'>Duration</span></th>
-                                <th />
+                                <th width='5%' />
                             </tr>
                         </thead>
                         <tbody>
@@ -90,7 +103,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                                     <tr className='tab-logs-data-default' key={message.id}>
                                         <td>{message.ordinal}</td>
                                         <td className={Logging.getRowClass(message)}><FontAwesomeIcon path={Logging.getIconPath(message.level)} />{message.level}</td>
-                                        <td><LogMessage message={message} /></td>
+                                        <td className='tab-logs-table-icon-column'><LogMessage message={message} /></td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td />
@@ -128,25 +141,21 @@ export class Logging extends React.Component<ILoggingProps, {}> {
      * Return the CSS class name to use for the given message
      */
     private static getRowClass(message: ILogMessage) {
-        'use strict';
+        let rowClass = 'tab-logs-table-icon-column';
 
-        let rowClass = 'tab-logs-data-default';
         switch (message.level) {
-            case 'Verbose':
-            case 'Info':
-                rowClass = 'tab-logs-data-default';
-                break;
             case 'Critical':
             case 'Error':
-                rowClass = 'tab-logs-data-error';
+                rowClass += ' tab-logs-data-error';
                 break;
             case 'Warning':
-                rowClass = 'tab-logs-data-warning';
+                rowClass += ' tab-logs-data-warning';
                 break;
             default:
-                rowClass = 'tab-logs-data-default';
+                rowClass += ' tab-logs-data-default';
                 break;
         }
+
         return rowClass;
     }
 
