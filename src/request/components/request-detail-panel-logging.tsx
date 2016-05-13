@@ -97,7 +97,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                         }
                         </tbody>
                         <tfoot>
-                            <tr className='table-body-padding table-col-title-group'><th colSpan='6'></th></tr>
+                            <tr className='table-body-padding table-col-title-group'><th colSpan={6}></th></tr>
                         </tfoot>
                     </table>
                 </div>
