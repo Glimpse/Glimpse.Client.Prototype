@@ -27,11 +27,11 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 
     public render() {
         return (
-            <div className='tab-logs-table-message' onClick={e => this.onToggleExpansion()}>
-                <div className={this.getIconClass()}><FontAwesomeIcon path={this.getIconPath()} /></div>
+            <div className='tab-logs-table-message'>
+                <div className={this.getIconClass()} onClick={e => this.onToggleExpansion()}><FontAwesomeIcon path={this.getIconPath()} /></div>
                 {
                     (this.state.isExpanded && this.props.message.isObject)
-                        ? <div className='tab-logs-table-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
+                        ? <div className='tab-logs-table-message-object'><Highlight language='javascript'>{this.props.message.message}</Highlight></div>
                         : <div className={this.getMessageClass()}>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-table-message-replaced-region' : ''}>{span.text}</span>)}</div>
                 }
             </div>);
