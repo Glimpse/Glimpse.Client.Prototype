@@ -24,6 +24,38 @@ describe('LogMessageModel', () => {
             },
             1);
     }
+    
+    describe('#isObject', () => {
+        it('should return false for undefined messages', () => {
+            const model = createModel(undefined);
+            
+            model.isObject.should.equal(false);
+        })
+
+        it('should return false for empty messages', () => {
+            const model = createModel('');
+            
+            model.isObject.should.equal(false);
+        })
+
+        it('should return false for plain text messages', () => {
+            const model = createModel('this is plain text');
+            
+            model.isObject.should.equal(false);
+        })
+
+        it('should return true for JSON-like messages', () => {
+            const model = createModel('{ key: \'value\' }');
+            
+            model.isObject.should.equal(true);
+        })
+
+        it('should return true for JavaScript stringified-like messages', () => {
+            const model = createModel('ServerResponse { key: \'value\' }');
+            
+            model.isObject.should.equal(true);
+        })
+    });
 
     describe('#spans', () => {
         it('should return one span for undefined messages', () => {

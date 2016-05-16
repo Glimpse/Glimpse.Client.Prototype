@@ -21,9 +21,13 @@ export class LogMessageModel implements ILogMessageModel {
     }
 
     public get isObject(): boolean {
-        const length = this._message.payload.message.length;
+        if (this._message.payload.message) {
+            const length = this._message.payload.message.length;
 
-        return length > 0 && this._message.payload.message[length - 1] === '}';
+            return length > 0 && this._message.payload.message[length - 1] === '}';
+        }
+        
+        return false;
     }
 
     public get level(): string {
