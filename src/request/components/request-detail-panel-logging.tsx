@@ -28,31 +28,43 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
     public render() {
         return (
             <div className='tab-logs-table-message' onClick={e => this.onToggleExpansion()}>
-                <div><FontAwesomeIcon path={this.getIconPath()} /></div>
+                <div className={this.getIconClass()}><FontAwesomeIcon path={this.getIconPath()} /></div>
                 {
                     (this.state.isExpanded && this.props.message.isObject)
-                        ? <div className='tab-logs-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
-                        : <div className='tab-logs-message-inline'>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-data-replaced-region' : ''}>{span.text}</span>)}</div>
+                        ? <div className='tab-logs-table-message-object'><Highlight language='json'>{this.props.message.message}</Highlight></div>
+                        : <div className={this.getMessageClass()}>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-table-message-replaced-region' : ''}>{span.text}</span>)}</div>
                 }
             </div>);
     }
-
+    
     private onToggleExpansion(): void {
         this.setState({
             isExpanded: !this.state.isExpanded
         });
     }
 
-    private getIconPath() {
-        if (!this.props.message.isObject) {
-            return '';
+    private getIconClass() {
+        if (this.state.isExpanded) {
+            return 'tab-logs-table-message-icon-expandable';
         }
-        else if (this.state.isExpanded) {
-            return FontAwesomeIcon.paths.CaretDown;
+        else if (this.props.message.isObject) {
+            return 'tab-logs-table-message-icon-expandable';
         }
         else {
-            return FontAwesomeIcon.paths.CaretRight;
+            return 'tab-logs-table-message-icon';
         }
+    }
+
+    private getMessageClass() {
+        return this.state.isExpanded
+            ? 'tab-logs-table-message-multiline'
+            : '';
+    }
+
+    private getIconPath() {
+        return this.state.isExpanded
+            ? FontAwesomeIcon.paths.CaretDown
+            : FontAwesomeIcon.paths.CaretRight;
     }
 }
 

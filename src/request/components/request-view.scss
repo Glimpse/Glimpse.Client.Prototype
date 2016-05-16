@@ -395,8 +395,24 @@
         .tab-logs-table-message {
             display: flex;
             flex-direction: row;
+            
+            .tab-logs-table-message-icon {
+                visibility: hidden;               
+            }
+
+            .tab-logs-table-message-icon-expandable {
+                @extend .tab-logs-table-message-icon;
+                
+                visibility: visible;               
+            }
+
+            &:hover {
+                .tab-logs-table-message-icon {
+                    visibility: visible;               
+                }
+            }
  
-            .tab-logs-message-object {
+            .tab-logs-table-message-object {
                 overflow: auto;
                 
                 > pre {
@@ -409,13 +425,14 @@
                     }
             }
 
-            .tab-logs-message-inline {
-                white-space: nowrap;
+            .tab-logs-table-message-multiline {
+                overflow: auto;
+                white-space: pre-wrap;
             }
 
-            .tab-logs-data-replaced-region {
+            .tab-logs-table-message-replaced-region {
                 font-weight: bold;
-            }
+            }           
         }
 
         .tab-logs-table-icon-column {
