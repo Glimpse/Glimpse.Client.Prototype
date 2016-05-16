@@ -88,12 +88,12 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                     <table className='table table-bordered table-striped tab-content-item tab-logs-table'>
                         <thead>
                             <tr className='table-col-title-group'>
-                                <th width='5%'><span className='table-col-title'>Ordinal</span></th>
+                                <th width='10%'><span className='table-col-title'>Ordinal</span></th>
                                 <th width='10%'><span className='table-col-title tab-logs-table-icon-column'><FontAwesomeIcon path=''/>Level</span></th>
-                                <th><span className='table-col-title tab-logs-table-icon-column'><FontAwesomeIcon path=''/>Message</span></th>
+                                <th width='58%'><span className='table-col-title tab-logs-table-icon-column'><FontAwesomeIcon path=''/>Message</span></th>
                                 <th width='10%'><span className='table-col-title'>From Start</span></th>
                                 <th width='10%'><span className='table-col-title'>Duration</span></th>
-                                <th width='5%' />
+                                <th width='2%' />
                             </tr>
                         </thead>
                         <tbody>

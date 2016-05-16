@@ -383,6 +383,8 @@
     }
 
     .tab-logs-table {
+        table-layout: fixed;
+        
         .fa-svg {
             height: 12px;
             width: 12px;
@@ -395,6 +397,8 @@
             flex-direction: row;
  
             .tab-logs-message-object {
+                overflow: auto;
+                
                 > pre {
                         margin: 0;
                         
@@ -406,10 +410,6 @@
             }
 
             .tab-logs-message-inline {
-                display: table;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                width: 100%;
                 white-space: nowrap;
             }
 
@@ -420,8 +420,10 @@
 
         .tab-logs-table-icon-column {
             padding-left: 0px;
+            overflow: hidden;
+            white-space: nowrap;
         }
-
+        
         .tab-logs-data-default {
             font-weight: normal;
         }
