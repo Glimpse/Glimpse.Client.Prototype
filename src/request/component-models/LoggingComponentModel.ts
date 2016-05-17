@@ -13,6 +13,7 @@ import _ = require('lodash');
 export class LogMessageModel implements ILogMessageModel {
     private static OBJECT_BRACE_WINDOW = 64;
     
+    private _isObject: boolean;
     private _spans: ILogMessageSpan[];
 
     public constructor(private _message: IMessageEnvelope<ILogMessage>, private _ordinal: number) {
@@ -23,28 +24,11 @@ export class LogMessageModel implements ILogMessageModel {
     }
 
     public get isObject(): boolean {
-        
-        //
-        // NOTE: Our heuristic for determining whether text represents an object rather simplistic 
-        //       (to minimize impact on performance). We simply look for starting and ending braces
-        //       (i.e. '{' and '}') near the beginning and ending of the text, respectively, allowing 
-        //       for whitespace and other text that might pre-fix/post-fix the actual object.
-        //
-        
-        if (this._message.payload.message) {
-            const length = this._message.payload.message.length;
-
-            if (length > 0) {
-                const startIndex = LogMessageModel.indexOf(this._message.payload.message, '{', LogMessageModel.OBJECT_BRACE_WINDOW);
-                const lastIndex = LogMessageModel.lastIndexOf(this._message.payload.message, '}', LogMessageModel.OBJECT_BRACE_WINDOW);
-                
-                if (startIndex >= 0 && lastIndex >= 0 && startIndex < lastIndex) {
-                    return true;
-                }
-            }
+        if (this._isObject === undefined) {
+            this._isObject = LogMessageModel.isMessageObject(this._message.payload.message);
         }
         
-        return false;
+        return this._isObject;
     }
     
     public get level(): string {
@@ -79,6 +63,30 @@ export class LogMessageModel implements ILogMessageModel {
         }
         
         return -1;
+    }
+
+    private static isMessageObject(message: string): boolean {
+        //
+        // NOTE: Our heuristic for determining whether text represents an object rather simplistic 
+        //       (to minimize impact on performance). We simply look for starting and ending braces
+        //       (i.e. '{' and '}') near the beginning and ending of the text, respectively, allowing 
+        //       for whitespace and other text that might pre-fix/post-fix the actual object.
+        //
+        
+        if (message) {
+            const length = message.length;
+
+            if (length > 0) {
+                const startIndex = LogMessageModel.indexOf(message, '{', LogMessageModel.OBJECT_BRACE_WINDOW);
+                const lastIndex = LogMessageModel.lastIndexOf(message, '}', LogMessageModel.OBJECT_BRACE_WINDOW);
+                
+                if (startIndex >= 0 && lastIndex >= 0 && startIndex < lastIndex) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
     private static lastIndexOf(value: string, term: string, window: number) {
