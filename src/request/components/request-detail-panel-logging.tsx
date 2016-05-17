@@ -2,39 +2,80 @@
 
 import { FontAwesomeIcon } from '../../shell/components/FontAwesomeIcon';
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from '../component-models/ILoggingComponentModel';
+import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel, ILogMessageSpan } from '../component-models/ILoggingComponentModel';
 
 import _ = require('lodash');
 import React = require('react');
 import Highlight = require('react-highlight');
+
+class LogMessageObject extends React.Component<{ message: string }, {}> {
+    public render() {
+        return <div className='tab-logs-table-message-object'><Highlight language='javascript'>{this.props.message}</Highlight></div>;
+    }
+}
+
+class LogMessageText extends React.Component<{ className: string, ref: string, spans: ILogMessageSpan[] }, {}> {
+    public render() {
+        return (
+            <div className={this.props.className}>{this.props.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-table-message-replaced-region' : ''}>{span.text}</span>)}</div>
+        );
+    }
+}
 
 interface ILogMessageProps {
     message: ILogMessageModel;
 }
 
 interface ILogMessageState {
-    isExpanded: boolean;
+    isExpanded?: boolean;
+    isTruncated?: boolean;
 }
 
 class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
+    private static __React = React;
+    
     constructor(props?) {
         super(props);
 
         this.state = {
-            isExpanded: false
+            isExpanded: false,
+            isTruncated: false
         };
+    }
+
+    public componentDidUpdate(prevProps, prevState) {
+        const messageWidth = React.findDOMNode(this.refs['text'])['offsetWidth'];
     }
 
     public render() {
         return (
-            <div className='tab-logs-table-message'>
+            <div className='tab-logs-table-message' onMouseEnter={e => this.onMouseEnter()} onMouseLeave={e => this.onMouseLeave()}>
                 <div className={this.getIconClass()} onClick={e => this.onToggleExpansion()}><FontAwesomeIcon path={this.getIconPath()} /></div>
                 {
                     (this.state.isExpanded && this.props.message.isObject)
-                        ? <div className='tab-logs-table-message-object'><Highlight language='javascript'>{this.props.message.message}</Highlight></div>
-                        : <div className={this.getMessageClass()}>{this.props.message.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-table-message-replaced-region' : ''}>{span.text}</span>)}</div>
+                        ? <LogMessageObject message={this.props.message.message} />
+                        : <LogMessageText ref='text' className={this.getMessageClass()} spans={this.props.message.spans} />
                 }
             </div>);
+    }
+    
+    private onMouseEnter(): void {
+        if (!this.props.message.isObject && !this.state.isExpanded && !this.state.isTruncated) {
+            const thisWidth = React.findDOMNode(this)['offsetWidth'];
+            const messageWidth = React.findDOMNode(this.refs['text'])['offsetWidth'];
+            
+            this.setState({
+                isTruncated: thisWidth < messageWidth
+            });
+        }
+    }
+    
+    private onMouseLeave(): void {
+        if (this.state.isTruncated) {
+            this.setState({
+                isTruncated: false
+            });
+        }
     }
     
     private onToggleExpansion(): void {
@@ -44,27 +85,21 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
     }
 
     private getIconClass() {
-        if (this.state.isExpanded) {
-            return 'tab-logs-table-message-icon-expandable';
-        }
-        else if (this.props.message.isObject) {
-            return 'tab-logs-table-message-icon-expandable';
-        }
-        else {
-            return 'tab-logs-table-message-icon';
-        }
-    }
-
-    private getMessageClass() {
-        return this.state.isExpanded
-            ? 'tab-logs-table-message-multiline'
-            : '';
+        return (this.props.message.isObject || this.state.isExpanded || this.state.isTruncated)
+            ? 'tab-logs-table-message-icon-expandable'
+            : 'tab-logs-table-message-icon';
     }
 
     private getIconPath() {
         return this.state.isExpanded
             ? FontAwesomeIcon.paths.CaretDown
             : FontAwesomeIcon.paths.CaretRight;
+    }
+
+    private getMessageClass() {
+        return this.state.isExpanded
+            ? 'tab-logs-table-message-multiline'
+            : '';
     }
 }
 
