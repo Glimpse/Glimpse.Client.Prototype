@@ -50,7 +50,7 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
     public render() {
         return (
             <div className='tab-logs-table-message' onMouseEnter={e => this.onMouseEnter()} onMouseLeave={e => this.onMouseLeave()}>
-                <div className={this.getIconClass()} onClick={e => this.onToggleExpansion()}><FontAwesomeIcon path={this.getIconPath()} /></div>
+                <div className={this.getIconClass()} onClick={e => this.onToggleExpansion()}><FontAwesomeIcon path={this.getExpansionIconPath()} /></div>
                 {
                     (this.state.isExpanded && this.props.message.isObject)
                         ? <LogMessageObject message={this.props.message.message} />
@@ -90,7 +90,7 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
             : 'tab-logs-table-message-icon';
     }
 
-    private getIconPath() {
+    private getExpansionIconPath() {
         return this.state.isExpanded
             ? FontAwesomeIcon.paths.CaretDown
             : FontAwesomeIcon.paths.CaretRight;
