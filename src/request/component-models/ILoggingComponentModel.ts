@@ -4,9 +4,15 @@ import { IComponentModel } from './IComponentModel';
 import { ILogMessage } from '../messages/ILogMessage';
 import { ILoggingComponentState } from './ILoggingComponentState';
 
+export interface ILogMessageSpan {
+    text: string;
+    wasReplaced?: boolean;
+}
+
 export interface ILogMessageModel extends ILogMessage {
     id: string;
     ordinal: number;
+    spans: ILogMessageSpan[];
 }
 
 export interface ILoggingLevelModel {
@@ -22,6 +28,6 @@ export interface ILoggingComponentModel extends IComponentModel {
 
     isShown(level: ILoggingLevelModel): boolean;
 
-    toggleAll(): void;
+    showAll(): void;
     toggleLevel(level: ILoggingLevelModel): void;
 }

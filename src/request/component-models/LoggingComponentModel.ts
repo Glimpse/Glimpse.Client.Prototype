@@ -2,16 +2,17 @@
 
 import { ComponentModel } from './ComponentModel';
 import { IGlimpse } from '../../IGlimpse';
-import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel } from './ILoggingComponentModel';
-import { ILogMessage } from '../messages/ILogMessage';
+import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel, ILogMessageSpan } from './ILoggingComponentModel';
+import { ILoggingComponentState } from './ILoggingComponentState';
+import { ILogMessage, ILogMessageReplacedRegion } from '../messages/ILogMessage';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 import { IRequestDetailStore } from '../stores/IRequestDetailStore';
 
-import store, { createLoggingShowAllAction, createLoggingToggleLevelAction } from '../stores/RequestStore';
-
 import _ = require('lodash');
 
-class LogMessageModel implements ILogMessageModel {
+export class LogMessageModel implements ILogMessageModel {
+    private _spans: ILogMessageSpan[];
+
     public constructor(private _message: IMessageEnvelope<ILogMessage>, private _ordinal: number) {
     }
 
@@ -29,6 +30,77 @@ class LogMessageModel implements ILogMessageModel {
 
     public get ordinal(): number {
         return this._ordinal;
+    }
+
+    public get replacedRegions(): ILogMessageReplacedRegion[] {
+        return this._message.payload.replacedRegions;
+    }
+
+    public get spans(): ILogMessageSpan[] {
+        if (!this._spans) {
+            this._spans = LogMessageModel.createSpans(this.message, this.replacedRegions);
+        }
+
+        return this._spans;
+    }
+
+    private static createSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ILogMessageSpan[] {
+        if (!message || message.length === 0) {
+            return [{ text: '' }];
+        }
+
+        replacedRegions = _.sortBy(replacedRegions || [], region => region.start);
+
+        let messageIndex = 0;
+        const messageStructure = [];
+
+        for (let i = 0; i < replacedRegions.length; i++) {
+            const region = replacedRegions[i];
+
+            if (region.start < 0 || region.start >= message.length) {
+                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.end < 0 || region.end > message.length) {
+                console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.end < region.start) {
+                console.warn('The region [%d,%d) is not a contiguous span in the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.start < messageIndex) {
+                console.warn('The region [%d,%d) overlaps a previous span in the log message (length === %d).', region.start, region.end, message.length);
+
+                continue;
+            }
+
+            if (region.start === region.end) {
+                // Ignore zero-length regions (to prevent creating three spans when one will do).
+
+                continue;
+            }
+
+            if (messageIndex < region.start) {
+                messageStructure.push({ text: message.substring(messageIndex, region.start) });
+            }
+
+            messageStructure.push({ text: message.substring(region.start, region.end), wasReplaced: true });
+
+            messageIndex = region.end;
+        }
+
+        if (messageIndex < message.length) {
+            messageStructure.push({ text: message.substring(messageIndex, message.length) });
+        }
+
+        return messageStructure;
     }
 }
 
@@ -54,9 +126,7 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public get levels(): ILoggingLevelModel[] {
-        const selectedRequestId = store.getState().get('selectedRequestId');
-
-        return store.getState().get('requests').get(selectedRequestId).get('logging').get('levels');
+        return this._levels;
     }
 
     public get totalMessageCount(): number {
@@ -103,13 +173,13 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public getMessages(): ILogMessageModel[] {
-        const state = store.getState();
+        const state = this._requestDetailStore.getState().logging.filter;
 
         let filteredMessages = _(this._messages);
 
         if (state) {
             _.filter(this._levels, level => {
-                return state.get('logging').get('filter').get(level.level) === false;
+                return state[level.level] === false;
             })
             .forEach(level => {
                 filteredMessages = filteredMessages.filter(message => message.level !== level.level);
@@ -120,17 +190,44 @@ export class LoggingComponentModel extends ComponentModel implements ILoggingCom
     }
 
     public isShown(level: ILoggingLevelModel): boolean {
-        const state = store.getState();
+        const state = this._requestDetailStore.getState().logging.filter;
 
-        return state === undefined || state.get('logging').get('filter').get(level.level) !== false;
+        return state === undefined || state[level.level] !== false;
     }
 
-    public toggleAll(): void {
-        store.dispatch(createLoggingShowAllAction());
+    public showAll(): void {
+        const state = _.clone(this._requestDetailStore.getState().logging.filter);
+
+        let updated = false;
+
+        _.forIn(state, (shown, level) => {
+            if (state[level] === false) {
+                state[level] = true;
+
+                updated = true;
+            }
+        });
+
+        if (updated) {
+            this.emitUpdate(state);
+        }
     }
 
     public toggleLevel(level: ILoggingLevelModel): void {
-        store.dispatch(createLoggingToggleLevelAction(level.level));
+        const state = _.clone(this._requestDetailStore.getState().logging.filter);
+
+        if (state[level.level] === false) {
+            state[level.level] = true;
+        }
+        else {
+            state[level.level] = false;
+        }
+
+        this.emitUpdate(state);
+    }
+
+    private emitUpdate(state: ILoggingComponentState) {
+        this._glimpse.emit('data.request.detail.logging.filter', state);
     }
 
     private static getOrderOfLevel(level: string): number {
