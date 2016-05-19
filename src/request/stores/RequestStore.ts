@@ -163,10 +163,10 @@ function updateFilterMessageCounts(filtersState: Immutable.List<Immutable.Map<st
     const levels = messagesState.groupBy(messageState => messageState.message.payload.level);
     
     return filtersState.withMutations(list => {
-        list.forEach(filterState => {
+        list.forEach((filterState, index) => {
             const level = levels.get(<string>filterState.get('level'));
             
-            filterState.set('messageCount', level ? level.count() : 0);
+            list.set(index, filterState.set('messageCount', level ? level.count() : 0));
         });
     })
 }

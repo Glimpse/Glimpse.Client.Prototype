@@ -7,6 +7,7 @@ import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel, ILogMessa
 import _ = require('lodash');
 import React = require('react');
 import Highlight = require('react-highlight');
+import Immutable = require('immutable');
 
 var store = require('../stores/RequestStore');
 
@@ -107,6 +108,7 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 
 export interface ILoggingProps {
     componentModel: ILoggingComponentModel;
+    loggingState: Immutable.Map<string, any>;
 }
 
 class Logging extends React.Component<ILoggingProps, {}> {
@@ -126,9 +128,9 @@ class Logging extends React.Component<ILoggingProps, {}> {
                         <button className='filter-show-all' onClick={e => this.toggleAll()}>Show All</button>
                         <div className='flex'>
                         {
-                            this.props.componentModel.levels.map(
-                                level => {
-                                    return <button className={this.props.componentModel.isShown(level) ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(level)}>{level.level} ({level.messageCount})</button>;
+                            this.props.loggingState.get('filters').map(
+                                (filter, index) => {
+                                    return <button className={filter.get('isShown') ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(index)}>{filter.get('level')} ({filter.get('messageCount')})</button>;
                                 })
                         }
                         </div>
@@ -219,6 +221,6 @@ class Logging extends React.Component<ILoggingProps, {}> {
 
 export class LoggingContainer extends React.Component<ILoggingProps, {}> {
     public render() {
-        return <Logging componentModel={this.props.componentModel} />;
+        return <Logging loggingState={store.default.getState()} componentModel={this.props.componentModel} />;
     }
 }
