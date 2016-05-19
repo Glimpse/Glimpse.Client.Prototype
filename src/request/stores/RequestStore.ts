@@ -114,7 +114,7 @@ function toggleLevel(loggingState: Immutable.Map<string, {}>, filterIndex: numbe
     return loggingState.withMutations(map => {
             map
                 .set('filters', updatedFiltersState)
-                .set('messages', updatedFilteredMessagesState);
+                .set('filteredMessages', updatedFilteredMessagesState);
         });
 }
 
@@ -182,7 +182,7 @@ function updateRequestDetails(loggingState: Immutable.Map<string, {}>, request) 
         updatedFiltersState);
 
     return loggingState.withMutations(map => map
-        .set('messages', updatedFilteredMessagesState)
+        .set('messages', updatedMessagesState)
         .set('filters', updatedFiltersState)
         .set('filteredMessages', updatedFilteredMessagesState));
 }

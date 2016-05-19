@@ -109,6 +109,8 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 export interface ILoggingProps {
     componentModel: ILoggingComponentModel;
     loggingState: Immutable.Map<string, any>;
+    onShowAll: () => void;
+    onToggleFilter: (filterIndex: number) => void;
 }
 
 class Logging extends React.Component<ILoggingProps, {}> {
@@ -125,12 +127,12 @@ class Logging extends React.Component<ILoggingProps, {}> {
                     <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
                     <br/>
                     <div className='flex filter-bar'>
-                        <button className='filter-show-all' onClick={e => this.toggleAll()}>Show All</button>
+                        <button className='filter-show-all' onClick={e => this.showAll()}>Show All</button>
                         <div className='flex'>
                         {
                             this.props.loggingState.get('filters').map(
                                 (filter, index) => {
-                                    return <button className={filter.get('isShown') ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleLevel(index)}>{filter.get('level')} ({filter.get('messageCount')})</button>;
+                                    return <button className={filter.get('isShown') ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleFilter(index)}>{filter.get('level')} ({filter.get('messageCount')})</button>;
                                 })
                         }
                         </div>
@@ -210,17 +212,25 @@ class Logging extends React.Component<ILoggingProps, {}> {
         return rowClass;
     }
 
-    private toggleLevel(level: ILoggingLevelModel) {
-        this.props.componentModel.toggleLevel(level);
+    private toggleFilter(filterIndex: number) {
+        this.props.onToggleFilter(filterIndex);
     }
 
-    private toggleAll() {
-        this.props.componentModel.showAll();
+    private showAll() {
+        this.props.onShowAll();
     }
 }
 
 export class LoggingContainer extends React.Component<ILoggingProps, {}> {
     public render() {
-        return <Logging loggingState={store.default.getState()} componentModel={this.props.componentModel} />;
+        return <Logging loggingState={store.default.getState()} onToggleFilter={this.onToggleFilter} onShowAll={this.onShowAll} componentModel={this.props.componentModel} />;
+    }
+    
+    private onToggleFilter(filterIndex: number) {
+        store.default.dispatch(store.createLoggingToggleLevelAction(filterIndex));
+    }
+    
+    private onShowAll() {
+        store.default.dispatch(store.createLoggingShowAllAction());
     }
 }
