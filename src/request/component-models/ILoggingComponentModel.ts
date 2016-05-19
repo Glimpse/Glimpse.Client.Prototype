@@ -11,6 +11,7 @@ export interface ILogMessageSpan {
 
 export interface ILogMessageModel extends ILogMessage {
     id: string;
+    isObject: boolean;
     ordinal: number;
     spans: ILogMessageSpan[];
 }
