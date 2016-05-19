@@ -46,7 +46,7 @@ module.exports.registerTab({
     component: Request
 });
 
-var LoggingComponent = require('./components/request-detail-panel-logging').Logging;
+var LoggingComponent = require('./components/request-detail-panel-logging').LoggingContainer;
 var LoggingComponentModel = require('./component-models/LoggingComponentModel').LoggingComponentModel;
 
 module.exports.registerTab({

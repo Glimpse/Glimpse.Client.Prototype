@@ -8,6 +8,8 @@ import _ = require('lodash');
 import React = require('react');
 import Highlight = require('react-highlight');
 
+var store = require('../stores/RequestStore');
+
 class LogMessageObject extends React.Component<{ message: string }, {}> {
     public render() {
         return <div className='tab-logs-table-message-object'><Highlight language='javascript'>{this.props.message}</Highlight></div>;
@@ -107,10 +109,7 @@ export interface ILoggingProps {
     componentModel: ILoggingComponentModel;
 }
 
-/**
- * React class to for the console log messages tab
- */
-export class Logging extends React.Component<ILoggingProps, {}> {
+class Logging extends React.Component<ILoggingProps, {}> {
     constructor(props?) {
         super(props);
     }
@@ -215,5 +214,11 @@ export class Logging extends React.Component<ILoggingProps, {}> {
 
     private toggleAll() {
         this.props.componentModel.showAll();
+    }
+}
+
+export class LoggingContainer extends React.Component<ILoggingProps, {}> {
+    public render() {
+        return <Logging componentModel={this.props.componentModel} />;
     }
 }
