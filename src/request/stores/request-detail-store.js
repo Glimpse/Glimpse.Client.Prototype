@@ -9,6 +9,7 @@ var messageProcessor = require('../util/request-message-processor');
 var requestRepository = require('../repository/request-repository');
 var requestTab = require('../request-tab');
 
+var loggingActions = require('../actions/LoggingActions');
 var store = require('./RequestStore');
 
 // TODO: Not sure I need to store the requests, already storing in
@@ -25,7 +26,7 @@ var _viewModel = {
 
 function requestChanged(targetRequests) {
     glimpse.emit('shell.request.detail.changed', targetRequests);
-    store.default.dispatch(store.createUpdateRequestDetailsAction(targetRequests.request));
+    store.default.dispatch(loggingActions.createUpdateRequestDetailsAction(targetRequests.request));
 }
 
 function getTabs(request) {
