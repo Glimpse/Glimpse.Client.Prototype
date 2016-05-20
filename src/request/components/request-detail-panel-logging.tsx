@@ -2,7 +2,7 @@
 
 import { FontAwesomeIcon } from '../../shell/components/FontAwesomeIcon';
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILoggingComponentModel, ILoggingLevelModel, ILogMessageModel, ILogMessageSpan } from '../component-models/ILoggingComponentModel';
+import { ILogMessageModel, ILogMessageSpan } from '../component-models/ILoggingComponentModel';
 
 import _ = require('lodash');
 import React = require('react');
@@ -103,13 +103,12 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 }
 
 export interface ILoggingProps {
-    componentModel: ILoggingComponentModel;
     loggingState: Immutable.Map<string, any>;
     onShowAll: () => void;
     onToggleFilter: (filterIndex: number) => void;
 }
 
-class Logging extends React.Component<ILoggingProps, {}> {
+export class Logging extends React.Component<ILoggingProps, {}> {
     constructor(props?) {
         super(props);
     }
@@ -217,19 +216,5 @@ class Logging extends React.Component<ILoggingProps, {}> {
 
     private showAll() {
         this.props.onShowAll();
-    }
-}
-
-export class LoggingContainer extends React.Component<ILoggingProps, {}> {
-    public render() {
-        return <Logging loggingState={store.default.getState()} onToggleFilter={this.onToggleFilter} onShowAll={this.onShowAll} componentModel={this.props.componentModel} />;
-    }
-    
-    private onToggleFilter(filterIndex: number) {
-        store.default.dispatch(store.createLoggingToggleLevelAction(filterIndex));
-    }
-    
-    private onShowAll() {
-        store.default.dispatch(store.createLoggingShowAllAction());
     }
 }
