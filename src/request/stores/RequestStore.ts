@@ -44,12 +44,15 @@ State:
     messages: (I) [
         {
             message: {
-                id: '123',
-                payload: {
-                    level: 'Debug',
-                    message: 'message'
-                },
-                ordinal: 123
+                level: 'Debug',
+                message: 'message'
+                isObject: false
+                spans: [
+                    {
+                        text: 'message',
+                        wasReplaced?: true
+                    }
+                ]
             }
         }   
     ],
@@ -72,14 +75,9 @@ State:
 */
 
 interface IMessageState {
-    message: {
-        id: string,
-        ordinal: number,
-        payload: {
-            level: string,
-            message: string
-        }
-    }
+    level: string,
+    message: string,
+    spans: ({ text: string, wasReplaced?: boolean })[]
 }
 
 function updateFilter(filtersState: Immutable.List<Immutable.Map<string, {}>>, filterIndex: number): Immutable.List<Immutable.Map<string, {}>> {
@@ -95,7 +93,7 @@ function updateFilteredMessages(filteredMessagesState: Immutable.List<number>, m
     let filteredMessages: number[] = [];
     
     messagesState.forEach((messageState, index) => {
-        if (!_.includes(hiddenLevels, messageState.message.payload.level)) {
+        if (!_.includes(hiddenLevels, messageState.level)) {
             filteredMessages.push(index);
         }
     })
@@ -137,6 +135,113 @@ function showAll(loggingState: Immutable.Map<string, {}>)
         .set('filteredMessages', updatedFilteredMessagesState));
 }
 
+function indexOf(value: string, term: string, window: number) {
+    for (let i = 0; i < value.length && i < window; i++) {
+        if (value[i] === term) {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+function lastIndexOf(value: string, term: string, window: number) {
+    const lastWindowIndex = value.length - window;
+    
+    for (let i = value.length - 1; i >= 0 && i >= lastWindowIndex; i--) {
+        if (value[i] === term) {
+            return i;
+        }
+    }
+    
+    return -1;
+}
+
+function isMessageObject(message: string): boolean {
+    const OBJECT_BRACE_WINDOW = 64;
+
+    //
+    // NOTE: Our heuristic for determining whether text represents an object rather simplistic 
+    //       (to minimize impact on performance). We simply look for starting and ending braces
+    //       (i.e. '{' and '}') near the beginning and ending of the text, respectively, allowing 
+    //       for whitespace and other text that might pre-fix/post-fix the actual object.
+    //
+    
+    if (message) {
+        const length = message.length;
+
+        if (length > 0) {
+            const startIndex = indexOf(message, '{', OBJECT_BRACE_WINDOW);
+            const lastIndex = lastIndexOf(message, '}', OBJECT_BRACE_WINDOW);
+            
+            if (startIndex >= 0 && lastIndex >= 0 && startIndex < lastIndex) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+function createSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ({ text: string, wasReplaced?: boolean })[] {
+    if (!message || message.length === 0) {
+        return [{ text: '' }];
+    }
+
+    replacedRegions = _.sortBy(replacedRegions || [], region => region.start);
+
+    let messageIndex = 0;
+    const messageStructure = [];
+
+    for (let i = 0; i < replacedRegions.length; i++) {
+        const region = replacedRegions[i];
+
+        if (region.start < 0 || region.start >= message.length) {
+            console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+            continue;
+        }
+
+        if (region.end < 0 || region.end > message.length) {
+            console.warn('The region [%d,%d) exceeds the bounds of the log message (length === %d).', region.start, region.end, message.length);
+
+            continue;
+        }
+
+        if (region.end < region.start) {
+            console.warn('The region [%d,%d) is not a contiguous span in the log message (length === %d).', region.start, region.end, message.length);
+
+            continue;
+        }
+
+        if (region.start < messageIndex) {
+            console.warn('The region [%d,%d) overlaps a previous span in the log message (length === %d).', region.start, region.end, message.length);
+
+            continue;
+        }
+
+        if (region.start === region.end) {
+            // Ignore zero-length regions (to prevent creating three spans when one will do).
+
+            continue;
+        }
+
+        if (messageIndex < region.start) {
+            messageStructure.push({ text: message.substring(messageIndex, region.start) });
+        }
+
+        messageStructure.push({ text: message.substring(region.start, region.end), wasReplaced: true });
+
+        messageIndex = region.end;
+    }
+
+    if (messageIndex < message.length) {
+        messageStructure.push({ text: message.substring(messageIndex, message.length) });
+    }
+
+    return messageStructure;
+}
+
 function updateMessagesState(messagesState: Immutable.List<{}>, request) {
     if (request && request.messages && request.types) {
         const logWriteMessageIds = request.types['log-write'];
@@ -147,8 +252,12 @@ function updateMessagesState(messagesState: Immutable.List<{}>, request) {
                 .map(id => request.messages[id])
                 .filter(message => message !== undefined)
                 .sortBy('ordinal')
-                .map((message, index) => {
-                    return { message: message };
+                .map(message => {
+                    return { 
+                        level: message.payload.level, 
+                        message: message.payload.message,
+                        isObject: isMessageObject(message.payload.message),
+                        spans: createSpans(message.payload.message, message.payload.replacedRegions) };
                 })
                 .value();
 
@@ -160,7 +269,7 @@ function updateMessagesState(messagesState: Immutable.List<{}>, request) {
 }
 
 function updateFilterMessageCounts(filtersState: Immutable.List<Immutable.Map<string, {}>>, messagesState: Immutable.List<IMessageState>): Immutable.List<Immutable.Map<string, {}>> {
-    const levels = messagesState.groupBy(messageState => messageState.message.payload.level);
+    const levels = messagesState.groupBy(messageState => messageState.level);
     
     return filtersState.withMutations(list => {
         list.forEach((filterState, index) => {

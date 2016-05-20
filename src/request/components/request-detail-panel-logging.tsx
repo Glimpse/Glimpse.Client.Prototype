@@ -46,10 +46,6 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
         };
     }
 
-    public componentDidUpdate(prevProps, prevState) {
-        const messageWidth = React.findDOMNode(this.refs['text'])['offsetWidth'];
-    }
-
     public render() {
         return (
             <div className='tab-logs-table-message' onMouseEnter={e => this.onMouseEnter()} onMouseLeave={e => this.onMouseLeave()}>
@@ -118,10 +114,11 @@ class Logging extends React.Component<ILoggingProps, {}> {
         super(props);
     }
     public render() {
-        const totalMessages = this.props.componentModel.totalMessageCount;
+        const messages = this.props.loggingState.get('messages');
+        const totalMessages = messages.count();
 
-        if (totalMessages !== 0) {
-            const messages = this.props.componentModel.getMessages();
+        if (totalMessages > 0) {
+            const filteredMessages = this.props.loggingState.get('filteredMessages');
             return (
                 <div className='tab-content tab-logs'>
                     <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
@@ -151,11 +148,13 @@ class Logging extends React.Component<ILoggingProps, {}> {
                         </thead>
                         <tbody>
                         {
-                            messages.map(message => {
+                            filteredMessages.map(index => {
+                                const message = messages.get(index);
+
                                 return (
-                                    <tr className='tab-logs-data-default' key={message.id}>
-                                        <td>{message.ordinal}</td>
-                                        <td className={Logging.getRowClass(message)}><FontAwesomeIcon path={Logging.getIconPath(message.level)} />{message.level}</td>
+                                    <tr className='tab-logs-data-default' key={index}>
+                                        <td>{index + 1}</td>
+                                        <td className={Logging.getRowClass(message.level)}><FontAwesomeIcon path={Logging.getIconPath(message.level)} />{message.level}</td>
                                         <td className='tab-logs-table-icon-column'><LogMessage message={message} /></td>
                                         <td>-</td>
                                         <td>-</td>
@@ -193,10 +192,10 @@ class Logging extends React.Component<ILoggingProps, {}> {
     /**
      * Return the CSS class name to use for the given message
      */
-    private static getRowClass(message: ILogMessage) {
+    private static getRowClass(level: string) {
         let rowClass = 'tab-logs-table-icon-column';
 
-        switch (message.level) {
+        switch (level) {
             case 'Critical':
             case 'Error':
                 rowClass += ' tab-logs-data-error';
