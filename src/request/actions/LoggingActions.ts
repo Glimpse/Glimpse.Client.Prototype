@@ -1,4 +1,4 @@
-import { Action } from 'Redux';
+import { Action } from 'redux';
 
 import * as _ from 'lodash';
 

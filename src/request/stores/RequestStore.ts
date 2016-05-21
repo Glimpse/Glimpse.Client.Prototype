@@ -40,4 +40,4 @@ State:
 
 */
 
-export default createStore(loggingReducer);
+export = createStore(loggingReducer);
