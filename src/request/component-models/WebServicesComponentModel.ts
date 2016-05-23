@@ -58,8 +58,8 @@ export class WebServicesComponentModel extends ComponentModel implements IWebSer
     
     public init(request) {
         const options = {
-            'data-http-request': this._messageProcessor.getList,
-            'data-http-response': this._messageProcessor.getList
+            'data-http-request': this._messageProcessor.getTypeMessageList,
+            'data-http-response': this._messageProcessor.getTypeMessageList
         };
         const messagesByType = this._messageProcessor.getTypeStucture(request, options);
         if (messagesByType) {
