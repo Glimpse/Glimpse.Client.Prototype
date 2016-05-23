@@ -103,7 +103,8 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 }
 
 export interface ILoggingProps {
-    loggingState: Immutable.Map<string, any>;
+    filteredMessages: ({ index: number, message })[];
+    filters;
     totalMessageCount: number;
     onShowAll: () => void;
     onToggleFilter: (filterIndex: number) => void;
@@ -115,8 +116,6 @@ export class Logging extends React.Component<ILoggingProps, {}> {
     }
     public render() {
         if (this.props.totalMessageCount > 0) {
-            const messages = this.props.loggingState.get('messages');
-            const filteredMessages = this.props.loggingState.get('filteredMessages');
             return (
                 <div className='tab-content tab-logs'>
                     <div className='tab-logs-message-count'>{this.props.totalMessageCount} {this.props.totalMessageCount === 1 ? 'Message' : 'Messages'}</div>
@@ -125,7 +124,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                         <button className='filter-show-all' onClick={e => this.showAll()}>Show All</button>
                         <div className='flex'>
                         {
-                            this.props.loggingState.get('filters').map(
+                            this.props.filters.map(
                                 (filter, index) => {
                                     return <button className={filter.get('isShown') ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleFilter(index)}>{filter.get('level')} ({filter.get('messageCount')})</button>;
                                 })
@@ -146,14 +145,12 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                         </thead>
                         <tbody>
                         {
-                            filteredMessages.map(index => {
-                                const message = messages.get(index);
-
+                            this.props.filteredMessages.map(message => {
                                 return (
-                                    <tr className='tab-logs-data-default' key={index}>
-                                        <td>{index + 1}</td>
-                                        <td className={Logging.getRowClass(message.level)}><FontAwesomeIcon path={Logging.getIconPath(message.level)} />{message.level}</td>
-                                        <td className='tab-logs-table-icon-column'><LogMessage message={message} /></td>
+                                    <tr className='tab-logs-data-default' key={message.index}>
+                                        <td>{message.index}</td>
+                                        <td className={Logging.getRowClass(message.message.level)}><FontAwesomeIcon path={Logging.getIconPath(message.message.level)} />{message.message.level}</td>
+                                        <td className='tab-logs-table-icon-column'><LogMessage message={message.message} /></td>
                                         <td>-</td>
                                         <td>-</td>
                                         <td />

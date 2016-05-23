@@ -1,6 +1,6 @@
 import * as LoggingActions from '../actions/LoggingActions';
 import { ILoggingProps, Logging } from '../components/request-detail-panel-logging';
-import { getTotalMessageCount } from '../selectors/LoggingSelectors';
+import { getFilteredMessages, getFilters, getTotalMessageCount  } from '../selectors/LoggingSelectors';
 
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 // Which part of the Redux global state does our component want to receive as props?
 function mapStateToProps(state) {
   return {
-    loggingState: state,
+    filteredMessages: getFilteredMessages(state),
+    filters: getFilters(state),
     totalMessageCount: getTotalMessageCount(state)
   };
 }
@@ -17,7 +18,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     onToggleFilter: (filterIndex: number) => dispatch(LoggingActions.createToggleLevelAction(filterIndex)),
-    onShowAll: dispatch(LoggingActions.createShowAllAction())
+    onShowAll: () => dispatch(LoggingActions.createShowAllAction())
   };
 }
 

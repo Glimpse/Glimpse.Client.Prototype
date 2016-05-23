@@ -22,13 +22,6 @@ State:
             }
         }   
     ],
-    filteredMessages: (I) [
-        0,
-        .,
-        .,
-        .,
-        n
-    ],
     filters: (I) [
         (I) {
             level: 'Debug',

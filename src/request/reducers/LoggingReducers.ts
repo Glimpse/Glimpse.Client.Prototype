@@ -14,35 +14,13 @@ function updateFilter(filtersState: Immutable.List<Immutable.Map<string, {}>>, f
     return filtersState.update(filterIndex, filterState => filterState.update('isShown', isShown => !isShown));
 }
 
-function updateFilteredMessages(filteredMessagesState: Immutable.List<number>, messagesState: Immutable.List<IMessageState>, filtersState: Immutable.List<Immutable.Map<string, {}>>): Immutable.List<number> {
-    const hiddenLevels = filtersState
-        .filter(filterState => filterState.get('isShown') === false)
-        .map(filterState => filterState.get('level'))
-        .toArray();
-    
-    let filteredMessages: number[] = [];
-    
-    messagesState.forEach((messageState, index) => {
-        if (!_.includes(hiddenLevels, messageState.level)) {
-            filteredMessages.push(index);
-        }
-    })
-    
-    return Immutable.List(filteredMessages);
-}
-
 function toggleLevel(loggingState: Immutable.Map<string, {}>, filterIndex: number) {
 
     const updatedFiltersState = updateFilter(<Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'), filterIndex);
-    const updatedFilteredMessagesState = updateFilteredMessages(
-        <Immutable.List<number>>loggingState.get('filteredMessages'),
-        <Immutable.List<IMessageState>>loggingState.get('messages'),
-        updatedFiltersState);
 
     return loggingState.withMutations(map => {
             map
-                .set('filters', updatedFiltersState)
-                .set('filteredMessages', updatedFilteredMessagesState);
+                .set('filters', updatedFiltersState);
         });
 }
 
@@ -55,14 +33,9 @@ function updateAllFilters(filtersState: Immutable.List<Immutable.Map<string, {}>
 function showAll(loggingState: Immutable.Map<string, {}>)
 {
     const updatedFiltersState = updateAllFilters(<Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'));
-    const updatedFilteredMessagesState = updateFilteredMessages(
-        <Immutable.List<number>>loggingState.get('filteredMessages'),
-        <Immutable.List<IMessageState>>loggingState.get('messages'),
-        updatedFiltersState);
 
     return loggingState.withMutations(map => map
-        .set('filters', updatedFiltersState)
-        .set('filteredMessages', updatedFilteredMessagesState));
+        .set('filters', updatedFiltersState));
 }
 
 function indexOf(value: string, term: string, window: number) {
@@ -215,15 +188,10 @@ function updateRequestDetails(loggingState: Immutable.Map<string, {}>, request) 
     const updatedFiltersState = updateFilterMessageCounts(
         <Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'),
         <Immutable.List<IMessageState>>updatedMessagesState);
-    const updatedFilteredMessagesState = updateFilteredMessages(
-        <Immutable.List<number>>loggingState.get('filteredMessages'),
-        <Immutable.List<IMessageState>>updatedMessagesState,
-        updatedFiltersState);
 
     return loggingState.withMutations(map => map
         .set('messages', updatedMessagesState)
-        .set('filters', updatedFiltersState)
-        .set('filteredMessages', updatedFilteredMessagesState));
+        .set('filters', updatedFiltersState));
 }
 
 const defaultState = Immutable.Map<string, {}>({
