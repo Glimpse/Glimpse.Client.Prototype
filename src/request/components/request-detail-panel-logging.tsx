@@ -104,6 +104,7 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 
 export interface ILoggingProps {
     loggingState: Immutable.Map<string, any>;
+    totalMessageCount: number;
     onShowAll: () => void;
     onToggleFilter: (filterIndex: number) => void;
 }
@@ -113,14 +114,12 @@ export class Logging extends React.Component<ILoggingProps, {}> {
         super(props);
     }
     public render() {
-        const messages = this.props.loggingState.get('messages');
-        const totalMessages = messages.count();
-
-        if (totalMessages > 0) {
+        if (this.props.totalMessageCount > 0) {
+            const messages = this.props.loggingState.get('messages');
             const filteredMessages = this.props.loggingState.get('filteredMessages');
             return (
                 <div className='tab-content tab-logs'>
-                    <div className='tab-logs-message-count'>{totalMessages} {totalMessages === 1 ? 'Message' : 'Messages'}</div>
+                    <div className='tab-logs-message-count'>{this.props.totalMessageCount} {this.props.totalMessageCount === 1 ? 'Message' : 'Messages'}</div>
                     <br/>
                     <div className='flex filter-bar'>
                         <button className='filter-show-all' onClick={e => this.showAll()}>Show All</button>
