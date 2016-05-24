@@ -1,5 +1,5 @@
-import { dataReducer } from '../reducers/RequestDetailPanelDataReducers';
+import { requestReducer } from '../reducers/RequestReducer';
 
 import { createStore } from 'redux';
 
-export = createStore(dataReducer);
+export = createStore(requestReducer);

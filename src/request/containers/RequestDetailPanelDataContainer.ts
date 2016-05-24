@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 function mapStateToProps(state) {
     return {
+        messages: state.detail.data.messages
     };
 }
 
