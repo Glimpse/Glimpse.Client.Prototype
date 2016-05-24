@@ -1,13 +1,16 @@
 import { MasterDetailTriPanel } from './MasterDetailTriPanel';
+import { RequestDetailPanelDataOperationCommandContainer } from '../containers/RequestDetailPanelDataOperationCommandContainer';
 import { RequestDetailPanelDataOperationTableContainer } from '../containers/RequestDetailPanelDataOperationTableContainer';
 
 import * as React from 'react';
+import Highlight = require('react-highlight');
+
 
 export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
     public render() {
         if (this.props.operations.length > 0) {
             return (
-                <div className='tab-content tab-data'>
+                <div className='tab-content tab-detail-holder tab-data'>
                     <MasterDetailTriPanel masterPanel={this.renderMaster()} leftDetailPanel={this.renderLeftDetail()} leftDetailPanelTitle='Command' rightDetailPanel={this.renderRightDetail()} rightDetailPanelTitle='Summary' />
                 </div>
             );
@@ -28,7 +31,9 @@ export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
     }
     
     private renderLeftDetail() {
-        return null;
+        return (
+            <RequestDetailPanelDataOperationCommandContainer />
+        )
     }
     
     private renderRightDetail() {

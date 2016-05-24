@@ -12,17 +12,17 @@ export class MasterDetailTriPanel extends React.Component<IMasterDetailTriPanelP
     public render() {
         return (
             <div>
-                <div className='master-detail-tri-panel-master'>
+                <div className='tab-detail-body master-detail-tri-panel-master'>
                 {
                     this.props.masterPanel
                 }
                 </div>
-                <div className='master-detail-tri-panel-detail'>
-                    <table>
+                <div className='tab-detail-footer master-detail-tri-panel-detail'>
+                    <table className='table table-details'>
                         <thead>
                             <tr>
-                                <th>{this.props.leftDetailPanelTitle}</th>
-                                <th>{this.props.rightDetailPanelTitle}</th>
+                                <th className='table-col-title' width='50%'>{this.props.leftDetailPanelTitle}</th>
+                                <th className='table-col-title' width='50%'>{this.props.rightDetailPanelTitle}</th>
                             </tr>
                         </thead>
                         <tbody>

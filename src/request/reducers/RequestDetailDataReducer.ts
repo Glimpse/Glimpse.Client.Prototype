@@ -18,7 +18,7 @@ function createMongoDbInsertOperation(message) {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
-        command: '',
+        command: message.payload.operation,
         duration: message.payload.duration,
         operation: 'Insert',
         recordCount: message.payload.count
@@ -29,7 +29,7 @@ function createMongoDbReadOperation(message) {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
-        command: '',
+        command: message.payload.operation,
         duration: message.payload.duration,
         operation: 'Read',
         recordCount: undefined // NOTE: Read does not have a 'count' property.
@@ -40,7 +40,7 @@ function createMongoDbUpdateOperation(message) {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
-        command: '',
+        command: message.payload.operation,
         duration: message.payload.duration,
         operation: 'Update',
         recordCount: message.payload.modifiedCount + message.payload.upsertedCount
@@ -51,7 +51,7 @@ function createMongoDbDeleteOperation(message) {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
-        command: '',
+        command: message.payload.operation,
         duration: message.payload.duration,
         operation: 'Delete',
         recordCount: message.payload.count
