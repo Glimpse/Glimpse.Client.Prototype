@@ -9,7 +9,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(state) {
     return {
-        
     };
 }
 
