@@ -1,8 +1,18 @@
+import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
 import { IRequestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 const processor = require('../util/request-message-processor');
  
 import { Action, combineReducers } from 'redux';
+
+function selectedIndexReducer(state = 0, action: Action) {
+    switch (action.type) {
+        case 'request.detail.data.selectOperation':
+            return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;
+    }
+    
+    return state;
+}
 
 function createMongoDbInsertOperation(message) {
     return {
@@ -82,5 +92,6 @@ function requestDetailDataMessagesReducer(state = [], action: IRequestDetailUpda
 }
 
 export const requestDetailDataReducer = combineReducers({
-    operations: requestDetailDataMessagesReducer
+    operations: requestDetailDataMessagesReducer,
+    selectedIndex: selectedIndexReducer
 });

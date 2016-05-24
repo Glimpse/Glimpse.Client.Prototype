@@ -1,12 +1,23 @@
+import { createSelectOperationAction } from '../actions/RequestDetailDataActions';
 import { RequestDetailPanelDataOperationTable } from '../components/RequestDetailPanelDataOperationTable';
 import { connect } from 'react-redux';
 
+import * as _ from 'lodash';
+
 function mapStateToProps(state, ownProps) {
-    return ownProps;
+    
+    return _.assign(
+        {
+            selectedIndex: state.detail.data.selectedIndex
+        }, 
+        ownProps);
 }
 
-function mapDispatchToProps(state) {
+function mapDispatchToProps(dispatch) {
     return {
+        onSelected: (index: number) => {
+            dispatch(createSelectOperationAction(index));           
+        }
     };
 }
 

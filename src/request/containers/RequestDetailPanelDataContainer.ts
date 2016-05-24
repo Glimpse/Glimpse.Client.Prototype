@@ -7,7 +7,7 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(state) {
+function mapDispatchToProps(dispatch) {
     return {
     };
 }
