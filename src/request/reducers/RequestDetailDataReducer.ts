@@ -124,7 +124,7 @@ function updateOperations(state, request) {
         const processedMessages = processor.getTypeStucture(request, options);
 
         const allOperations = []
-            .concat(correlateSqlCommands(processedMessages.beforeExecuteCommand || [], processedMessages.afterExecureCommand || []).map(createSqlOperation))
+            .concat(correlateSqlCommands(processedMessages.beforeExecuteCommand || [], processedMessages.afterExecuteCommand || []).map(createSqlOperation))
             .concat((processedMessages.dataMongodbInsert || []).map(createMongoDbInsertOperation))
             .concat((processedMessages.dataMongodbRead || []).map(createMongoDbReadOperation))
             .concat((processedMessages.dataMongodbUpdate || []).map(createMongoDbUpdateOperation))

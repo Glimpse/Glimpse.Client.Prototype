@@ -57,6 +57,6 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
     private static getRecordCountText(recordCount: number) {
         return recordCount
             ? recordCount
-            : '--';
+            : '-';
     }
 }
