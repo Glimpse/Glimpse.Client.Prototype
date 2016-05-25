@@ -11,10 +11,18 @@ import { Action, combineReducers } from 'redux';
 
 import * as _ from 'lodash';
 
+function updateSelectedIndex(state: number, action: IRequestDetailUpdateAction) {
+    return action.request
+        ? state
+        : 0; 
+}
+
 function selectedIndexReducer(state = 0, action: Action) {
     switch (action.type) {
         case 'request.detail.data.selectOperation':
-            return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;
+            return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;            
+        case 'request.detail.update':
+            return updateSelectedIndex(state, <IRequestDetailUpdateAction>action);
     }
     
     return state;
