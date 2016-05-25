@@ -1,8 +1,13 @@
+import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
 import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
 import { IRequestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 import { ICommandAfterExecuteMessage } from '../messages/ICommandAfterExecuteMessage';
 import { ICommandBeforeExecuteMessage } from '../messages/ICommandBeforeExecuteMessage';
+import { IDataMongoDbDeletePayload } from '../messages/IDataMongoDbDeletePayload';
+import { IDataMongoDbInsertPayload } from '../messages/IDataMongoDbInsertPayload';
+import { IDataMongoDbReadPayload } from '../messages/IDataMongoDbReadPayload';
+import { IDataMongoDbUpdatePayload } from '../messages/IDataMongoDbUpdatePayload';
 import { IMessageEnvelope } from '../messages/IMessageEnvelope';
 
 const processor = require('../util/request-message-processor');
@@ -11,13 +16,17 @@ import { Action, combineReducers } from 'redux';
 
 import * as _ from 'lodash';
 
+interface ISortableOperation extends IRequestDetailDataOperationState {
+    ordinal: number;
+}
+
 function updateSelectedIndex(state: number, action: IRequestDetailUpdateAction) {
     return action.request
         ? state
         : 0; 
 }
 
-function selectedIndexReducer(state = 0, action: Action) {
+function selectedIndexReducer(state: number = 0, action: Action) {
     switch (action.type) {
         case 'request.detail.data.selectOperation':
             return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;            
@@ -54,7 +63,7 @@ function getOperationForSqlCommand(commandMethod: string): string {
     }
 }
 
-function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> }) {
+function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> }): ISortableOperation {
     return {
         ordinal: beforeAfterMessage.beforeMessage.ordinal,
         database: 'SQL',
@@ -65,7 +74,7 @@ function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelop
     }
 }
 
-function createMongoDbInsertOperation(message) {
+function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInsertPayload>): ISortableOperation {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
@@ -76,7 +85,7 @@ function createMongoDbInsertOperation(message) {
     };
 }
 
-function createMongoDbReadOperation(message) {
+function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPayload>): ISortableOperation {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
@@ -87,7 +96,7 @@ function createMongoDbReadOperation(message) {
     };
 }
 
-function createMongoDbUpdateOperation(message) {
+function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpdatePayload>): ISortableOperation {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
@@ -98,7 +107,7 @@ function createMongoDbUpdateOperation(message) {
     };
 }
 
-function createMongoDbDeleteOperation(message) {
+function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): ISortableOperation {
     return {
         ordinal: message.ordinal,
         database: 'MongoDB',
@@ -109,12 +118,14 @@ function createMongoDbDeleteOperation(message) {
     };
 }
 
-function updateOperations(state, request) {
+function updateOperations(state: IRequestDetailDataOperationState[], request): IRequestDetailDataOperationState[] {
     if (request) {
         const options = {
+            // SQL Messages
             'before-execute-command': processor.getTypeMessageList,
             'after-execute-command': processor.getTypeMessageList,
             
+            // MongoDB Messages
             'data-mongodb-insert': processor.getTypeMessageList,
             'data-mongodb-read': processor.getTypeMessageList,
             'data-mongodb-update': processor.getTypeMessageList,
@@ -123,7 +134,7 @@ function updateOperations(state, request) {
 
         const processedMessages = processor.getTypeStucture(request, options);
 
-        const allOperations = []
+        const allOperations = <ISortableOperation[]>[]
             .concat(correlateSqlCommands(processedMessages.beforeExecuteCommand || [], processedMessages.afterExecuteCommand || []).map(createSqlOperation))
             .concat((processedMessages.dataMongodbInsert || []).map(createMongoDbInsertOperation))
             .concat((processedMessages.dataMongodbRead || []).map(createMongoDbReadOperation))
@@ -137,7 +148,7 @@ function updateOperations(state, request) {
     return [];
 }
 
-function requestDetailDataMessagesReducer(state = [], action: IRequestDetailUpdateAction) {
+function operationsReducer(state: IRequestDetailDataOperationState[] = [], action: IRequestDetailUpdateAction): IRequestDetailDataOperationState[] {
     switch (action.type) {
         case 'request.detail.update': 
             return updateOperations(state, action.request);
@@ -147,6 +158,6 @@ function requestDetailDataMessagesReducer(state = [], action: IRequestDetailUpda
 }
 
 export const requestDetailDataReducer = combineReducers({
-    operations: requestDetailDataMessagesReducer,
+    operations: operationsReducer,
     selectedIndex: selectedIndexReducer
 });
