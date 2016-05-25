@@ -11,27 +11,22 @@ interface IMasterDetailTriPanelProps {
 export class MasterDetailTriPanel extends React.Component<IMasterDetailTriPanelProps, {}> {
     public render() {
         return (
-            <div className='tab-content tab-detail-holder'>
-                <div className='tab-detail-body master-detail-tri-panel-master'>
+            <div className='master-detail-tri-panel'>
+                <div className='master-detail-tri-panel-master'>
                 {
                     this.props.masterPanel
                 }
                 </div>
-                <div className='tab-detail-footer master-detail-tri-panel-detail'>
-                    <table className='table table-details master-detail-tri-panel-detail-table'>
-                        <thead>
-                            <tr>
-                                <th className='table-col-title' width='50%'>{this.props.leftDetailPanelTitle}</th>
-                                <th className='table-col-title' width='50%'>{this.props.rightDetailPanelTitle}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{this.props.leftDetailPanel}</td>
-                                <td>{this.props.rightDetailPanel}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className='master-detail-tri-panel-detail'>
+                    <div className='master-detail-tri-panel-detail-panel'>
+                        <div className='master-detail-tri-panel-detail-panel-title'>{this.props.leftDetailPanelTitle}</div>
+                        <div className='master-detail-tri-panel-detail-panel-content'>{this.props.leftDetailPanel}</div>
+                    </div>
+                    <div className='master-detail-tri-panel-detail-margin' />
+                    <div className='master-detail-tri-panel-detail-panel'>
+                        <div className='master-detail-tri-panel-detail-panel-title'>{this.props.rightDetailPanelTitle}</div>
+                        <div className='master-detail-tri-panel-detail-panel-content'>{this.props.rightDetailPanel}</div>
+                    </div>
                 </div>
             </div>
         );
