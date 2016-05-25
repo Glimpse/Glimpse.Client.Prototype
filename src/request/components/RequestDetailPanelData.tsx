@@ -10,9 +10,7 @@ export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
     public render() {
         if (this.props.operations.length > 0) {
             return (
-                <div className='tab-content tab-detail-holder tab-data'>
-                    <MasterDetailTriPanel masterPanel={this.renderMaster()} leftDetailPanel={this.renderLeftDetail()} leftDetailPanelTitle='Command' rightDetailPanel={this.renderRightDetail()} rightDetailPanelTitle='Summary' />
-                </div>
+                <MasterDetailTriPanel masterPanel={this.renderMaster()} leftDetailPanel={this.renderLeftDetail()} leftDetailPanelTitle='Command' rightDetailPanel={this.renderRightDetail()} rightDetailPanelTitle='Summary' />
             );
         }
         else {

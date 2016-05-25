@@ -9,7 +9,7 @@ interface IRequestDetailPanelDataOperationCommandProps {
 export class RequestDetailPanelDataOperationCommand extends React.Component<IRequestDetailPanelDataOperationCommandProps, {}> {
     public render() {
         return (
-            <div>
+            <div className='tab-data-operation-command'>
                 <Highlight language={this.props.language}>{this.props.command}</Highlight>
             </div>
         );

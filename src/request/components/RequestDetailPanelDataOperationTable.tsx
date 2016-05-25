@@ -14,12 +14,12 @@ interface IRequestDetailPanelDataOperationTableProps {
 export class RequestDetailPanelDataOperationTable extends React.Component<IRequestDetailPanelDataOperationTableProps, {}> {
     public render() {
         return (
-            <table className='table table-bordered table-striped table-selectable'>
+            <table className='table table-bordered table-striped table-selectable tab-data-operation-table'>
                 <thead>
                     <tr className='table-col-title-group'>
                         <th width='10%'><span className='table-col-title'>Ordinal</span></th>
                         <th width='10%'><span className='table-col-title'>Database</span></th>
-                        <th width='48%'><span className='table-col-title'>Command</span></th>
+                        <th width='48%'><span className='table-col-title tab-data-operation-table-command-column'>Command</span></th>
                         <th width='10%'><span className='table-col-title'>Duration</span></th>
                         <th width='10%'><span className='table-col-title'>Operation</span></th>
                         <th width='10%'><span className='table-col-title'>Records</span></th>
@@ -45,7 +45,7 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
             <tr className={classNames({ selected: index === this.props.selectedIndex })} key={index} onClick={e => this.props.onSelected(index)}>
                 <td>{index + 1}</td>
                 <td>{operation.database}</td>
-                <td>{operation.command}</td>
+                <td className='tab-data-operation-table-command-column'>{operation.command}</td>
                 <td>{util.timeOrEmpty(operation.duration)}</td>
                 <td>{operation.operation}</td>
                 <td>{operation.recordCount}</td>

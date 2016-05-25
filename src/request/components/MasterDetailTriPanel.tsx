@@ -11,14 +11,14 @@ interface IMasterDetailTriPanelProps {
 export class MasterDetailTriPanel extends React.Component<IMasterDetailTriPanelProps, {}> {
     public render() {
         return (
-            <div>
+            <div className='tab-content tab-detail-holder'>
                 <div className='tab-detail-body master-detail-tri-panel-master'>
                 {
                     this.props.masterPanel
                 }
                 </div>
                 <div className='tab-detail-footer master-detail-tri-panel-detail'>
-                    <table className='table table-details'>
+                    <table className='table table-details master-detail-tri-panel-detail-table'>
                         <thead>
                             <tr>
                                 <th className='table-col-title' width='50%'>{this.props.leftDetailPanelTitle}</th>
