@@ -1,9 +1,15 @@
 import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
 import { IRequestDetailUpdateAction } from '../actions/RequestDetailActions';
 
+import { ICommandAfterExecuteMessage } from '../messages/ICommandAfterExecuteMessage';
+import { ICommandBeforeExecuteMessage } from '../messages/ICommandBeforeExecuteMessage';
+import { IMessageEnvelope } from '../messages/IMessageEnvelope';
+
 const processor = require('../util/request-message-processor');
  
 import { Action, combineReducers } from 'redux';
+
+import * as _ from 'lodash';
 
 function selectedIndexReducer(state = 0, action: Action) {
     switch (action.type) {
@@ -12,6 +18,43 @@ function selectedIndexReducer(state = 0, action: Action) {
     }
     
     return state;
+}
+
+function correlateSqlCommands(beforeMessages: IMessageEnvelope<ICommandBeforeExecuteMessage>[], afterMessages: IMessageEnvelope<ICommandAfterExecuteMessage>[]): ({ beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> })[] {
+    // NOTE: This is a particularly naive implementation. If no after-message actually exists for a given 
+    //       before-message but another later after-message does exist, that will be paired to the before-message 
+    //       instead.
+    
+    const sortedAfterMessages = afterMessages.sort((a, b) => a.ordinal - b.ordinal);
+    
+    return beforeMessages.map(beforeMessage => {
+        const afterMessage = _.find(sortedAfterMessages, message => message.ordinal > beforeMessage.ordinal);
+        
+        return {
+            beforeMessage: beforeMessage,
+            afterMessage: afterMessage
+        }
+    });
+}
+
+function getOperationForSqlCommand(commandMethod: string): string {
+    switch (commandMethod) {
+        case 'ExecuteReader':
+            return 'Read';
+        default:
+            return commandMethod;
+    }
+}
+
+function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> }) {
+    return {
+        ordinal: beforeAfterMessage.beforeMessage.ordinal,
+        database: 'SQL',
+        command: beforeAfterMessage.beforeMessage.payload.commandText,
+        duration: beforeAfterMessage.afterMessage ? beforeAfterMessage.afterMessage.payload.commandDuration : undefined,
+        operation: getOperationForSqlCommand(beforeAfterMessage.beforeMessage.payload.commandMethod),
+        recordCount: undefined // NOTE: SQL does not track record counts.
+    }
 }
 
 function createMongoDbInsertOperation(message) {
@@ -61,6 +104,9 @@ function createMongoDbDeleteOperation(message) {
 function updateOperations(state, request) {
     if (request) {
         const options = {
+            'before-execute-command': processor.getTypeMessageList,
+            'after-execute-command': processor.getTypeMessageList,
+            
             'data-mongodb-insert': processor.getTypeMessageList,
             'data-mongodb-read': processor.getTypeMessageList,
             'data-mongodb-update': processor.getTypeMessageList,
@@ -70,6 +116,7 @@ function updateOperations(state, request) {
         const processedMessages = processor.getTypeStucture(request, options);
 
         const allOperations = []
+            .concat(correlateSqlCommands(processedMessages.beforeExecuteCommand || [], processedMessages.afterExecureCommand || []).map(createSqlOperation))
             .concat((processedMessages.dataMongodbInsert || []).map(createMongoDbInsertOperation))
             .concat((processedMessages.dataMongodbRead || []).map(createMongoDbReadOperation))
             .concat((processedMessages.dataMongodbUpdate || []).map(createMongoDbUpdateOperation))
