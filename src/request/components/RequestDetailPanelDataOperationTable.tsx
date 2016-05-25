@@ -48,9 +48,15 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
                 <td className='tab-data-operation-table-command-column'>{operation.command}</td>
                 <td>{util.timeOrEmpty(operation.duration)}</td>
                 <td>{operation.operation}</td>
-                <td>{operation.recordCount}</td>
+                <td>{RequestDetailPanelDataOperationTable.getRecordCountText(operation.recordCount)}</td>
                 <td />
             </tr>
         );
+    }
+    
+    private static getRecordCountText(recordCount: number) {
+        return recordCount
+            ? recordCount
+            : '--';
     }
 }

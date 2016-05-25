@@ -383,25 +383,30 @@
 
 .master-detail-tri-panel-master {
     flex: 3;
+    min-height: 100px;
     overflow-y: auto;
     padding: 0 20px 20px 20px;
 }
 
 .master-detail-tri-panel-detail {
     display: flex;
-    flex: 1;
+    flex: none;
     flex-direction: row;
-    max-height: 250px;
+    height: 250px;
 }
 
 .master-detail-tri-panel-detail-panel {
+    display: flex;
     flex: none;
+    flex-direction: column;
+    height: 100%;
     width: 50%;
 }
 
 .master-detail-tri-panel-detail-margin {
     background: #ccc;
     flex: none;
+    height: 100%;
     width: 1px;
 }
 
@@ -415,6 +420,7 @@
 }
 
 .master-detail-tri-panel-detail-panel-content {
+    height: 100%;
     overflow: auto;
 }
 
