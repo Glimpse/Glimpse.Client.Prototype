@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 function mapStateToProps(state) {
     return {
-        operations: state.detail.data.operations
+        totalOperationCount: state.detail.data.operations.length
     };
 }
 

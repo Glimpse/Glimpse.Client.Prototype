@@ -4,13 +4,11 @@ import { connect } from 'react-redux';
 
 import * as _ from 'lodash';
 
-function mapStateToProps(state, ownProps) {
-    
-    return _.assign(
-        {
-            selectedIndex: state.detail.data.selectedIndex
-        }, 
-        ownProps);
+function mapStateToProps(state) {
+    return {
+        operations: state.detail.data.operations,
+        selectedIndex: state.detail.data.selectedIndex
+    };
 }
 
 function mapDispatchToProps(dispatch) {

@@ -6,16 +6,17 @@ import * as React from 'react';
 import Highlight = require('react-highlight');
 
 
-export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
+export class DataComponent extends React.Component<{ totalOperationCount: number }, {}> {
     public render() {
-        if (this.props.operations.length > 0) {
-            return (
-                <MasterDetailTriPanel masterPanel={this.renderMaster()} leftDetailPanel={this.renderLeftDetail()} leftDetailPanelTitle='Command' rightDetailPanel={this.renderRightDetail()} rightDetailPanelTitle='Summary' />
-            );
-        }
-        else {
-            return <div className='tab-section text-minor'>Could not find any data.</div>;
-        }
+        return (
+            <div className='tab-data'>
+            {
+                this.props.totalOperationCount > 0
+                    ? <MasterDetailTriPanel masterPanel={this.renderMaster()} leftDetailPanel={this.renderLeftDetail()} leftDetailPanelTitle='Command' rightDetailPanel={this.renderRightDetail()} rightDetailPanelTitle='Summary' />
+                    : <div className='tab-section text-minor'>Could not find any data.</div>  
+            }
+            </div>
+        );
     }
     
     private renderMaster() {
@@ -23,7 +24,7 @@ export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
             <div className='tab-data-master'>
                 <div className='tab-data-operation-count'>{this.getTotalOperationCountText()}</div>
                 <br />
-                <RequestDetailPanelDataOperationTableContainer operations={this.props.operations} />
+                <RequestDetailPanelDataOperationTableContainer />
             </div>
         );
     }
@@ -39,8 +40,6 @@ export class DataComponent extends React.Component<{ operations: ({})[] }, {}> {
     }
     
     private getTotalOperationCountText() {
-        const totalOperationCount = this.props.operations.length;
-        
-        return totalOperationCount + (totalOperationCount === 1 ? ' Operation' : ' Operations');
+        return this.props.totalOperationCount + (this.props.totalOperationCount === 1 ? ' Operation' : ' Operations');
     }
 }
