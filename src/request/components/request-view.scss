@@ -399,14 +399,12 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    height: 100%;
     width: 50%;
 }
 
 .master-detail-tri-panel-detail-margin {
     background: #ccc;
     flex: none;
-    height: 100%;
     width: 1px;
 }
 
@@ -420,7 +418,6 @@
 }
 
 .master-detail-tri-panel-detail-panel-content {
-    height: 100%;
     overflow: auto;
 }
 
