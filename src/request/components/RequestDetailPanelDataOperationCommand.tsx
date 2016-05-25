@@ -1,7 +1,7 @@
 import React = require('react');
 import Highlight = require('react-highlight');
 
-interface IRequestDetailPanelDataOperationCommandProps {
+export interface IRequestDetailPanelDataOperationCommandProps {
     command: string,
     language: string
 }

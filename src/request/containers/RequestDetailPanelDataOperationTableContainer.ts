@@ -1,17 +1,20 @@
 import { createSelectOperationAction } from '../actions/RequestDetailDataActions';
-import { RequestDetailPanelDataOperationTable } from '../components/RequestDetailPanelDataOperationTable';
+import { getOperations, getSelectedIndex } from '../selectors/RequestDetailDataSelectors';
+import { IRequestState } from '../stores/IRequestState';
+import { IRequestDetailPanelDataOperationTableProps, IRequestDetailPanelDataOperationTableCallbacks, RequestDetailPanelDataOperationTable } from '../components/RequestDetailPanelDataOperationTable';
+
 import { connect } from 'react-redux';
 
 import * as _ from 'lodash';
 
-function mapStateToProps(state) {
+function mapStateToProps(state: IRequestState): IRequestDetailPanelDataOperationTableProps {
     return {
-        operations: state.detail.data.operations,
-        selectedIndex: state.detail.data.selectedIndex
+        operations: getOperations(state),
+        selectedIndex: getSelectedIndex(state)
     };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch): IRequestDetailPanelDataOperationTableCallbacks {
     return {
         onSelected: (index: number) => {
             dispatch(createSelectOperationAction(index));           

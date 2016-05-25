@@ -5,8 +5,11 @@ import { RequestDetailPanelDataOperationTableContainer } from '../containers/Req
 import * as React from 'react';
 import Highlight = require('react-highlight');
 
+export interface IDataComponentProps {
+    totalOperationCount: number;
+}
 
-export class DataComponent extends React.Component<{ totalOperationCount: number }, {}> {
+export class DataComponent extends React.Component<IDataComponentProps, {}> {
     public render() {
         return (
             <div className='tab-data'>

@@ -1,8 +1,11 @@
-import { RequestDetailPanelDataOperationCommand } from '../components/RequestDetailPanelDataOperationCommand';
+import { getSelectedOperation } from '../selectors/RequestDetailDataSelectors';
+import { IRequestState } from '../stores/IRequestState';
+import { RequestDetailPanelDataOperationCommand, IRequestDetailPanelDataOperationCommandProps } from '../components/RequestDetailPanelDataOperationCommand';
+
 import { connect } from 'react-redux';
 
-function mapStateToProps(state, ownProps) {
-    const operation = state.detail.data.operations[state.detail.data.selectedIndex];
+function mapStateToProps(state: IRequestState, ownProps): IRequestDetailPanelDataOperationCommandProps {
+    const operation = getSelectedOperation(state);
 
     return {
         command: operation ? operation.command : '',

@@ -1,17 +1,25 @@
+import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
+
 const util = require('../../lib/util');
 
 import * as React from 'react';
 
 const classNames = require('classnames');
 
-interface IRequestDetailPanelDataOperationTableProps {
-    operations: ({})[],
+export interface IRequestDetailPanelDataOperationTableProps {
+    operations: IRequestDetailDataOperationState[],
     selectedIndex: number,
-    
+}
+
+export interface IRequestDetailPanelDataOperationTableCallbacks {
     onSelected: (index: number) => void
 }
 
-export class RequestDetailPanelDataOperationTable extends React.Component<IRequestDetailPanelDataOperationTableProps, {}> {
+interface IRequestDetailPanelDataOperationTableCombinedProps
+    extends IRequestDetailPanelDataOperationTableProps, IRequestDetailPanelDataOperationTableCallbacks {
+}
+
+export class RequestDetailPanelDataOperationTable extends React.Component<IRequestDetailPanelDataOperationTableCombinedProps, {}> {
     public render() {
         return (
             <table className='table table-bordered table-striped table-selectable tab-data-operation-table'>
@@ -40,7 +48,7 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
         );
     }
     
-    public renderOperation(operation, index: number) {
+    public renderOperation(operation: IRequestDetailDataOperationState, index: number) {
         return (
             <tr className={classNames({ selected: index === this.props.selectedIndex })} key={index} onClick={e => this.props.onSelected(index)}>
                 <td>{index + 1}</td>

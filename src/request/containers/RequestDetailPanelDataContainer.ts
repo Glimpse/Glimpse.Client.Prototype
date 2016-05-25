@@ -1,11 +1,12 @@
-import { DataComponent } from '../components/RequestDetailPanelData';
+import { DataComponent, IDataComponentProps } from '../components/RequestDetailPanelData';
 import { IRequestState } from '../stores/IRequestState';
+import { getTotalOperationCount } from '../selectors/RequestDetailDataSelectors';
 
 import { connect } from 'react-redux';
 
-function mapStateToProps(state: IRequestState) {
+function mapStateToProps(state: IRequestState): IDataComponentProps {
     return {
-        totalOperationCount: state.detail.data.operations.length
+        totalOperationCount: getTotalOperationCount(state)
     };
 }
 
