@@ -12,7 +12,7 @@ describe('RequestDetailDataActions', () => {
             
             should.exist(action);
             action.should.deep.equal({
-                type: 'request.detail.data.selected',
+                type: 'request.detail.data.select',
                 payload: selectedIndex
             });
         });

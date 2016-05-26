@@ -25,7 +25,7 @@ function updateSelectedIndex(state: number, request) {
         : 0; 
 }
 
-function selectedIndexReducer(state: number = 0, action: Action) {
+export function selectedIndexReducer(state: number = 0, action: Action) {
     switch (action.type) {
         case selectOperationAction.type:
             return selectOperationAction.unwrap(action);            
@@ -155,7 +155,7 @@ function updateOperations(state: IRequestDetailDataOperationState[], request): I
     return [];
 }
 
-function operationsReducer(state: IRequestDetailDataOperationState[] = [], action: Action): IRequestDetailDataOperationState[] {
+export function operationsReducer(state: IRequestDetailDataOperationState[] = [], action: Action): IRequestDetailDataOperationState[] {
     switch (action.type) {
         case requestDetailUpdateAction.type: 
             return updateOperations(state, requestDetailUpdateAction.unwrap(action));
