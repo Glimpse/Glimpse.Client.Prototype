@@ -1,12 +1,9 @@
+import { createActionCreator } from './ActionCreator';
+
 import { Action } from 'redux';
 
 export interface IRequestDetailDataSelectOperationAction extends Action {
     selectedIndex: number;
 }
 
-export function createSelectOperationAction(selectedIndex: number): IRequestDetailDataSelectOperationAction {
-    return {
-        type: 'request.detail.data.selectOperation',
-        selectedIndex: selectedIndex
-    }
-}
+export const selectOperationAction = createActionCreator<number>('request.detail.data.selectOperation');

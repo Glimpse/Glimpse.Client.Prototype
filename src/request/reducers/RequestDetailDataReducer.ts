@@ -1,6 +1,6 @@
 import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
-import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
-import { IRequestDetailUpdateAction, requestDetailUpdateAction } from '../actions/RequestDetailActions';
+import { selectOperationAction } from '../actions/RequestDetailDataActions';
+import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 import { ICommandAfterExecutePayload } from '../messages/ICommandAfterExecutePayload';
 import { ICommandBeforeExecutePayload } from '../messages/ICommandBeforeExecutePayload';
@@ -28,8 +28,8 @@ function updateSelectedIndex(state: number, request) {
 
 function selectedIndexReducer(state: number = 0, action: Action) {
     switch (action.type) {
-        case 'request.detail.data.selectOperation':
-            return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;            
+        case selectOperationAction.type:
+            return selectOperationAction.unwrap(action);            
         case requestDetailUpdateAction.type:
             return updateSelectedIndex(state, requestDetailUpdateAction.unwrap(action));
     }

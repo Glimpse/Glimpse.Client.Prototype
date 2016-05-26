@@ -1,4 +1,4 @@
-import { createSelectOperationAction } from '../actions/RequestDetailDataActions';
+import { selectOperationAction } from '../actions/RequestDetailDataActions';
 import { getOperations, getSelectedIndex } from '../selectors/RequestDetailDataSelectors';
 import { IRequestState } from '../stores/IRequestState';
 import { IRequestDetailPanelDataOperationTableProps, IRequestDetailPanelDataOperationTableCallbacks, RequestDetailPanelDataOperationTable } from '../components/RequestDetailPanelDataOperationTable';
@@ -17,7 +17,7 @@ function mapStateToProps(state: IRequestState): IRequestDetailPanelDataOperation
 function mapDispatchToProps(dispatch): IRequestDetailPanelDataOperationTableCallbacks {
     return {
         onSelected: (index: number) => {
-            dispatch(createSelectOperationAction(index));           
+            dispatch(selectOperationAction(index));           
         }
     };
 }

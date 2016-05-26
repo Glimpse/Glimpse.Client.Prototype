@@ -1,29 +1,31 @@
 import { Action } from 'redux';
 
-interface IActionCreatorAction<T> extends Action {
-    payload: T;
+interface IActionCreatorAction<TPayload> extends Action {
+    payload: TPayload;
 }
 
-interface IActionCreator<T> {
-    (): IActionCreatorAction<T>;
-    
+interface IActionCreatorBase<TPayload> {
     type: string;
-    unwrap(action: Action): T;
+    unwrap(action: Action): TPayload;
 }
 
-export function createActionCreator<T>(type: string, payloadCreator: (...args) => T): IActionCreator<T> {
-    const actionCreator = (...args) => {
+interface IActionCreator<TPayload> extends IActionCreatorBase<TPayload> {
+    (payload: TPayload): IActionCreatorAction<TPayload>;
+}
+
+export function createActionCreator<TPayload>(type: string): IActionCreator<TPayload> {
+    const actionCreator = (payload: TPayload) => {
         return {
             type: type,
-            payload: payloadCreator(...args)
+            payload: payload
         }
     };
     
-    const typedActionCreator = <IActionCreator<T>>actionCreator;
+    const typedActionCreator = <IActionCreator<TPayload>>actionCreator;
     
     typedActionCreator.type = type;
     typedActionCreator.unwrap = (action: Action) => {
-        return (<IActionCreatorAction<T>>action).payload;
+        return (<IActionCreatorAction<TPayload>>action).payload;
     };
     
     return typedActionCreator;
