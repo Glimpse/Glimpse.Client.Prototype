@@ -8,16 +8,15 @@ import { IDataMongoDbDeletePayload } from '../messages/IDataMongoDbDeletePayload
 import { IDataMongoDbInsertPayload } from '../messages/IDataMongoDbInsertPayload';
 import { IDataMongoDbReadPayload } from '../messages/IDataMongoDbReadPayload';
 import { IDataMongoDbUpdatePayload } from '../messages/IDataMongoDbUpdatePayload';
-import { IMessageEnvelope } from '../messages/IMessageEnvelope';
+import { IMessage, IMessageEnvelope } from '../messages/IMessageEnvelope';
 
-const processor = require('../util/request-message-processor');
- 
 import { Action, combineReducers } from 'redux';
 
 import * as _ from 'lodash';
 
-interface ISortableOperation extends IRequestDetailDataOperationState {
+interface ISortableOperation {
     ordinal: number;
+    operation: IRequestDetailDataOperationState;
 }
 
 function updateSelectedIndex(state: number, request) {
@@ -66,17 +65,18 @@ function getOperationForSqlCommand(commandMethod: string): string {
 function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecutePayload>, afterMessage: IMessageEnvelope<ICommandAfterExecutePayload> }): ISortableOperation {
     return {
         ordinal: beforeAfterMessage.beforeMessage.ordinal,
-        database: 'SQL',
-        command: beforeAfterMessage.beforeMessage.payload.commandText,
-        duration: beforeAfterMessage.afterMessage ? beforeAfterMessage.afterMessage.payload.commandDuration : undefined,
-        operation: getOperationForSqlCommand(beforeAfterMessage.beforeMessage.payload.commandMethod),
-        recordCount: undefined // NOTE: SQL does not track record counts.
+        operation: {
+            database: 'SQL',
+            command: beforeAfterMessage.beforeMessage.payload.commandText,
+            duration: beforeAfterMessage.afterMessage ? beforeAfterMessage.afterMessage.payload.commandDuration : undefined,
+            operation: getOperationForSqlCommand(beforeAfterMessage.beforeMessage.payload.commandMethod),
+            recordCount: undefined // NOTE: SQL does not track record counts.
+        }
     }
 }
 
-function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInsertPayload>): ISortableOperation {
+function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInsertPayload>): IRequestDetailDataOperationState {
     return {
-        ordinal: message.ordinal,
         database: 'MongoDB',
         command: message.payload.operation,
         duration: message.payload.duration,
@@ -85,9 +85,8 @@ function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInse
     };
 }
 
-function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPayload>): ISortableOperation {
+function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPayload>): IRequestDetailDataOperationState {
     return {
-        ordinal: message.ordinal,
         database: 'MongoDB',
         command: message.payload.operation,
         duration: message.payload.duration,
@@ -96,9 +95,8 @@ function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPa
     };
 }
 
-function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpdatePayload>): ISortableOperation {
+function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpdatePayload>): IRequestDetailDataOperationState {
     return {
-        ordinal: message.ordinal,
         database: 'MongoDB',
         command: message.payload.operation,
         duration: message.payload.duration,
@@ -107,9 +105,8 @@ function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpda
     };
 }
 
-function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): ISortableOperation {
+function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): IRequestDetailDataOperationState {
     return {
-        ordinal: message.ordinal,
         database: 'MongoDB',
         command: message.payload.operation,
         duration: message.payload.duration,
@@ -118,31 +115,41 @@ function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDele
     };
 }
 
+function getMessages(request, messageType: string): IMessage[] {
+    const messageIds = request.types[messageType];
+    
+    if (messageIds) {
+        return messageIds.map(messageId => request.messages[messageId]);
+    }
+    
+    return [];
+}
+
+function getSqlOperations(request): ISortableOperation[] {
+    return correlateSqlCommands(getMessages(request, 'before-execute-command'), getMessages(request, 'after-execute-command'))
+        .map(createSqlOperation);   
+}
+
+function getDataOperations(request, messageType: string, selector: (message: IMessage) => IRequestDetailDataOperationState): ISortableOperation[] {
+    return getMessages(request, messageType).map(message => {
+        return { 
+            ordinal: message.ordinal, operation: selector(message) 
+        }
+    });
+}
+
 function updateOperations(state: IRequestDetailDataOperationState[], request): IRequestDetailDataOperationState[] {
     if (request) {
-        const options = {
-            // SQL Messages
-            'before-execute-command': processor.getTypeMessageList,
-            'after-execute-command': processor.getTypeMessageList,
-            
-            // MongoDB Messages
-            'data-mongodb-insert': processor.getTypeMessageList,
-            'data-mongodb-read': processor.getTypeMessageList,
-            'data-mongodb-update': processor.getTypeMessageList,
-            'data-mongodb-delete': processor.getTypeMessageList
-        };
-
-        const processedMessages = processor.getTypeStucture(request, options);
-
-        const allOperations = <ISortableOperation[]>[]
-            .concat(correlateSqlCommands(processedMessages.beforeExecuteCommand || [], processedMessages.afterExecuteCommand || []).map(createSqlOperation))
-            .concat((processedMessages.dataMongodbInsert || []).map(createMongoDbInsertOperation))
-            .concat((processedMessages.dataMongodbRead || []).map(createMongoDbReadOperation))
-            .concat((processedMessages.dataMongodbUpdate || []).map(createMongoDbUpdateOperation))
-            .concat((processedMessages.dataMongodbDelete || []).map(createMongoDbDeleteOperation))
-            .sort((a, b) => a.ordinal - b.ordinal); 
-    
-        return allOperations;
+        const allOperations: ISortableOperation[] = [];
+        
+        return allOperations
+            .concat(getSqlOperations(request))
+            .concat(getDataOperations(request, 'data-mongodb-insert', createMongoDbInsertOperation))
+            .concat(getDataOperations(request, 'data-mongodb-read', createMongoDbReadOperation))
+            .concat(getDataOperations(request, 'data-mongodb-update', createMongoDbUpdateOperation))
+            .concat(getDataOperations(request, 'data-mongodb-delete', createMongoDbDeleteOperation))
+            .sort((a, b) => a.ordinal - b.ordinal)
+            .map(operation => operation.operation);
     }
     
     return [];
