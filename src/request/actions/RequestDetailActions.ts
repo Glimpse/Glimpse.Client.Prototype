@@ -1,12 +1,14 @@
+import { createActionCreator } from './ActionCreator';
+
 import { Action } from 'redux';
 
 export interface IRequestDetailUpdateAction extends Action {
     request;
 }
 
-export function createRequestDetailUpdateAction(request): IRequestDetailUpdateAction {
-    return {
-        type: 'request.detail.update',
-        request: request
-    }
-}
+export const requestDetailUpdateAction = 
+    createActionCreator(
+        'request.detail.update', 
+        request => {
+            return request;
+        });

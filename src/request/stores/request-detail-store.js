@@ -25,7 +25,7 @@ var _viewModel = {
 
 function requestChanged(targetRequests) {
     glimpse.emit('shell.request.detail.changed', targetRequests);
-    store.dispatch(requestDetailActions.createRequestDetailUpdateAction(targetRequests.request));
+    store.dispatch(requestDetailActions.requestDetailUpdateAction(targetRequests.request));
 }
 
 function getTabs(request) {

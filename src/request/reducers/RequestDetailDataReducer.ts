@@ -1,6 +1,6 @@
 import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
 import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
-import { IRequestDetailUpdateAction } from '../actions/RequestDetailActions';
+import { IRequestDetailUpdateAction, requestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 import { ICommandAfterExecutePayload } from '../messages/ICommandAfterExecutePayload';
 import { ICommandBeforeExecutePayload } from '../messages/ICommandBeforeExecutePayload';
@@ -20,8 +20,8 @@ interface ISortableOperation extends IRequestDetailDataOperationState {
     ordinal: number;
 }
 
-function updateSelectedIndex(state: number, action: IRequestDetailUpdateAction) {
-    return action.request
+function updateSelectedIndex(state: number, request) {
+    return request
         ? state
         : 0; 
 }
@@ -30,8 +30,8 @@ function selectedIndexReducer(state: number = 0, action: Action) {
     switch (action.type) {
         case 'request.detail.data.selectOperation':
             return (<IRequestDetailDataSelectOperationAction>action).selectedIndex;            
-        case 'request.detail.update':
-            return updateSelectedIndex(state, <IRequestDetailUpdateAction>action);
+        case requestDetailUpdateAction.type:
+            return updateSelectedIndex(state, requestDetailUpdateAction.unwrap(action));
     }
     
     return state;
@@ -148,10 +148,10 @@ function updateOperations(state: IRequestDetailDataOperationState[], request): I
     return [];
 }
 
-function operationsReducer(state: IRequestDetailDataOperationState[] = [], action: IRequestDetailUpdateAction): IRequestDetailDataOperationState[] {
+function operationsReducer(state: IRequestDetailDataOperationState[] = [], action: Action): IRequestDetailDataOperationState[] {
     switch (action.type) {
-        case 'request.detail.update': 
-            return updateOperations(state, action.request);
+        case requestDetailUpdateAction.type: 
+            return updateOperations(state, requestDetailUpdateAction.unwrap(action));
     }
     
     return state;
