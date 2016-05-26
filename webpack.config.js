@@ -71,7 +71,7 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             DIAGNOSTICS: true,
-            FAKE_SERVER: true
+            FAKE_SERVER: false
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         progressPlugin
