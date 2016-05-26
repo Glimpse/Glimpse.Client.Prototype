@@ -1,4 +1,4 @@
-export interface ICommandAfterExecuteMessage {
+export interface ICommandAfterExecutePayload {
     commandHadException: boolean;
     commandEndTime: string;
     commandDuration: number;

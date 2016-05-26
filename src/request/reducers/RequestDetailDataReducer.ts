@@ -2,8 +2,8 @@ import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOp
 import { IRequestDetailDataSelectOperationAction } from '../actions/RequestDetailDataActions';
 import { IRequestDetailUpdateAction } from '../actions/RequestDetailActions';
 
-import { ICommandAfterExecuteMessage } from '../messages/ICommandAfterExecuteMessage';
-import { ICommandBeforeExecuteMessage } from '../messages/ICommandBeforeExecuteMessage';
+import { ICommandAfterExecutePayload } from '../messages/ICommandAfterExecutePayload';
+import { ICommandBeforeExecutePayload } from '../messages/ICommandBeforeExecutePayload';
 import { IDataMongoDbDeletePayload } from '../messages/IDataMongoDbDeletePayload';
 import { IDataMongoDbInsertPayload } from '../messages/IDataMongoDbInsertPayload';
 import { IDataMongoDbReadPayload } from '../messages/IDataMongoDbReadPayload';
@@ -37,7 +37,7 @@ function selectedIndexReducer(state: number = 0, action: Action) {
     return state;
 }
 
-function correlateSqlCommands(beforeMessages: IMessageEnvelope<ICommandBeforeExecuteMessage>[], afterMessages: IMessageEnvelope<ICommandAfterExecuteMessage>[]): ({ beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> })[] {
+function correlateSqlCommands(beforeMessages: IMessageEnvelope<ICommandBeforeExecutePayload>[], afterMessages: IMessageEnvelope<ICommandAfterExecutePayload>[]): ({ beforeMessage: IMessageEnvelope<ICommandBeforeExecutePayload>, afterMessage: IMessageEnvelope<ICommandAfterExecutePayload> })[] {
     // NOTE: This is a particularly naive implementation. If no after-message actually exists for a given 
     //       before-message but another later after-message does exist, that will be paired to the before-message 
     //       instead.
@@ -63,7 +63,7 @@ function getOperationForSqlCommand(commandMethod: string): string {
     }
 }
 
-function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecuteMessage>, afterMessage: IMessageEnvelope<ICommandAfterExecuteMessage> }): ISortableOperation {
+function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelope<ICommandBeforeExecutePayload>, afterMessage: IMessageEnvelope<ICommandAfterExecutePayload> }): ISortableOperation {
     return {
         ordinal: beforeAfterMessage.beforeMessage.ordinal,
         database: 'SQL',

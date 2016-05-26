@@ -1,4 +1,4 @@
-export interface ICommandBeforeExecuteMessage {
+export interface ICommandBeforeExecutePayload {
     commandMethod: string;
     commandIsAsync: boolean;
     commandText: string;
