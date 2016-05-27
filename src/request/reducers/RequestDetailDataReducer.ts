@@ -75,10 +75,14 @@ function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelop
     }
 }
 
+function prettyPrintJson(value): string {
+    return JSON.stringify(value, null, 4);
+}
+
 function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInsertPayload>): IRequestDetailDataOperationState {
     return {
         database: 'MongoDB',
-        command: message.payload.operation,
+        command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
         operation: 'Insert',
         recordCount: message.payload.count
@@ -88,7 +92,7 @@ function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInse
 function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPayload>): IRequestDetailDataOperationState {
     return {
         database: 'MongoDB',
-        command: message.payload.operation,
+        command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
         operation: 'Read',
         recordCount: undefined // NOTE: Read does not have a 'count' property.
@@ -98,7 +102,7 @@ function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPa
 function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpdatePayload>): IRequestDetailDataOperationState {
     return {
         database: 'MongoDB',
-        command: message.payload.operation,
+        command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
         operation: 'Update',
         recordCount: message.payload.modifiedCount + message.payload.upsertedCount
@@ -108,7 +112,7 @@ function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpda
 function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): IRequestDetailDataOperationState {
     return {
         database: 'MongoDB',
-        command: message.payload.operation,
+        command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
         operation: 'Delete',
         recordCount: message.payload.count

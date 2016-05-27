@@ -125,7 +125,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-insert',
                     payload: {
-                        operation: 'op1',
+                        options: '{skip: 0}',
                         duration: 123,
                         count: 456
                     }
@@ -138,7 +138,7 @@ describe('RequestDetailDataReducer', () => {
             
             newState[0].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op1',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Insert',
                 recordCount: 456
@@ -153,7 +153,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-read',
                     payload: {
-                        operation: 'op1',
+                        options: '{skip: 0}',
                         duration: 123
                     }
                 }
@@ -165,7 +165,7 @@ describe('RequestDetailDataReducer', () => {
             
             newState[0].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op1',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Read',
                 recordCount: undefined
@@ -180,7 +180,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-update',
                     payload: {
-                        operation: 'op1',
+                        options: '{skip: 0}',
                         duration: 123,
                         modifiedCount: 456,
                         upsertedCount: 654
@@ -194,7 +194,7 @@ describe('RequestDetailDataReducer', () => {
             
             newState[0].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op1',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Update',
                 recordCount: 1110
@@ -209,7 +209,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-delete',
                     payload: {
-                        operation: 'op1',
+                        options: '{skip: 0}',
                         duration: 123,
                         count: 456
                     }
@@ -222,7 +222,7 @@ describe('RequestDetailDataReducer', () => {
             
             newState[0].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op1',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Delete',
                 recordCount: 456
@@ -237,7 +237,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message2',
                     type: 'data-mongodb-delete',
                     payload: {
-                        operation: 'op2',
+                        options: '{skip: 0}',
                         duration: 123,
                         count: 456
                     }
@@ -247,7 +247,7 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-insert',
                     payload: {
-                        operation: 'op1',
+                        options: '{skip: 0}',
                         duration: 123,
                         count: 456
                     }
@@ -260,7 +260,7 @@ describe('RequestDetailDataReducer', () => {
             
             newState[0].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op1',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Insert',
                 recordCount: 456
@@ -268,7 +268,7 @@ describe('RequestDetailDataReducer', () => {
 
             newState[1].should.deep.equal({
                 database: 'MongoDB',
-                command: 'op2',
+                command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Delete',
                 recordCount: 456
