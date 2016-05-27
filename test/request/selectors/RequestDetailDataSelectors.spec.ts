@@ -12,6 +12,7 @@ describe('RequestDetailDataSelectors', () => {
         return {
             detail: {
                 data: {
+                    filters: {},
                     operations: operations || [],
                     selectedIndex: selectedIndex || 0
                 }

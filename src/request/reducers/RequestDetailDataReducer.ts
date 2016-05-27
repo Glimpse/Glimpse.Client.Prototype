@@ -168,7 +168,62 @@ export function operationsReducer(state: IRequestDetailDataOperationState[] = []
     return state;
 }
 
+function hasMessagesOfType(request, messageType: string) {
+    if (request) {
+        const messageIds = request.types[messageType];
+        
+        return messageIds && messageIds.length > 0;
+    }
+    
+    return false;
+}
+
+function hasMessagesOfTypes(request, messageTypes: string[]) {
+    return _.some(messageTypes, messageType => hasMessagesOfType(request, messageType));
+}
+
+function updateFilters(state: { [key: string]: boolean }, request): { [key: string]: boolean } {
+    if (request) {
+        const databaseMessageTypes = {
+            'SQL': [
+                'before-execute-command',
+                'after-execute-command'
+            ],
+            'MongoDB': [
+                'data-mongodb-insert',
+                'data-mongodb-read',
+                'data-mongodb-update',
+                'data-mongodb-delete'
+            ]
+        };
+        
+        const existingDatabases = _.pickBy(databaseMessageTypes, dataMessageType => hasMessagesOfTypes(request, dataMessageType));
+        
+        const newState = _.clone(state);
+        
+        _.forOwn(existingDatabases, (messageTypes, database) => {
+            if (!newState[database]) {
+                newState[database] = true;
+            }
+        });
+        
+        return newState;
+    }
+    
+    return state;
+}
+
+export function filtersReducer(state: { [key: string]: boolean } = {}, action: Action) {
+    switch (action.type) {
+        case requestDetailUpdateAction.type: 
+            return updateFilters(state, requestDetailUpdateAction.unwrap(action));
+    }
+    
+    return state;
+}
+
 export const requestDetailDataReducer = combineReducers({
+    filters: filtersReducer,
     operations: operationsReducer,
     selectedIndex: selectedIndexReducer
 });
