@@ -1,7 +1,5 @@
 import * as React from 'react';
 
-const classNames = require('classnames');
-
 export interface IFilterButtonProps {
     count: number;
     isShown: boolean;
@@ -18,7 +16,7 @@ interface IFilterButtonCombinedProps extends IFilterButtonProps, IFilterButtonCa
 export class FilterButton extends React.Component<IFilterButtonCombinedProps, {}> {
     public render() {
         return (
-            <button className={classNames('filter-button', { shown: this.props.isShown })} type='button' onClick={e => this.props.onToggle()}>{this.props.name} ({this.props.count})</button>
+            <button className={this.props.isShown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.props.onToggle()}>{this.props.name} ({this.props.count})</button>
         );
     }
 }

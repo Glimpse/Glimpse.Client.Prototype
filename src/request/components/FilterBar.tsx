@@ -7,6 +7,7 @@ export interface IFilterBarProps {
 }
 
 export interface IFilterBarCallbacks {
+    onShowAll: () => void;
     onToggle: (name: string) => void;
 }
 
@@ -17,9 +18,10 @@ export class FilterBar extends React.Component<IFilterBarCombinedProps, {}> {
     public render() {
         return (
             <div className='filter-bar'>
-            {
-                this.props.filters.map((filter) => this.renderFilter(filter))
-            }
+                <button className='filter-show-all' onClick={e => this.props.onShowAll()}>Show All</button>
+                {
+                    this.props.filters.map((filter) => this.renderFilter(filter))
+                }
             </div>
         );
     }    

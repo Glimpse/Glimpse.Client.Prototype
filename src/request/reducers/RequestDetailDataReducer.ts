@@ -1,5 +1,5 @@
 import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
-import { selectOperationAction, toggleFilterAction } from '../actions/RequestDetailDataActions';
+import { selectOperationAction, showAllAction, toggleFilterAction } from '../actions/RequestDetailDataActions';
 import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 import { ICommandAfterExecutePayload } from '../messages/ICommandAfterExecutePayload';
@@ -221,10 +221,18 @@ function updateFilters(state: { [key: string]: boolean }, request): { [key: stri
     return state;
 }
 
+function showAllFilters(state: { [key: string]: boolean }): { [key: string]: boolean } {
+    // TODO: Optimize this for when all filter are already shown.
+    
+    return _.mapValues(state, filter => true);
+}
+
 export function filtersReducer(state: { [key: string]: boolean } = {}, action: Action) {
     switch (action.type) {
         case toggleFilterAction.type:
             return toggleFilter(state, toggleFilterAction.unwrap(action));
+        case showAllAction.type:
+            return showAllFilters(state);
         case requestDetailUpdateAction.type: 
             return updateFilters(state, requestDetailUpdateAction.unwrap(action));
     }
