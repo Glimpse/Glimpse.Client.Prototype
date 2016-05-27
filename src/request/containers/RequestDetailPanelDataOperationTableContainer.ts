@@ -1,5 +1,5 @@
 import { selectOperationAction } from '../actions/RequestDetailDataActions';
-import { getOperations, getSelectedIndex } from '../selectors/RequestDetailDataSelectors';
+import { getFilteredOperations, getSelectedIndex } from '../selectors/RequestDetailDataSelectors';
 import { IRequestState } from '../stores/IRequestState';
 import { IRequestDetailPanelDataOperationTableProps, IRequestDetailPanelDataOperationTableCallbacks, RequestDetailPanelDataOperationTable } from '../components/RequestDetailPanelDataOperationTable';
 
@@ -9,7 +9,8 @@ import * as _ from 'lodash';
 
 function mapStateToProps(state: IRequestState): IRequestDetailPanelDataOperationTableProps {
     return {
-        operations: getOperations(state),
+        // TODO: How should selection behave as filters are added/removed?
+        operations: getFilteredOperations(state),
         selectedIndex: getSelectedIndex(state)
     };
 }

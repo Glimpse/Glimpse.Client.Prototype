@@ -13,8 +13,28 @@ export const getTotalOperationCount = createSelector(
         return operations.length;
     });
 
-export const getSelectedOperation = createSelector(
+export const getFilteredOperations = createSelector(
+    getFilterState,
     getOperations,
+    (filterState, operations) => {
+        const hiddenDatabases = _.keys(_.omitBy(filterState, isShown => isShown));
+        
+        let filteredOperations = [];
+        
+        operations.forEach((operation, index) => {
+            if (!_.includes(hiddenDatabases, operation.database)) {
+                filteredOperations.push({
+                    ordinal: index + 1,
+                    operation: operation
+                })
+            }
+        });
+        
+        return filteredOperations;
+    });
+
+export const getSelectedOperation = createSelector(
+    getFilteredOperations,
     getSelectedIndex,
     (operations, selectedIndex) => {
         return operations[selectedIndex];

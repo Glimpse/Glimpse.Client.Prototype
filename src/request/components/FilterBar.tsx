@@ -7,7 +7,7 @@ export interface IFilterBarProps {
 }
 
 export interface IFilterBarCallbacks {
-    onToggle: (index: number) => void;
+    onToggle: (name: string) => void;
 }
 
 interface IFilterBarCombinedProps extends IFilterBarProps, IFilterBarCallbacks {
@@ -18,15 +18,15 @@ export class FilterBar extends React.Component<IFilterBarCombinedProps, {}> {
         return (
             <div className='filter-bar'>
             {
-                this.props.filters.map((filter, index) => this.renderFilter(filter, index))
+                this.props.filters.map((filter) => this.renderFilter(filter))
             }
             </div>
         );
     }    
     
-    private renderFilter(filter: IFilterButtonProps, index: number) {
+    private renderFilter(filter: IFilterButtonProps) {
         return (
-            <FilterButton count={filter.count} isShown={filter.isShown} name={filter.name} onToggle={() => this.props.onToggle(index)} />
+            <FilterButton count={filter.count} isShown={filter.isShown} name={filter.name} onToggle={() => this.props.onToggle(filter.name)} />
         );
     }
 }

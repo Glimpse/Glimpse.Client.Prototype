@@ -1,5 +1,5 @@
 import { IRequestDetailDataOperationState } from '../stores/IRequestDetailDataOperationState';
-import { selectOperationAction } from '../actions/RequestDetailDataActions';
+import { selectOperationAction, toggleFilterAction } from '../actions/RequestDetailDataActions';
 import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 
 import { ICommandAfterExecutePayload } from '../messages/ICommandAfterExecutePayload';
@@ -168,6 +168,14 @@ export function operationsReducer(state: IRequestDetailDataOperationState[] = []
     return state;
 }
 
+function toggleFilter(state: { [key: string]: boolean }, name: string): { [key: string]: boolean } {
+    const newState = _.clone(state);
+    
+    newState[name] = !state[name];
+    
+    return newState;
+}
+
 function hasMessagesOfType(request, messageType: string) {
     if (request) {
         const messageIds = request.types[messageType];
@@ -215,6 +223,8 @@ function updateFilters(state: { [key: string]: boolean }, request): { [key: stri
 
 export function filtersReducer(state: { [key: string]: boolean } = {}, action: Action) {
     switch (action.type) {
+        case toggleFilterAction.type:
+            return toggleFilter(state, toggleFilterAction.unwrap(action));
         case requestDetailUpdateAction.type: 
             return updateFilters(state, requestDetailUpdateAction.unwrap(action));
     }
