@@ -130,7 +130,7 @@ function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpda
 
 function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): IRequestDetailDataOperationState {
     return {
-        database: Databases.mongoDb.name,
+        database: 'MongoDB',
         command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
         operation: 'Delete',
