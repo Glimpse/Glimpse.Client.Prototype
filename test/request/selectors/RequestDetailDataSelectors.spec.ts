@@ -60,7 +60,10 @@ describe('RequestDetailDataSelectors', () => {
                 1));
             
             should.exist(selectedOperation);
-            selectedOperation.should.deep.equal(operation1);
+            selectedOperation.should.deep.equal({
+                ordinal: 2,
+                operation: operation1
+            });
         });      
 
         it('should return undefined if the selected index < 0', () => {
