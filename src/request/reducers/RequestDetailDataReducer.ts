@@ -188,11 +188,17 @@ export function operationsReducer(state: IRequestDetailDataOperationState[] = []
 }
 
 function toggleFilter(state: { [key: string]: boolean }, name: string): { [key: string]: boolean } {
-    const newState = _.clone(state);
+    const filterValue = state[name];
     
-    newState[name] = !state[name];
-    
-    return newState;
+    if (filterValue !== undefined) {
+        const newState = _.clone(state);
+        
+        newState[name] = !filterValue;
+        
+        return newState;       
+    }
+
+    return state;
 }
 
 function hasMessagesOfType(request, messageType: string) {

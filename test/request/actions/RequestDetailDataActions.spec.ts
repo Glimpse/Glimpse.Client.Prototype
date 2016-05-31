@@ -1,4 +1,4 @@
-import { selectOperationAction } from '../../../src/request/actions/RequestDetailDataActions';
+import { selectOperationAction, showAllAction, toggleFilterAction } from '../../../src/request/actions/RequestDetailDataActions';
 
 import * as chai from 'chai';
 
@@ -16,5 +16,29 @@ describe('RequestDetailDataActions', () => {
                 payload: selectedIndex
             });
         });
-    });  
+    });
+    
+    describe('#toggleFilterAction', () => {
+        it('should return the filter name as payload', () => {
+            const name = 'test';
+            const action = toggleFilterAction(name);
+            
+            should.exist(action);
+            action.should.deep.equal({
+                type: 'request.detail.data.toggle',
+                payload: name
+            });
+        });
+    });
+    
+    describe('#showAllAction', () => {
+        it('shoudl return a simple action', () => {
+            const action = showAllAction();
+            
+            should.exist(action);
+            action.should.deep.equal({
+                type: 'request.detail.data.all'
+            });
+        });
+    });
 });

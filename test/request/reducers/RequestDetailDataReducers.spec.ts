@@ -1,6 +1,6 @@
 import { IRequestDetailDataOperationState } from '../../../src/request/stores/IRequestDetailDataOperationState';
 import { IRequestState } from '../../../src/request/stores/IRequestState';
-import { operationsReducer, selectedIndexReducer } from '../../../src/request/reducers/RequestDetailDataReducer';
+import { filtersReducer, operationsReducer, selectedIndexReducer } from '../../../src/request/reducers/RequestDetailDataReducer';
 
 import { Action } from 'redux';
 import * as chai from 'chai';
@@ -103,7 +103,7 @@ describe('RequestDetailDataReducer', () => {
             const newState = operationsReducer(state, createAction());
             
             should.exist(newState);
-            newState.should.deep.equal(state);
+            newState.should.equal(state);
         });
 
         it('should reset the state when no request is selected', () => {
@@ -273,6 +273,189 @@ describe('RequestDetailDataReducer', () => {
                 operation: 'Delete',
                 recordCount: 456
             });
+        });
+    });
+    
+    describe('#filtersReducer', () => {
+        it('should default to an empty collection of filters', () => {
+            const state = undefined;
+            const newState = filtersReducer(state, createAction());
+            
+            should.exist(newState);
+            newState.should.deep.equal({});
+        });
+        
+        it('should ignore an unknown action', () => {
+            const state: { [key: string]: boolean } = { test: false };
+            const newState = filtersReducer(state, createAction());
+            
+            should.exist(newState);
+            newState.should.equal(state);
+        });
+        
+        it('should return the previous state if toggling a non-existant filter', () => {
+            const state: { [key: string]: boolean } = {};
+            const newState = filtersReducer(state, createAction('request.detail.data.toggle', 'test'));
+            
+            should.exist(newState);
+            newState.should.equal(state);
+        });
+        
+        it('should return an enabled filter if currently disabled', () => {
+            const state: { [key: string]: boolean } = { test: false, other: false };
+            const newState = filtersReducer(state, createAction('request.detail.data.toggle', 'test'));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                test: true,
+                other: false
+            });
+        });
+
+        it('should return an disabled filter if currently enabled', () => {
+            const state: { [key: string]: boolean } = { test: true, other: true };
+            const newState = filtersReducer(state, createAction('request.detail.data.toggle', 'test'));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                test: false,
+                other: true
+            });
+        });
+
+        it('should return the previous state if already showing all', () => {
+            const state: { [key: string]: boolean } = { test: true, other: true };
+            const newState = filtersReducer(state, createAction('request.detail.data.all'));
+            
+            should.exist(newState);
+            newState.should.equal(state);
+        });
+
+        it('should enable all disabled filters', () => {
+            const state: { [key: string]: boolean } = { test: false, other: false };
+            const newState = filtersReducer(state, createAction('request.detail.data.all'));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                test: true,
+                other: true
+            });
+        });
+        
+        it('should return the previous state if no request is selected', () => {
+            const state: { [key: string]: boolean } = { test: false, other: false };
+            const newState = filtersReducer(state, createAction('request.detail.update'));
+            
+            should.exist(newState);
+            newState.should.equal(state);
+        });
+        
+        it('should add a MongoDB filter if none yet exists and an insert message exists for the request', () => {
+            const state: { [key: string]: boolean } = {};
+            const request = createRequest([
+                {
+                    ordinal: 1,
+                    id: 'message1',
+                    type: 'data-mongodb-insert',
+                    payload: {
+                        options: '{skip: 0}',
+                        duration: 123,
+                        count: 456
+                    }
+                }
+            ]);
+            const newState = filtersReducer(state, createAction('request.detail.update', request));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                MongoDB: true
+            });
+        });
+
+        it('should add a MongoDB filter if none yet exists and a read message exists for the request', () => {
+            const state: { [key: string]: boolean } = {};
+            const request = createRequest([
+                {
+                    ordinal: 1,
+                    id: 'message1',
+                    type: 'data-mongodb-read',
+                    payload: {
+                        options: '{skip: 0}',
+                        duration: 123
+                    }
+                }
+            ]);
+            const newState = filtersReducer(state, createAction('request.detail.update', request));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                MongoDB: true
+            });
+        });
+
+        it('should add a MongoDB filter if none yet exists and an update message exists for the request', () => {
+            const state: { [key: string]: boolean } = {};
+            const request = createRequest([
+                {
+                    ordinal: 1,
+                    id: 'message1',
+                    type: 'data-mongodb-update',
+                    payload: {
+                        options: '{skip: 0}',
+                        duration: 123,
+                        modifiedCount: 456,
+                        upsertedCount: 654
+                    }
+                }
+            ]);
+            const newState = filtersReducer(state, createAction('request.detail.update', request));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                MongoDB: true
+            });
+        });
+
+        it('should add a MongoDB filter if none yet exists and a delete message exists for the request', () => {
+            const state: { [key: string]: boolean } = {};
+            const request = createRequest([
+                {
+                    ordinal: 1,
+                    id: 'message1',
+                    type: 'data-mongodb-delete',
+                    payload: {
+                        options: '{skip: 0}',
+                        duration: 123,
+                        count: 456
+                    }
+                }
+            ]);
+            const newState = filtersReducer(state, createAction('request.detail.update', request));
+            
+            should.exist(newState);
+            newState.should.deep.equal({
+                MongoDB: true
+            });
+        });
+
+        it('should return the previous state if a filter associated with a given message already exists', () => {
+            const state: { [key: string]: boolean } = { MongoDB: false };
+            const request = createRequest([
+                {
+                    ordinal: 1,
+                    id: 'message1',
+                    type: 'data-mongodb-delete',
+                    payload: {
+                        options: '{skip: 0}',
+                        duration: 123,
+                        count: 456
+                    }
+                }
+            ]);
+            const newState = filtersReducer(state, createAction('request.detail.update', request));
+            
+            should.exist(newState);
+            newState.should.equal(state);
         });
     });
 });
