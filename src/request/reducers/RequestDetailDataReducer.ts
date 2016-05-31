@@ -211,18 +211,19 @@ function hasMessagesOfTypes(request, messageTypes: string[]) {
 
 function updateFilters(state: { [key: string]: boolean }, request): { [key: string]: boolean } {
     if (request) {
-        // TODO: Optimize this by not returning new state if the existing state has the same set of databases.
-        const existingDatabases = _.pickBy(Databases, databaseType => hasMessagesOfTypes(request, databaseType.messageTypes));
+        const existingDatabaseNames = _.values<{ name: string, messageTypes: string[] }>(Databases).filter(databaseType => hasMessagesOfTypes(request, databaseType.messageTypes)).map(dataBaseType => dataBaseType.name);
         
         const newState = _.clone(state);
-        
-        _.forOwn(existingDatabases, (database) => {
-            if (!newState[database.name]) {
-                newState[database.name] = true;
+
+        let newDatabaseFound = false;
+                
+        existingDatabaseNames.forEach(name => {
+            if (newState[name] === undefined) {
+                newState[name] = newDatabaseFound = true;
             }
         });
         
-        return newState;
+        return newDatabaseFound ? newState : state;
     }
     
     return state;
