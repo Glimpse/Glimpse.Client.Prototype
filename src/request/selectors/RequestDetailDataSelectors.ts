@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 export const getFilterState = (state: IRequestState) => state.detail.data.filters;
 export const getOperations = (state: IRequestState) => state.detail.data.operations;
-export const getSelectedOperationId = (state: IRequestState) => state.detail.data.selectedOperationId;
+export const getSelectedOperationIdState = (state: IRequestState) => state.detail.data.selectedOperationId;
 
 export const getTotalOperationCount = createSelector(
     getOperations,
@@ -31,6 +31,15 @@ export const getFilteredOperations = createSelector(
         });
         
         return filteredOperations;
+    });
+
+export const getSelectedOperationId = createSelector(
+    getFilteredOperations,
+    getSelectedOperationIdState,
+    (operations, selectedOperationIdState) => {       
+        return selectedOperationIdState === '' && operations.length > 0 
+            ? operations[0].operation.id 
+            : selectedOperationIdState;
     });
 
 export const getSelectedOperation = createSelector(

@@ -1,4 +1,4 @@
-import { getFilteredOperations, getFilters, getTotalOperationCount, getSelectedOperation } from '../../../src/request/selectors/RequestDetailDataSelectors';
+import { getFilteredOperations, getFilters, getTotalOperationCount, getSelectedOperation, getSelectedOperationId } from '../../../src/request/selectors/RequestDetailDataSelectors';
 import { IRequestState } from '../../../src/request/stores/IRequestState';
 import { IRequestDetailDataOperationState } from '../../../src/request/stores/IRequestDetailDataOperationState';
 
@@ -49,6 +49,44 @@ describe('RequestDetailDataSelectors', () => {
         });
     });
     
+    describe('#getSelectedOperationId', () => {
+        it('should return ID of the currently selected operation', () => {
+            const operation0 = createOperation(0);
+            const operation1 = createOperation(1);
+            const selectedOperationId = getSelectedOperationId(
+                createState([
+                    operation0,
+                    operation1
+                ],
+                '1'));
+            
+            should.exist(selectedOperationId);
+            selectedOperationId.should.equal('1');           
+        });
+
+        it('should return ID of the first operation if there is no selected operation', () => {
+            const operation0 = createOperation(0);
+            const operation1 = createOperation(1);
+            const selectedOperationId = getSelectedOperationId(
+                createState([
+                    operation0,
+                    operation1
+                ],
+                ''));
+            
+            should.exist(selectedOperationId);
+            selectedOperationId.should.equal('0');           
+        });
+
+        it('should return \'\' if there is no selected operation and there are no operations', () => {
+            const selectedOperationId = getSelectedOperationId(
+                createState([], ''));
+            
+            should.exist(selectedOperationId);
+            selectedOperationId.should.equal('');           
+        });
+    });
+    
     describe('#getSelectedOperation', () => {
         it('should return the operation at the selected index', () => {
             const operation0 = createOperation(0);
@@ -67,7 +105,7 @@ describe('RequestDetailDataSelectors', () => {
             });
         });      
 
-        it('should return undefined if there is no selected operation', () => {
+        it('should return the first operation if there is no selected operation', () => {
             const operation0 = createOperation(0);
             const operation1 = createOperation(1);
             const selectedOperation = getSelectedOperation(
@@ -76,7 +114,11 @@ describe('RequestDetailDataSelectors', () => {
                     operation1
                 ]));
             
-            should.not.exist(selectedOperation);
+            should.exist(selectedOperation);
+            selectedOperation.should.deep.equal({
+                ordinal: 1,
+                operation: operation0
+            });
         });      
 
         it('should return undefined if the selected operation is not found', () => {
