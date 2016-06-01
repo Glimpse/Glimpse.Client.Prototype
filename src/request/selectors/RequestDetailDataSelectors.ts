@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 export const getFilterState = (state: IRequestState) => state.detail.data.filters;
 export const getOperations = (state: IRequestState) => state.detail.data.operations;
-export const getSelectedIndex = (state: IRequestState) => state.detail.data.selectedIndex;
+export const getSelectedOperationId = (state: IRequestState) => state.detail.data.selectedOperationId;
 
 export const getTotalOperationCount = createSelector(
     getOperations,
@@ -35,9 +35,10 @@ export const getFilteredOperations = createSelector(
 
 export const getSelectedOperation = createSelector(
     getFilteredOperations,
-    getSelectedIndex,
-    (operations, selectedIndex) => {
-        return operations[selectedIndex];
+    getSelectedOperationId,
+    (operations, selectedOperationId) => {
+        // TODO: Can this (need this) be optimized by building a map of id --> operation?
+        return _.find(operations, operation => operation.operation.id === selectedOperationId);
     });
 
 export const getFilters = createSelector(

@@ -3,5 +3,5 @@ import { IRequestDetailDataOperationState } from './IRequestDetailDataOperationS
 export interface IRequestDetailDataState {
     filters: { [key: string]: boolean };
     operations: IRequestDetailDataOperationState[];
-    selectedIndex: number;
+    selectedOperationId: string;
 }

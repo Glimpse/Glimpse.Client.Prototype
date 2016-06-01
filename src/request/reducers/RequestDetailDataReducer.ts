@@ -38,11 +38,11 @@ interface ISortableOperation {
     operation: IRequestDetailDataOperationState;
 }
 
-function updateSelectedIndex(state: number, request) {
-    return request ? state : 0; 
+function updateSelectedIndex(state: string, request) {
+    return request ? state : ''; 
 }
 
-export function selectedIndexReducer(state: number = 0, action: Action) {
+export function selectedOperationIdReducer(state: string = '', action: Action) {
     switch (action.type) {
         case selectOperationAction.type:
             return selectOperationAction.unwrap(action);            
@@ -263,5 +263,5 @@ export function filtersReducer(state: { [key: string]: boolean } = {}, action: A
 export const requestDetailDataReducer = combineReducers({
     filters: filtersReducer,
     operations: operationsReducer,
-    selectedIndex: selectedIndexReducer
+    selectedOperationId: selectedOperationIdReducer
 });

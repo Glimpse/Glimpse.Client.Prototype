@@ -1,6 +1,6 @@
 import { IRequestDetailDataOperationState } from '../../../src/request/stores/IRequestDetailDataOperationState';
 import { IRequestState } from '../../../src/request/stores/IRequestState';
-import { filtersReducer, operationsReducer, selectedIndexReducer } from '../../../src/request/reducers/RequestDetailDataReducer';
+import { filtersReducer, operationsReducer, selectedOperationIdReducer } from '../../../src/request/reducers/RequestDetailDataReducer';
 
 import { Action } from 'redux';
 import * as chai from 'chai';
@@ -53,37 +53,37 @@ describe('RequestDetailDataReducer', () => {
         };
     }
     
-    describe('#selectedIndexReducer', () => {
+    describe('#selectedOperationIdReducer', () => {
         it('should default to the first operation', () => {
             const state = undefined;
-            const newState = selectedIndexReducer(state, createAction());
+            const newState = selectedOperationIdReducer(state, createAction());
             
             should.exist(newState);
-            newState.should.equal(0);
+            newState.should.equal('');
         });
         
         it('should ignore unknown actions', () => {
-            const state = 1;
-            const newState = selectedIndexReducer(state, createAction());
+            const state = '1';
+            const newState = selectedOperationIdReducer(state, createAction());
             
             should.exist(newState);
-            newState.should.equal(1);
+            newState.should.equal('1');
         });
 
         it('should reset its state when no request is selected', () => {
-            const state = 1;
-            const newState = selectedIndexReducer(state, createAction('request.detail.update', undefined));
+            const state = '1';
+            const newState = selectedOperationIdReducer(state, createAction('request.detail.update', undefined));
             
             should.exist(newState);
-            newState.should.equal(0);
+            newState.should.equal('');
         });
 
         it('should update its state to the selected operation', () => {
-            const state = 1;
-            const newState = selectedIndexReducer(state, createAction('request.detail.data.select', 2));
+            const state = '1';
+            const newState = selectedOperationIdReducer(state, createAction('request.detail.data.select', '2'));
             
             should.exist(newState);
-            newState.should.equal(2);
+            newState.should.equal('2');
         });
     });
     
@@ -138,6 +138,7 @@ describe('RequestDetailDataReducer', () => {
             newState.length.should.equal(1);
             
             newState[0].should.deep.equal({
+                id: 'message1',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,
@@ -165,6 +166,7 @@ describe('RequestDetailDataReducer', () => {
             newState.length.should.equal(1);
             
             newState[0].should.deep.equal({
+                id: 'message1',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,
@@ -194,6 +196,7 @@ describe('RequestDetailDataReducer', () => {
             newState.length.should.equal(1);
             
             newState[0].should.deep.equal({
+                id: 'message1',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,
@@ -222,6 +225,7 @@ describe('RequestDetailDataReducer', () => {
             newState.length.should.equal(1);
             
             newState[0].should.deep.equal({
+                id: 'message1',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,
@@ -260,6 +264,7 @@ describe('RequestDetailDataReducer', () => {
             newState.length.should.equal(2);
             
             newState[0].should.deep.equal({
+                id: 'message1',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,
@@ -268,6 +273,7 @@ describe('RequestDetailDataReducer', () => {
             });
 
             newState[1].should.deep.equal({
+                id: 'message2',
                 database: 'MongoDB',
                 command: '\"{skip: 0}\"',
                 duration: 123,

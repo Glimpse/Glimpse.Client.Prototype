@@ -13,11 +13,11 @@ export interface IRequestDetailPanelDataOperationProps {
 
 export interface IRequestDetailPanelDataOperationTableProps {
     operations: IRequestDetailPanelDataOperationProps[],
-    selectedIndex: number,
+    selectedOperationId: string,
 }
 
 export interface IRequestDetailPanelDataOperationTableCallbacks {
-    onSelected: (index: number) => void
+    onSelected: (operationId: string) => void
 }
 
 interface IRequestDetailPanelDataOperationTableCombinedProps
@@ -41,7 +41,7 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
                 </thead>
                 <tbody>
                 {
-                    this.props.operations.map((operation, index) => this.renderOperation(operation, index))
+                    this.props.operations.map(operation => this.renderOperation(operation))
                 }
                 </tbody>
                 <tfoot>
@@ -53,9 +53,9 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
         );
     }
     
-    public renderOperation(operation: IRequestDetailPanelDataOperationProps, index: number) {
+    public renderOperation(operation: IRequestDetailPanelDataOperationProps) {
         return (
-            <tr className={classNames({ selected: index === this.props.selectedIndex })} key={index} onClick={e => this.props.onSelected(index)}>
+            <tr className={classNames({ selected: operation.operation.id === this.props.selectedOperationId })} key={operation.operation.id} onClick={e => this.props.onSelected(operation.operation.id)}>
                 <td>{operation.ordinal}</td>
                 <td>{operation.operation.database}</td>
                 <td className='tab-data-operation-table-command-column'>{operation.operation.command}</td>
