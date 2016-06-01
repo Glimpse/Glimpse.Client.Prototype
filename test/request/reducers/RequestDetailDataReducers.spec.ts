@@ -37,6 +37,7 @@ describe('RequestDetailDataReducer', () => {
     
     function createOperation(index: number): IRequestDetailDataOperationState {
         return {
+            id: index.toString(),
             command: 'command' + index,
             database: 'db' + index,
             duration: 123,

@@ -83,6 +83,7 @@ function createSqlOperation(beforeAfterMessage: { beforeMessage: IMessageEnvelop
     return {
         ordinal: beforeAfterMessage.beforeMessage.ordinal,
         operation: {
+            id: beforeAfterMessage.beforeMessage.id,
             database: Databases.sql.name,
             command: beforeAfterMessage.beforeMessage.payload.commandText,
             duration: beforeAfterMessage.afterMessage ? beforeAfterMessage.afterMessage.payload.commandDuration : undefined,
@@ -98,6 +99,7 @@ function prettyPrintJson(value): string {
 
 function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInsertPayload>): IRequestDetailDataOperationState {
     return {
+        id: message.id,
         database: Databases.mongoDb.name,
         command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
@@ -108,6 +110,7 @@ function createMongoDbInsertOperation(message: IMessageEnvelope<IDataMongoDbInse
 
 function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPayload>): IRequestDetailDataOperationState {
     return {
+        id: message.id,
         database: Databases.mongoDb.name,
         command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
@@ -118,6 +121,7 @@ function createMongoDbReadOperation(message: IMessageEnvelope<IDataMongoDbReadPa
 
 function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpdatePayload>): IRequestDetailDataOperationState {
     return {
+        id: message.id,
         database: Databases.mongoDb.name,
         command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,
@@ -128,6 +132,7 @@ function createMongoDbUpdateOperation(message: IMessageEnvelope<IDataMongoDbUpda
 
 function createMongoDbDeleteOperation(message: IMessageEnvelope<IDataMongoDbDeletePayload>): IRequestDetailDataOperationState {
     return {
+        id: message.id,
         database: 'MongoDB',
         command: prettyPrintJson(message.payload.options),
         duration: message.payload.duration,

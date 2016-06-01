@@ -22,6 +22,7 @@ describe('RequestDetailDataSelectors', () => {
     
     function createOperation(index: number, database?: string): IRequestDetailDataOperationState {
         return {
+            id: index.toString(),
             command: 'command' + index,
             database: database || 'db',
             duration: 123,
