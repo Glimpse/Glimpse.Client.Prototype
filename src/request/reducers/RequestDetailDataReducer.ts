@@ -39,9 +39,7 @@ interface ISortableOperation {
 }
 
 function updateSelectedIndex(state: number, request) {
-    return request
-        ? state
-        : 0; 
+    return request ? state : 0; 
 }
 
 export function selectedIndexReducer(state: number = 0, action: Action) {
