@@ -40,6 +40,8 @@ describe('RequestDetailDataReducer', () => {
             id: index.toString(),
             command: 'command' + index,
             database: 'db' + index,
+            databaseName: 'db1',
+            serverName: 'server1',
             duration: 123,
             operation: 'op' + index,
             recordCount: 456

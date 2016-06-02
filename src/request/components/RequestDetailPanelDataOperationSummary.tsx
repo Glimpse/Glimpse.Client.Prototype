@@ -1,3 +1,4 @@
+import { RequestDetailPanelDataOperationSummaryGeneralInfo } from './RequestDetailPanelDataOperationSummaryGeneralInfo';
 import { TabbedPanel } from './TabbedPanel';
 import { TabPanel } from './TabPanel';
 
@@ -7,15 +8,13 @@ export interface IRequestDetailPanelDataOperationSummaryProps {
     operation;
 }
 
-export class RequestDetailPanelDataOperationSummary extends React.Component<{}, {}> {
+export class RequestDetailPanelDataOperationSummary extends React.Component<IRequestDetailPanelDataOperationSummaryProps, {}> {
     public render() {
         return (
-            <div className='tab-data-summary'>
+            <div className='tab-data-operation-summary'>
                 <TabbedPanel>
                     <TabPanel header='General Info'>
-                    {
-                        this.renderGeneralInfo()
-                    }
+                        <RequestDetailPanelDataOperationSummaryGeneralInfo databaseType={this.props.operation.operation.database} databaseName={this.props.operation.operation.databaseName} serverName={this.props.operation.operation.serverName} />
                     </TabPanel>
                     <TabPanel header='Parameters'>
                     {
@@ -32,12 +31,6 @@ export class RequestDetailPanelDataOperationSummary extends React.Component<{}, 
         );
     }
     
-    private renderGeneralInfo() {
-        return (
-            <div>Coming soon!</div>
-        );
-    }
-
     private renderParameters() {
         return (
             <div>Coming soon!</div>

@@ -476,6 +476,14 @@ $tabbed-panel-border-color: #d0d0d0;
     white-space: nowrap;
 }
 
+.tab-data-operation-summary-general-info {
+    padding-left: 31px;  
+    
+    .label {
+        font-weight: bold;
+    } 
+}
+
 .tab-logs {
     .tab-logs-message-count {
         font-family: 'Segoe UI', 'Selawik Semibold', Tahoma, Geneva, Verdana, sans-serif;
