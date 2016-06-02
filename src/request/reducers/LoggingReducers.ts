@@ -1,8 +1,8 @@
 import { IRequestDetailLoggingFilterState } from '../stores/IRequestDetailLoggingFilterState';
 import { IRequestDetailLoggingMessageState } from '../stores/IRequestDetailLoggingMessageState';
 import { IRequestDetailLoggingState } from '../stores/IRequestDetailLoggingState';
-
-import * as LoggingActions from '../actions/LoggingActions';
+import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
+import { showAllAction, toggleLevelAction } from '../actions/LoggingActions';
 
 import { Action } from 'redux';
 import * as _ from 'lodash';
@@ -223,12 +223,12 @@ const defaultState = {
 
 export function loggingReducer(state: IRequestDetailLoggingState = defaultState, action: Action): IRequestDetailLoggingState {
     switch (action.type) {
-        case 'request.detail.logging.filter.toggleLevel':
-            return toggleLevel(state, (<LoggingActions.IToggleLevelAction>action).filterIndex);
-        case 'request.detail.logging.filter.showAll':
+        case toggleLevelAction.type:
+            return toggleLevel(state, toggleLevelAction.unwrap(action));
+        case showAllAction.type:
             return showAll(state);
-        case 'request.detail':
-            return updateRequestDetails(state, (<LoggingActions.IUpdateRequestDetailsAction>action).request);
+        case requestDetailUpdateAction.type:
+            return updateRequestDetails(state, requestDetailUpdateAction.unwrap(action));
         default:
             return state;
     }

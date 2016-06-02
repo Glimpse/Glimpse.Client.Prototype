@@ -125,7 +125,7 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                         {
                             this.props.filters.map(
                                 (filter, index) => {
-                                    return <button className={filter.get('isShown') ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleFilter(index)}>{filter.get('level')} ({filter.get('messageCount')})</button>;
+                                    return <button className={filter.isShown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleFilter(index)}>{filter.level} ({filter.messageCount})</button>;
                                 })
                         }
                         </div>

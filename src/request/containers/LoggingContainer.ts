@@ -1,4 +1,4 @@
-import * as LoggingActions from '../actions/LoggingActions';
+import { showAllAction, toggleLevelAction } from '../actions/LoggingActions';
 import { ILoggingProps, Logging } from '../components/request-detail-panel-logging';
 import { getFilteredMessages, getFilters, getTotalMessageCount  } from '../selectors/LoggingSelectors';
 
@@ -17,8 +17,8 @@ function mapStateToProps(state) {
 // Which action creators does it want to receive by props?
 function mapDispatchToProps(dispatch) {
   return {
-    onToggleFilter: (filterIndex: number) => dispatch(LoggingActions.createToggleLevelAction(filterIndex)),
-    onShowAll: () => dispatch(LoggingActions.createShowAllAction())
+    onToggleFilter: (filterIndex: number) => dispatch(toggleLevelAction(filterIndex)),
+    onShowAll: () => dispatch(showAllAction(undefined))
   };
 }
 
