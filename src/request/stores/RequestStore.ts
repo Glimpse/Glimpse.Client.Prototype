@@ -3,4 +3,4 @@ import { requestReducer } from '../reducers/RequestReducer';
 import { createStore } from 'redux';
 
 export = createStore(requestReducer,
-    window.devToolsExtension && window.devToolsExtension());
+    DEV_TOOLS && window.devToolsExtension && window.devToolsExtension());
