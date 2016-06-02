@@ -421,6 +421,43 @@
     overflow: auto;
 }
 
+$tabbed-panel-background-color: white;
+$tabbed-panel-border-color: #d0d0d0;
+
+.tabbed-panel {
+    background: $tabbed-panel-background-color;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabbed-panel-headers {
+    border-bottom: 1px solid $tabbed-panel-border-color;
+    display: flex;
+    flex-direction: row;
+    padding: 5px 30px 0px 30px;
+}
+
+.tabbed-panel-header {
+    border-color: transparent transparent $tabbed-panel-border-color transparent;
+    border-style: solid;
+    border-width: 1px;
+    color: #7c7c7c;
+    cursor: pointer;
+    margin-bottom: -1px;
+    padding: 5px;
+}
+
+.tabbed-panel-header-selected {
+    @extend .tabbed-panel-header;
+    
+    border-color: $tabbed-panel-border-color $tabbed-panel-border-color $tabbed-panel-background-color $tabbed-panel-border-color;
+    color: black;
+}
+
+.tabbed-panel-selected {
+    padding: 5px;
+}
+
 .tab-data {
     display: flex;
 }
