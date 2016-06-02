@@ -1,7 +1,3 @@
-import { loggingReducer } from '../reducers/LoggingReducers';
-
-import { createStore } from 'redux';
-
 /*
 
 State:
@@ -33,4 +29,8 @@ State:
 
 */
 
-export = createStore(loggingReducer);
+import { requestReducer } from '../reducers/RequestReducer';
+
+import { createStore } from 'redux';
+
+export = createStore(requestReducer);

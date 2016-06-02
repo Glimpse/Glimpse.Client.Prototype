@@ -13,26 +13,28 @@ module.exports = React.createClass({
     render: function () {
         return (
             <ReactRedux.Provider store={store}>
-                { () => (
-                    <div className="request-holder application-section-group">
-                        <div className="request-user-section application-section">
-                            <div className="request-holder-content">
-                                <User />
+                {
+                    () => (
+                        <div className="request-holder application-section-group">
+                            <div className="request-user-section application-section">
+                                <div className="request-holder-content">
+                                    <User />
+                                </div>
                             </div>
-                        </div>
-                        <div className="request-summary-section application-section">
-                            <div className="request-holder-content">
-                                <Summary />
+                            <div className="request-summary-section application-section">
+                                <div className="request-holder-content">
+                                    <Summary />
+                                </div>
                             </div>
-                        </div>
-                        <div className="request-filter-section application-section">
-                            <div className="request-holder-content">
-                                <Filter />
+                            <div className="request-filter-section application-section">
+                                <div className="request-holder-content">
+                                    <Filter />
+                                </div>
                             </div>
-                        </div>
-                        <Detail />
-                    </div> 
-                )}
+                            <Detail />
+                        </div> 
+                    )
+                }
             </ReactRedux.Provider>
         );
     }

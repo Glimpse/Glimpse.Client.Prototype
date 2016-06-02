@@ -6,8 +6,10 @@ var glimpse = require('glimpse');
 var PanelTab = require('../components/request-detail-panel-tab');
 
 var messageProcessor = require('../util/request-message-processor');
+var requestDetailActions = require('../actions/RequestDetailActions');
 var requestRepository = require('../repository/request-repository');
 var requestTab = require('../request-tab');
+var store = require('./RequestStore');
 
 var loggingActions = require('../actions/LoggingActions');
 var store = require('./RequestStore');
@@ -26,7 +28,7 @@ var _viewModel = {
 
 function requestChanged(targetRequests) {
     glimpse.emit('shell.request.detail.changed', targetRequests);
-    store.dispatch(loggingActions.createUpdateRequestDetailsAction(targetRequests.request));
+    store.dispatch(requestDetailActions.requestDetailUpdateAction(targetRequests.request));
 }
 
 function getTabs(request) {
