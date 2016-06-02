@@ -1,41 +1,53 @@
+import { IRequestDetailLoggingFilterState } from '../stores/IRequestDetailLoggingFilterState';
+import { IRequestDetailLoggingMessageState } from '../stores/IRequestDetailLoggingMessageState';
+import { IRequestDetailLoggingState } from '../stores/IRequestDetailLoggingState';
+
 import * as LoggingActions from '../actions/LoggingActions';
 
 import { Action } from 'redux';
-import * as Immutable from 'immutable';
 import * as _ from 'lodash';
 
-interface IMessageState {
-    level: string,
-    message: string,
-    spans: ({ text: string, wasReplaced?: boolean })[]
+function updateFilter(filtersState: IRequestDetailLoggingFilterState[], filterIndex: number): IRequestDetailLoggingFilterState[] {
+    
+    const filterState = filtersState[filterIndex];
+    const updatedFiltersState = filtersState.slice();
+    
+    updatedFiltersState[filterIndex] = {
+        level: filterState.level,
+        messageCount: filterState.messageCount,
+        isShown: !filterState.isShown
+    };
+    
+    return updatedFiltersState;
 }
 
-function updateFilter(filtersState: Immutable.List<Immutable.Map<string, {}>>, filterIndex: number): Immutable.List<Immutable.Map<string, {}>> {
-    return filtersState.update(filterIndex, filterState => filterState.update('isShown', isShown => !isShown));
+function toggleLevel(loggingState: IRequestDetailLoggingState, filterIndex: number): IRequestDetailLoggingState {
+    const updatedFiltersState = updateFilter(loggingState.filters, filterIndex);
+
+    return {
+        messages: loggingState.messages,
+        filters: updatedFiltersState
+    };
 }
 
-function toggleLevel(loggingState: Immutable.Map<string, {}>, filterIndex: number) {
-
-    const updatedFiltersState = updateFilter(<Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'), filterIndex);
-
-    return loggingState.withMutations(map => {
-            map
-                .set('filters', updatedFiltersState);
-        });
-}
-
-function updateAllFilters(filtersState: Immutable.List<Immutable.Map<string, {}>>): Immutable.List<Immutable.Map<string, {}>> {
-    return filtersState.withMutations(list => {
-        list.forEach((value, index) => list.set(index, value.set('isShown', true)));
+function updateAllFilters(filtersState: IRequestDetailLoggingFilterState[]): IRequestDetailLoggingFilterState[] {
+    return filtersState.map(filterState => {
+        return {
+            level: filterState.level,
+            messageCount: filterState.messageCount,
+            isShown: true
+        };
     });
 }
 
-function showAll(loggingState: Immutable.Map<string, {}>)
+function showAll(loggingState: IRequestDetailLoggingState): IRequestDetailLoggingState
 {
-    const updatedFiltersState = updateAllFilters(<Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'));
+    const updatedFiltersState = updateAllFilters(loggingState.filters);
 
-    return loggingState.withMutations(map => map
-        .set('filters', updatedFiltersState));
+    return {
+        messages: loggingState.messages,
+        filters: updatedFiltersState
+    };
 }
 
 function indexOf(value: string, term: string, window: number) {
@@ -145,7 +157,7 @@ function createSpans(message: string, replacedRegions: ({ start: number, end: nu
     return messageStructure;
 }
 
-function updateMessagesState(messagesState: Immutable.List<{}>, request) {
+function updateMessagesState(messagesState: IRequestDetailLoggingMessageState[], request): IRequestDetailLoggingMessageState[] {
     if (request && request.messages && request.types) {
         const logWriteMessageIds = request.types['log-write'];
 
@@ -164,50 +176,52 @@ function updateMessagesState(messagesState: Immutable.List<{}>, request) {
                 })
                 .value();
 
-            return Immutable.List(allMessages);
+            return allMessages;
         }
     }
 
-    return messagesState.clear();
+    return [];
 }
 
-function updateFilterMessageCounts(filtersState: Immutable.List<Immutable.Map<string, {}>>, messagesState: Immutable.List<IMessageState>): Immutable.List<Immutable.Map<string, {}>> {
-    const levels = messagesState.groupBy(messageState => messageState.level);
+function updateFilterMessageCounts(filtersState: IRequestDetailLoggingFilterState[], messagesState: IRequestDetailLoggingMessageState[]): IRequestDetailLoggingFilterState[] {
+    const levels = _.groupBy(messagesState, messageState => messageState.level);
     
-    return filtersState.withMutations(list => {
-        list.forEach((filterState, index) => {
-            const level = levels.get(<string>filterState.get('level'));
-            
-            list.set(index, filterState.set('messageCount', level ? level.count() : 0));
-        });
-    })
+    return filtersState.map(filterState => {
+        const level = levels[filterState.level];
+        
+        return {
+            level: filterState.level,
+            messageCount: level ? level.length : 0,
+            isShown: filterState.isShown
+        };
+    });
 }
 
-function updateRequestDetails(loggingState: Immutable.Map<string, {}>, request) {
-    const updatedMessagesState = updateMessagesState(<Immutable.List<{}>>loggingState.get('messages'), request);
+function updateRequestDetails(loggingState: IRequestDetailLoggingState, request): IRequestDetailLoggingState {
+    const updatedMessagesState = updateMessagesState(loggingState.messages, request);
     const updatedFiltersState = updateFilterMessageCounts(
-        <Immutable.List<Immutable.Map<string, {}>>>loggingState.get('filters'),
-        <Immutable.List<IMessageState>>updatedMessagesState);
+        loggingState.filters,
+        updatedMessagesState);
 
-    return loggingState.withMutations(map => map
-        .set('messages', updatedMessagesState)
-        .set('filters', updatedFiltersState));
+    return {
+        messages: updatedMessagesState,
+        filters: updatedFiltersState
+    };
 }
 
-const defaultState = Immutable.Map<string, {}>({
-    messages: Immutable.List(),
-    filters: Immutable.List([
-        Immutable.Map({ level: 'Critical', messageCount: 0, isShown: true }),
-        Immutable.Map({ level: 'Error', messageCount: 0, isShown: true }),
-        Immutable.Map({ level: 'Warning', messageCount: 0, isShown: true }),
-        Immutable.Map({ level: 'Information', messageCount: 0, isShown: true }),
-        Immutable.Map({ level: 'Verbose', messageCount: 0, isShown: true }),
-        Immutable.Map({ level: 'Debug', messageCount: 0, isShown: true })
-    ]),
-    filteredMessages: Immutable.List()
-});
+const defaultState = {
+    messages: [],
+    filters: [
+        { level: 'Critical', messageCount: 0, isShown: true },
+        { level: 'Error', messageCount: 0, isShown: true },
+        { level: 'Warning', messageCount: 0, isShown: true },
+        { level: 'Information', messageCount: 0, isShown: true },
+        { level: 'Verbose', messageCount: 0, isShown: true },
+        { level: 'Debug', messageCount: 0, isShown: true }
+    ]
+};
 
-export function loggingReducer(state = defaultState, action: Action) {
+export function loggingReducer(state: IRequestDetailLoggingState = defaultState, action: Action): IRequestDetailLoggingState {
     switch (action.type) {
         case 'request.detail.logging.filter.toggleLevel':
             return toggleLevel(state, (<LoggingActions.IToggleLevelAction>action).filterIndex);

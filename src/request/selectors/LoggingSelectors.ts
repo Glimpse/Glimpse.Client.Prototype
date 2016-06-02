@@ -1,20 +1,20 @@
+import { IRequestState } from '../stores/IRequestState';
+
 import { createSelector } from 'reselect';
 
 import * as _ from 'lodash';
-import * as Immutable from 'immutable';
 
-const getMessages = (state) => state.get('messages');
+const getMessages = (state: IRequestState) => state.detail.logging.messages;
 
-export const getFilters = (state) => state.get('filters');
+export const getFilters = (state: IRequestState) => state.detail.logging.filters;
 
 export const getFilteredMessages = createSelector(
     getMessages, 
     getFilters,
     (messages, filters) => {
         const hiddenLevels = filters
-            .filter(filterState => filterState.get('isShown') === false)
-            .map(filterState => filterState.get('level'))
-            .toArray();
+            .filter(filterState => filterState.isShown === false)
+            .map(filterState => filterState.level);
         
         let filteredMessages = [];
         
@@ -31,5 +31,5 @@ export const getFilteredMessages = createSelector(
 export const getTotalMessageCount = createSelector(
     getMessages,
     (messages) => {
-        return messages.count();
+        return messages.length;
     });

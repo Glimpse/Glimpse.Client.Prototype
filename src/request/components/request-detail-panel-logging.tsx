@@ -7,7 +7,6 @@ import { ILogMessageModel, ILogMessageSpan } from '../component-models/ILoggingC
 import _ = require('lodash');
 import React = require('react');
 import Highlight = require('react-highlight');
-import Immutable = require('immutable');
 
 var store = require('../stores/RequestStore');
 
