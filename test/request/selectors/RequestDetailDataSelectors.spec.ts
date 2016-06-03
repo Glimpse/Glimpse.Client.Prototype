@@ -58,7 +58,8 @@ describe('RequestDetailDataSelectors', () => {
                     operation0,
                     operation1
                 ],
-                '1'));
+                '1', 
+                { 'db': true }));
             
             should.exist(selectedOperationId);
             selectedOperationId.should.equal('1');           
@@ -72,7 +73,8 @@ describe('RequestDetailDataSelectors', () => {
                     operation0,
                     operation1
                 ],
-                ''));
+                '', 
+                { 'db': true }));
             
             should.exist(selectedOperationId);
             selectedOperationId.should.equal('0');           
@@ -96,7 +98,8 @@ describe('RequestDetailDataSelectors', () => {
                     operation0,
                     operation1
                 ],
-                '1'));
+                '1', 
+                { 'db': true }));
             
             should.exist(selectedOperation);
             selectedOperation.should.deep.equal({
@@ -112,7 +115,9 @@ describe('RequestDetailDataSelectors', () => {
                 createState([
                     operation0,
                     operation1
-                ]));
+                ],
+                '', 
+                { 'db': true }));
             
             should.exist(selectedOperation);
             selectedOperation.should.deep.equal({
@@ -129,7 +134,8 @@ describe('RequestDetailDataSelectors', () => {
                     operation0,
                     operation1
                 ],
-                '2'));
+                '2', 
+                { 'db': true }));
             
             should.not.exist(selectedOperation);
         });      
