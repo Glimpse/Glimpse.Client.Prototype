@@ -15,7 +15,6 @@ function updateFilter(filtersState: IRequestDetailLoggingFilterState[], filterIn
     
     updatedFiltersState[filterIndex] = {
         level: filterState.level,
-        messageCount: filterState.messageCount,
         isShown: !filterState.isShown
     };
     
@@ -30,7 +29,6 @@ function updateAllFilters(filtersState: IRequestDetailLoggingFilterState[]): IRe
     return filtersState.map(filterState => {
         return {
             level: filterState.level,
-            messageCount: filterState.messageCount,
             isShown: true
         };
     });
@@ -175,12 +173,12 @@ function updateMessagesState(messagesState: IRequestDetailLoggingMessageState[],
 }
 
 const defaultState = [
-    { level: 'Critical', messageCount: 0, isShown: true },
-    { level: 'Error', messageCount: 0, isShown: true },
-    { level: 'Warning', messageCount: 0, isShown: true },
-    { level: 'Information', messageCount: 0, isShown: true },
-    { level: 'Verbose', messageCount: 0, isShown: true },
-    { level: 'Debug', messageCount: 0, isShown: true }
+    { level: 'Critical', isShown: true },
+    { level: 'Error', isShown: true },
+    { level: 'Warning', isShown: true },
+    { level: 'Information', isShown: true },
+    { level: 'Verbose', isShown: true },
+    { level: 'Debug', isShown: true }
 ];
 
 export function filtersReducer(state: IRequestDetailLoggingFilterState[] = defaultState, action: Action) {
