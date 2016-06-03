@@ -4,7 +4,8 @@ import { IRequestDetailLoggingState } from '../stores/IRequestDetailLoggingState
 import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 import { showAllAction, toggleLevelAction } from '../actions/LoggingActions';
 
-import { Action } from 'redux';
+import { Action, combineReducers } from 'redux';
+
 import * as _ from 'lodash';
 
 function updateFilter(filtersState: IRequestDetailLoggingFilterState[], filterIndex: number): IRequestDetailLoggingFilterState[] {
@@ -21,13 +22,8 @@ function updateFilter(filtersState: IRequestDetailLoggingFilterState[], filterIn
     return updatedFiltersState;
 }
 
-function toggleLevel(loggingState: IRequestDetailLoggingState, filterIndex: number): IRequestDetailLoggingState {
-    const updatedFiltersState = updateFilter(loggingState.filters, filterIndex);
-
-    return {
-        messages: loggingState.messages,
-        filters: updatedFiltersState
-    };
+function toggleLevel(filtersState: IRequestDetailLoggingFilterState[], filterIndex: number): IRequestDetailLoggingFilterState[] {
+    return updateFilter(filtersState, filterIndex);
 }
 
 function updateAllFilters(filtersState: IRequestDetailLoggingFilterState[]): IRequestDetailLoggingFilterState[] {
@@ -40,14 +36,9 @@ function updateAllFilters(filtersState: IRequestDetailLoggingFilterState[]): IRe
     });
 }
 
-function showAll(loggingState: IRequestDetailLoggingState): IRequestDetailLoggingState
+function showAll(filtersState: IRequestDetailLoggingFilterState[]): IRequestDetailLoggingFilterState[]
 {
-    const updatedFiltersState = updateAllFilters(loggingState.filters);
-
-    return {
-        messages: loggingState.messages,
-        filters: updatedFiltersState
-    };
+    return updateAllFilters(filtersState);
 }
 
 function indexOf(value: string, term: string, window: number) {
@@ -183,53 +174,36 @@ function updateMessagesState(messagesState: IRequestDetailLoggingMessageState[],
     return [];
 }
 
-function updateFilterMessageCounts(filtersState: IRequestDetailLoggingFilterState[], messagesState: IRequestDetailLoggingMessageState[]): IRequestDetailLoggingFilterState[] {
-    const levels = _.groupBy(messagesState, messageState => messageState.level);
-    
-    return filtersState.map(filterState => {
-        const level = levels[filterState.level];
-        
-        return {
-            level: filterState.level,
-            messageCount: level ? level.length : 0,
-            isShown: filterState.isShown
-        };
-    });
-}
+const defaultState = [
+    { level: 'Critical', messageCount: 0, isShown: true },
+    { level: 'Error', messageCount: 0, isShown: true },
+    { level: 'Warning', messageCount: 0, isShown: true },
+    { level: 'Information', messageCount: 0, isShown: true },
+    { level: 'Verbose', messageCount: 0, isShown: true },
+    { level: 'Debug', messageCount: 0, isShown: true }
+];
 
-function updateRequestDetails(loggingState: IRequestDetailLoggingState, request): IRequestDetailLoggingState {
-    const updatedMessagesState = updateMessagesState(loggingState.messages, request);
-    const updatedFiltersState = updateFilterMessageCounts(
-        loggingState.filters,
-        updatedMessagesState);
-
-    return {
-        messages: updatedMessagesState,
-        filters: updatedFiltersState
-    };
-}
-
-const defaultState = {
-    messages: [],
-    filters: [
-        { level: 'Critical', messageCount: 0, isShown: true },
-        { level: 'Error', messageCount: 0, isShown: true },
-        { level: 'Warning', messageCount: 0, isShown: true },
-        { level: 'Information', messageCount: 0, isShown: true },
-        { level: 'Verbose', messageCount: 0, isShown: true },
-        { level: 'Debug', messageCount: 0, isShown: true }
-    ]
-};
-
-export function loggingReducer(state: IRequestDetailLoggingState = defaultState, action: Action): IRequestDetailLoggingState {
+export function filtersReducer(state: IRequestDetailLoggingFilterState[] = defaultState, action: Action) {
     switch (action.type) {
-        case toggleLevelAction.type:
+       case toggleLevelAction.type:
             return toggleLevel(state, toggleLevelAction.unwrap(action));
         case showAllAction.type:
             return showAll(state);
-        case requestDetailUpdateAction.type:
-            return updateRequestDetails(state, requestDetailUpdateAction.unwrap(action));
-        default:
-            return state;
     }
+
+    return state;
 }
+
+export function messagesReducer(state: IRequestDetailLoggingMessageState[] = [], action: Action): IRequestDetailLoggingMessageState[] {
+    switch (action.type) {
+        case requestDetailUpdateAction.type:
+            return updateMessagesState(state, requestDetailUpdateAction.unwrap(action));    
+    }
+    
+    return state;
+}
+
+export const loggingReducer = combineReducers({
+    messages: messagesReducer,
+    filters: filtersReducer
+});
