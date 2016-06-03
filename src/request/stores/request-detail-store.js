@@ -11,9 +11,6 @@ var requestRepository = require('../repository/request-repository');
 var requestTab = require('../request-tab');
 var store = require('./RequestStore');
 
-var loggingActions = require('../actions/LoggingActions');
-var store = require('./RequestStore');
-
 // TODO: Not sure I need to store the requests, already storing in
 //       repository
 var _requests = {};   // TODO: Remove this, don't need to store

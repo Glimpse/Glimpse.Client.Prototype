@@ -1,6 +1,6 @@
-import { showAllAction, toggleLevelAction } from '../actions/LoggingActions';
-import { ILoggingProps, Logging } from '../components/request-detail-panel-logging';
-import { getFilteredMessages, getFilters, getTotalMessageCount  } from '../selectors/LoggingSelectors';
+import { showAllAction, toggleLevelAction } from '../actions/RequestDetailLoggingActions';
+import { ILoggingProps, Logging } from '../components/RequestDetailPanelLogging';
+import { getFilteredMessages, getFilters, getTotalMessageCount  } from '../selectors/RequestDetailLoggingSelectors';
 
 import * as React from 'react';
 import { connect } from 'react-redux';

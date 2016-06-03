@@ -1,4 +1,4 @@
-import { loggingReducer } from './LoggingReducers';
+import { loggingReducer } from './RequestDetailLoggingReducer';
 import { requestDetailDataReducer } from './RequestDetailDataReducer'
 
 import { combineReducers } from 'redux';

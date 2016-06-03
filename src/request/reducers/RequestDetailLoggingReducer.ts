@@ -2,7 +2,7 @@ import { IRequestDetailLoggingFilterState } from '../stores/IRequestDetailLoggin
 import { IRequestDetailLoggingMessageState } from '../stores/IRequestDetailLoggingMessageState';
 import { IRequestDetailLoggingState } from '../stores/IRequestDetailLoggingState';
 import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
-import { showAllAction, toggleLevelAction } from '../actions/LoggingActions';
+import { showAllAction, toggleLevelAction } from '../actions/RequestDetailLoggingActions';
 
 import { Action, combineReducers } from 'redux';
 
