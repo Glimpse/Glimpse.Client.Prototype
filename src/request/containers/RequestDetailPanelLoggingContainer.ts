@@ -1,6 +1,5 @@
-import { showAllAction, toggleLevelAction } from '../actions/RequestDetailLoggingActions';
 import { ILoggingProps, Logging } from '../components/RequestDetailPanelLogging';
-import { getFilteredMessages, getFilters, getTotalMessageCount  } from '../selectors/RequestDetailLoggingSelectors';
+import { getFilteredMessages, getTotalMessageCount  } from '../selectors/RequestDetailLoggingSelectors';
 
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -9,7 +8,6 @@ import { connect } from 'react-redux';
 function mapStateToProps(state) {
   return {
     filteredMessages: getFilteredMessages(state),
-    filters: getFilters(state),
     totalMessageCount: getTotalMessageCount(state)
   };
 }
@@ -17,8 +15,6 @@ function mapStateToProps(state) {
 // Which action creators does it want to receive by props?
 function mapDispatchToProps(dispatch) {
   return {
-    onToggleFilter: (filterIndex: number) => dispatch(toggleLevelAction(filterIndex)),
-    onShowAll: () => dispatch(showAllAction(undefined))
   };
 }
 

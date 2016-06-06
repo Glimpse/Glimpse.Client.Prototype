@@ -7,12 +7,11 @@ const should = chai.should();
 describe('RequestDetailLoggingActions', () => {
     describe('#showAllAction', () => {
         it('should return a show all action', () => {
-            const action = showAllAction(undefined);
+            const action = showAllAction();
             
             should.exist(action);
             action.should.deep.equal({
-                type: 'request.detail.logging.all',
-                payload: undefined
+                type: 'request.detail.logging.all'
             });
         });
     });

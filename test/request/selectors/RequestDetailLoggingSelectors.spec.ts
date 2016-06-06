@@ -72,15 +72,15 @@ describe('RequestDetailLoggingSelectors', () => {
             filters.length.should.equal(2);
             
             filters[0].should.deep.equal({
-                level: 'level1',
+                name: 'level1',
                 isShown: true,
-                messageCount: 0
+                count: 0
             });
 
             filters[1].should.deep.equal({
-                level: 'level2',
+                name: 'level2',
                 isShown: false,
-                messageCount: 0
+                count: 0
             });
         });
 
@@ -102,21 +102,21 @@ describe('RequestDetailLoggingSelectors', () => {
             filters.length.should.equal(3);
             
             filters[0].should.deep.equal({
-                level: 'level1',
+                name: 'level1',
                 isShown: true,
-                messageCount: 2
+                count: 2
             });
 
             filters[1].should.deep.equal({
-                level: 'level2',
+                name: 'level2',
                 isShown: true,
-                messageCount: 1
+                count: 1
             });
 
             filters[2].should.deep.equal({
-                level: 'level3',
+                name: 'level3',
                 isShown: true,
-                messageCount: 0
+                count: 0
             });
         });
     });

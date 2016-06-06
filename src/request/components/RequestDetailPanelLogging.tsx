@@ -2,6 +2,7 @@
 
 import { FontAwesomeIcon } from '../../shell/components/FontAwesomeIcon';
 import { ILogMessage } from '../messages/ILogMessage';
+import { RequestDetailPanelLoggingFilterBarContainer } from '../containers/RequestDetailPanelLoggingFilterBarContainer';
 
 import _ = require('lodash');
 import React = require('react');
@@ -114,10 +115,7 @@ class LogMessage extends React.Component<ILogMessageProps, ILogMessageState> {
 
 export interface ILoggingProps {
     filteredMessages: ({ index: number, message })[];
-    filters;
     totalMessageCount: number;
-    onShowAll: () => void;
-    onToggleFilter: (filterIndex: number) => void;
 }
 
 export class Logging extends React.Component<ILoggingProps, {}> {
@@ -130,18 +128,8 @@ export class Logging extends React.Component<ILoggingProps, {}> {
                 <div className='tab-content tab-logs'>
                     <div className='tab-logs-message-count'>{this.props.totalMessageCount} {this.props.totalMessageCount === 1 ? 'Message' : 'Messages'}</div>
                     <br/>
-                    <div className='flex filter-bar'>
-                        <button className='filter-show-all' onClick={e => this.showAll()}>Show All</button>
-                        <div className='flex'>
-                        {
-                            this.props.filters.map(
-                                (filter, index) => {
-                                    return <button className={filter.isShown ? 'filter-button-shown' : 'filter-button-not-shown'} type='button' onClick={e => this.toggleFilter(index)}>{filter.level} ({filter.messageCount})</button>;
-                                })
-                        }
-                        </div>
-                    </div>
-                    <br/>
+                    <RequestDetailPanelLoggingFilterBarContainer />
+                    <br />
                     <table className='table table-bordered table-striped tab-content-item tab-logs-table'>
                         <thead>
                             <tr className='table-col-title-group'>
@@ -214,13 +202,5 @@ export class Logging extends React.Component<ILoggingProps, {}> {
         }
 
         return rowClass;
-    }
-
-    private toggleFilter(filterIndex: number) {
-        this.props.onToggleFilter(filterIndex);
-    }
-
-    private showAll() {
-        this.props.onShowAll();
     }
 }

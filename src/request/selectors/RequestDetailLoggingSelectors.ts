@@ -17,8 +17,8 @@ export const getFilters = createSelector(
             const level = levels[filter.level];
             
             return {
-                level: filter.level,
-                messageCount: level ? level.length : 0,
+                name: filter.level,
+                count: level ? level.length : 0,
                 isShown: filter.isShown
             };
         });
