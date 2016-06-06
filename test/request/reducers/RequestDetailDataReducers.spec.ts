@@ -128,6 +128,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-insert',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123,
                         count: 456
@@ -142,6 +144,8 @@ describe('RequestDetailDataReducer', () => {
             newState[0].should.deep.equal({
                 id: 'message1',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Insert',
@@ -157,6 +161,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-read',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123
                     }
@@ -170,6 +176,8 @@ describe('RequestDetailDataReducer', () => {
             newState[0].should.deep.equal({
                 id: 'message1',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Read',
@@ -185,6 +193,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-update',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123,
                         modifiedCount: 456,
@@ -200,6 +210,8 @@ describe('RequestDetailDataReducer', () => {
             newState[0].should.deep.equal({
                 id: 'message1',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Update',
@@ -215,6 +227,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-delete',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123,
                         count: 456
@@ -229,6 +243,8 @@ describe('RequestDetailDataReducer', () => {
             newState[0].should.deep.equal({
                 id: 'message1',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Delete',
@@ -244,6 +260,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message2',
                     type: 'data-mongodb-delete',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123,
                         count: 456
@@ -254,6 +272,8 @@ describe('RequestDetailDataReducer', () => {
                     id: 'message1',
                     type: 'data-mongodb-insert',
                     payload: {
+                        database: 'db',
+                        connectionHost: 'server',
                         options: '{skip: 0}',
                         duration: 123,
                         count: 456
@@ -268,6 +288,8 @@ describe('RequestDetailDataReducer', () => {
             newState[0].should.deep.equal({
                 id: 'message1',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Insert',
@@ -277,6 +299,8 @@ describe('RequestDetailDataReducer', () => {
             newState[1].should.deep.equal({
                 id: 'message2',
                 database: 'MongoDB',
+                databaseName: 'db',
+                serverName: 'server',
                 command: '\"{skip: 0}\"',
                 duration: 123,
                 operation: 'Delete',
