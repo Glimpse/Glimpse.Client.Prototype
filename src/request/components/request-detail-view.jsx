@@ -14,7 +14,6 @@ var Loading = require('lib/components/loading');
 module.exports = React.createClass({
     mixins: [ EmitterMixin ],
     componentDidMount: function () {
-        var that = this;
         this.addListener('shell.request.detail.changed', this._requestDetailChanged);
     },
     render: function () {
