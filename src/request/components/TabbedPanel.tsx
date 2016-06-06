@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import classNames = require('classnames');
 
-export class TabbedPanel extends React.Component<{ children?: TabPanel[] }, { selectedIndex: number }> {
+export class TabbedPanel extends React.Component<{ children?: TabPanel[], ref?: string }, { selectedIndex: number }> {
     public constructor(props?) {
         super(props);
         
@@ -24,6 +24,10 @@ export class TabbedPanel extends React.Component<{ children?: TabPanel[] }, { se
             }
             </div>
         );
+    }
+
+    public select(index: number) {
+        this.onSelect(index);
     }
     
     private renderHeaders() {

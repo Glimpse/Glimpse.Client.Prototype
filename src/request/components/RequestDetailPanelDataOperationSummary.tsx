@@ -12,9 +12,9 @@ export class RequestDetailPanelDataOperationSummary extends React.Component<IReq
     public render() {
         return (
             <div className='tab-data-operation-summary'>
-                <TabbedPanel>
+                <TabbedPanel ref='tabs'>
                     <TabPanel header='General Info'>
-                        <RequestDetailPanelDataOperationSummaryGeneralInfo databaseType={this.props.operation.operation.database} databaseName={this.props.operation.operation.databaseName} serverName={this.props.operation.operation.serverName} />
+                        <RequestDetailPanelDataOperationSummaryGeneralInfo databaseType={this.props.operation.operation.database} databaseName={this.props.operation.operation.databaseName} serverName={this.props.operation.operation.serverName} onSelect={index => this.onSelect(index)} />
                     </TabPanel>
                     <TabPanel header='Parameters'>
                     {
@@ -41,5 +41,9 @@ export class RequestDetailPanelDataOperationSummary extends React.Component<IReq
         return (
             <div>Coming soon!</div>
         );
+    }
+
+    private onSelect(index: number) {
+        (this.refs['tabs'] as TabbedPanel).select(index);
     }
 }
