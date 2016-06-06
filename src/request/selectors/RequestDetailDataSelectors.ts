@@ -17,12 +17,10 @@ export const getFilteredOperations = createSelector(
     getFilterState,
     getOperations,
     (filterState, operations) => {
-        const hiddenDatabases = _.keys(_.omitBy(filterState, isShown => isShown));
-        
         let filteredOperations = [];
         
         operations.forEach((operation, index) => {
-            if (!_.includes(hiddenDatabases, operation.database)) {
+            if (filterState[operation.database]) {
                 filteredOperations.push({
                     ordinal: index + 1,
                     operation: operation
@@ -56,18 +54,17 @@ export const getFilters = createSelector(
     (filterState, operations) => {
         var databases = _.groupBy(operations, operation => operation.database);
         
-        return _.sortBy(
-            _.values<{ name: string, isShown: boolean, count: number}>(
-                _.mapValues(
-                    filterState, 
-                    (filter, database) => {
-                        const databaseOperations = databases[database];
-                        
-                        return {
-                            name: database,
-                            isShown: filter,
-                            count: databaseOperations ? databaseOperations.length : 0
-                        }
-                    })),
-            filter => filter.name);
+        return _(filterState)
+            .mapValues((filter, database) => {
+                const databaseOperations = databases[database];
+                
+                return {
+                    name: database,
+                    isShown: filter,
+                    count: databaseOperations ? databaseOperations.length : 0
+                };
+            })
+            .values<{ name: string, isShown: boolean, count: number }>()
+            .sortBy(filter => filter.name)
+            .value();
     });
