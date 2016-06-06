@@ -25,18 +25,18 @@ function toggleLevel(filtersState: IRequestDetailLoggingFilterState[], filterInd
     return updateFilter(filtersState, filterIndex);
 }
 
-function updateAllFilters(filtersState: IRequestDetailLoggingFilterState[]): IRequestDetailLoggingFilterState[] {
-    return filtersState.map(filterState => {
-        return {
-            level: filterState.level,
-            isShown: true
-        };
-    });
-}
-
 function showAll(filtersState: IRequestDetailLoggingFilterState[]): IRequestDetailLoggingFilterState[]
 {
-    return updateAllFilters(filtersState);
+    if (_.some(filtersState, filter => !filter.isShown)) {
+        return filtersState.map(filterState => {
+            return {
+                level: filterState.level,
+                isShown: true
+            };
+        });
+    }
+    
+    return filtersState;
 }
 
 function indexOf(value: string, term: string, window: number) {
