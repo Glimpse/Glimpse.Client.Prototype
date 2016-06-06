@@ -42,7 +42,7 @@ export class TabbedPanel extends React.Component<{ children?: TabPanel[], ref?: 
     
     private renderHeader(header: string, index: number) {
         return (
-            <div className={classNames('tabbed-panel-header', { 'tabbed-panel-header-selected': index === this.state.selectedIndex })} onClick={e => this.onSelect(index)}>{header}</div>
+            <div className={classNames('tabbed-panel-header', { 'tabbed-panel-header-selected': index === this.state.selectedIndex })} key={header} onClick={e => this.onSelect(index)}>{header}</div>
         );
     }
     

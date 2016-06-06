@@ -28,7 +28,7 @@ export class FilterBar extends React.Component<IFilterBarCombinedProps, {}> {
     
     private renderFilter(filter: IFilterButtonProps) {
         return (
-            <FilterButton count={filter.count} isShown={filter.isShown} name={filter.name} onToggle={() => this.props.onToggle(filter.name)} />
+            <FilterButton count={filter.count} key={filter.name} isShown={filter.isShown} name={filter.name} onToggle={() => this.props.onToggle(filter.name)} />
         );
     }
 }
