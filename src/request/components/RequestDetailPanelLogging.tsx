@@ -11,7 +11,7 @@ var store = require('../stores/RequestStore');
 
 class LogMessageObject extends React.Component<{ message: string }, {}> {
     public render() {
-        return <div className='tab-logs-table-message-object'><Highlight language='javascript'>{this.props.message}</Highlight></div>;
+        return <div className='tab-logs-table-message-object'><Highlight className='javascript'>{this.props.message}</Highlight></div>;
     }
 }
 

@@ -13,8 +13,9 @@ describe('RequestDetailLoggingSelectors', () => {
         return {
             detail: {
                 data: {
+                    filters: {},
                     operations: [],
-                    selectedIndex: -1
+                    selectedOperationId: ''
                 },
                 logging: {
                     messages: messages || [],
