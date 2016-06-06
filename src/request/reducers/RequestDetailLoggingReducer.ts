@@ -61,7 +61,7 @@ function lastIndexOf(value: string, term: string, window: number) {
     return -1;
 }
 
-function isMessageObject(message: string): boolean {
+export function isMessageObject(message: string): boolean {
     const OBJECT_BRACE_WINDOW = 64;
 
     //
@@ -87,7 +87,7 @@ function isMessageObject(message: string): boolean {
     return false;
 }
 
-function createSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ({ text: string, wasReplaced?: boolean })[] {
+export function createSpans(message: string, replacedRegions: ({ start: number, end: number })[]): ({ text: string, wasReplaced?: boolean })[] {
     if (!message || message.length === 0) {
         return [{ text: '' }];
     }
