@@ -2,7 +2,6 @@
 
 import { FontAwesomeIcon } from '../../shell/components/FontAwesomeIcon';
 import { ILogMessage } from '../messages/ILogMessage';
-import { ILogMessageModel, ILogMessageSpan } from '../component-models/ILoggingComponentModel';
 
 import _ = require('lodash');
 import React = require('react');
@@ -22,6 +21,18 @@ class LogMessageText extends React.Component<{ className: string, ref: string, s
             <div className={this.props.className}>{this.props.spans.map(span => <span className={span.wasReplaced ? 'tab-logs-table-message-replaced-region' : ''}>{span.text}</span>)}</div>
         );
     }
+}
+
+interface ILogMessageSpan {
+    text: string;
+    wasReplaced?: boolean;
+}
+
+interface ILogMessageModel extends ILogMessage {
+    id: string;
+    isObject: boolean;
+    ordinal: number;
+    spans: ILogMessageSpan[];
 }
 
 interface ILogMessageProps {
