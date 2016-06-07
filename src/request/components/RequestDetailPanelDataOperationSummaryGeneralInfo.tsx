@@ -18,19 +18,13 @@ export class RequestDetailPanelDataOperationSummaryGeneralInfo extends React.Com
     public render() {
         return (
             <div className='tab-data-operation-summary-general-info'>
-                <span className='label'>Connection: </span><a href='#' onClick={e => this.props.onSeeConnection()}>See details</a>
-                <br />
-                <br />
-                <span className='label'>Transaction: </span><a href='#' onClick={e => this.props.onSeeTransaction()}>See details</a>
-                <br />
-                <br />
-                <span className='label'>Database: </span><span>{this.props.databaseType}</span>
-                <br />
-                <br />
-                <span className='label'>Database Name: </span><span>{this.props.databaseName || '-'}</span>
-                <br />
-                <br />
-                <span className='label'>Server: </span><span>{this.props.serverName || '-'}</span>
+                <ul>
+                    <li><span className='label'>Connection: </span><a href='#' onClick={e => this.props.onSeeConnection()}>See details</a></li>
+                    <li><span className='label'>Transaction: </span><a href='#' onClick={e => this.props.onSeeTransaction()}>See details</a></li>
+                    <li><span className='label'>Database: </span><span>{this.props.databaseType}</span></li>
+                    <li><span className='label'>Database Name: </span><span>{this.props.databaseName || '-'}</span></li>
+                    <li><span className='label'>Server: </span><span>{this.props.serverName || '-'}</span></li>
+                </ul>
             </div>
         );
     }
