@@ -16,12 +16,8 @@ export class TabbedPanel extends React.Component<{ children?: TabPanel[], ref?: 
     public render() {
         return (
             <div className='tabbed-panel'>
-            {
-                this.renderHeaders()
-            }
-            {
-                this.renderSelectedTab()
-            }
+                { this.renderHeaders() }
+                { this.renderSelectedTab() }
             </div>
         );
     }
@@ -33,9 +29,7 @@ export class TabbedPanel extends React.Component<{ children?: TabPanel[], ref?: 
     private renderHeaders() {
         return (
           <div className='tabbed-panel-headers'>
-          {
-              this.props.children.map((tabPanel, index) => this.renderHeader(tabPanel.props.header, index))
-          }
+            { this.props.children.map((tabPanel, index) => this.renderHeader(tabPanel.props.header, index)) }
           </div>  
         );
     }
@@ -49,9 +43,7 @@ export class TabbedPanel extends React.Component<{ children?: TabPanel[], ref?: 
     private renderSelectedTab() {
         return (
             <div className='tabbed-panel-selected'>
-            {
-                this.props.children[this.state.selectedIndex]
-            }
+                { this.props.children[this.state.selectedIndex] }
             </div>
         );
     }

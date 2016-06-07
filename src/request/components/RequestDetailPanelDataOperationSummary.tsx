@@ -22,14 +22,10 @@ export class RequestDetailPanelDataOperationSummary extends React.Component<IReq
                             onSeeTransaction={() => this.onSelectConnection()} />
                     </TabPanel>
                     <TabPanel header='Parameters'>
-                    {
-                        this.renderParameters()   
-                    }
+                        { this.renderParameters() }
                     </TabPanel>
                     <TabPanel header='Connection'>
-                    {
-                        this.renderConnection()
-                    }
+                        { this.renderConnection() }
                     </TabPanel>
                 </TabbedPanel>
             </div>

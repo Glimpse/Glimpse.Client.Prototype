@@ -40,9 +40,7 @@ export class RequestDetailPanelDataOperationTable extends React.Component<IReque
                     </tr>
                 </thead>
                 <tbody>
-                {
-                    this.props.operations.map(operation => this.renderOperation(operation))
-                }
+                    { this.props.operations.map(operation => this.renderOperation(operation)) }
                 </tbody>
             </table>
         );
