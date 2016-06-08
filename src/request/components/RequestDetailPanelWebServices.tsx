@@ -49,7 +49,9 @@ class ServiceMessages extends React.Component<IServiceMessagesProps, {}> {
                         <th width='20%'><span className='table-col-title'>Timeline</span></th>
                     </tr>
                 </thead>
-                {requestItems}
+                <tbody>
+                    {requestItems}
+                </tbody>
             </table>
         );
     }
@@ -64,13 +66,15 @@ class ServiceDetailsHeaders extends React.Component<{ headers }, {}> {
         
         return (
             <table className='table'>
+                <tbody>
                 {_.map(headers, function(value, key) {
                     return (
-                        <tr>
+                        <tr key={key}>
                             <td className='truncate'><strong>{key}:</strong> {value}</td>
                         </tr>
                     );
                 })}
+                </tbody>
             </table>
         );
     }
