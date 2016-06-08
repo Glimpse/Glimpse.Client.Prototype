@@ -62,20 +62,20 @@ class ServiceMessages extends React.Component<IServiceMessagesProps, {}> {
  */
 class ServiceDetailsHeaders extends React.Component<{ headers }, {}> {
     public render() {
-        var headers = this.props.headers;
-        
         return (
-            <table className='table'>
-                <tbody>
-                {_.map(headers, function(value, key) {
-                    return (
-                        <tr key={key}>
-                            <td className='truncate'><strong>{key}:</strong> {value}</td>
-                        </tr>
-                    );
-                })}
-                </tbody>
-            </table>
+            <div className='tab-web-services-header-details'>
+                <table className='table'>
+                    <tbody>
+                        {_.map(this.props.headers, function(value, key) {
+                            return (
+                                <tr key={key}>
+                                    <td className='truncate'><strong>{key}:</strong> {value}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 }
