@@ -1,19 +1,25 @@
-import { WebServices }from '../components/RequestDetailPanelWebServices';
+import { getRequestsByOrdinal, getSelectedRequest } from '../selectors/RequestDetailWebServicesSelectors';
+import { IWebServicesProps, IWebServicesDispatchProps, WebServices } from '../components/RequestDetailPanelWebServices';
+import { selectRequestAction } from '../actions/RequestDetailWebServicesActions';
 
 import { connect } from 'react-redux';
 
-// Which part of the Redux global state does our component want to receive as props?
-function mapStateToProps(state, ownProps) {
-  return ownProps;
+function mapStateToProps(state): IWebServicesProps {
+    return {
+        requests: getRequestsByOrdinal(state),
+        selectedRequest: getSelectedRequest(state)
+    };
 }
 
-// Which action creators does it want to receive by props?
-function mapDispatchToProps(dispatch) {
-  return {
-  };
+function mapDispatchToProps(dispatch): IWebServicesDispatchProps {
+    return {
+        onSelectRequest: (requestId: string) => {
+            dispatch(selectRequestAction(requestId));
+        }
+    };
 }
 
 export = connect(
-  mapStateToProps,
-  mapDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(WebServices);

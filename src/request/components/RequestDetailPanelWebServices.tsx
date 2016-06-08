@@ -1,54 +1,32 @@
-'use strict';
-
-const messageProcessor = require('../util/request-message-processor');
+import { IRequestDetailWebServicesRequestState } from '../stores/IRequestDetailWebServicesRequestState';
 
 import _ = require('lodash');
 import React = require('react');
 import classNames = require('classnames');
 
-var getList = messageProcessor.getTypeMessageList;
-
-var options = {
-    'data-http-request': getList,
-    'data-http-response': getList
-};
-
-/**
- * Return the messages to be used by the view.
- */
-function getMessages(request) {	
-    return messageProcessor.getTypeStucture(request, options); 
-}
-
 interface IServiceMessagesProps {
-    dataHttpRequestMessages;
-    dataHttpResponseMessages;
-    selectedIndex: number;
-    onSelectedIndex: (index: number) => void;
+    requests: IRequestDetailWebServicesRequestState[];
+    selectedRequestId: string;
+    onSelectRequest: (requestId: string) => void;
 }
 
 /**
  * React class to display console messages
  */
 class ServiceMessages extends React.Component<IServiceMessagesProps, {}> {
-    public render() {
-        var dataHttpRequestMessages = this.props.dataHttpRequestMessages;
-        var dataHttpResponseMessages = this.props.dataHttpResponseMessages;
-        
+    public render() {       
         // get child items
         var requestItems = [];
-        for (var i = 0; i < dataHttpRequestMessages.length; i++) {
-            // TODO: replace with correlation matching once inplace
-            var httpRequest = dataHttpRequestMessages[i].payload;
-            var httpResponse = dataHttpResponseMessages[i].payload;
+        for (var i = 0; i < this.props.requests.length; i++) {
+            const request = this.props.requests[i];
             
             requestItems.push(
-                <tr onClick={this.props.onSelectedIndex.bind(this, i)} className={classNames({
-                        'selected': i == this.props.selectedIndex
+                <tr key={request.id} onClick={e => this.props.onSelectRequest(request.id)} className={classNames({
+                        'selected': request.id === this.props.selectedRequestId
                     })}> 
-                    <td>{httpRequest.url}</td>
-                    <td>{httpResponse.statusCode}</td>
-                    <td>{httpRequest.method}</td>
+                    <td>{request.url}</td>
+                    <td>{request.statusCode}</td>
+                    <td>{request.method}</td>
                     <td>-</td>
                     <td>-</td>
                     <td>-</td>
@@ -103,8 +81,8 @@ class ServiceDetailsHeaders extends React.Component<{ headers }, {}> {
 }
 
 interface IServiceDetailsProps {
-    selectedDataHttpRequestMessage;
-    selectedDataHttpResponseMessage;
+    requestHeaders: { [key: string]: string };
+    responseHeaders: { [key: string]: string };
 }
 
 /**
@@ -112,9 +90,6 @@ interface IServiceDetailsProps {
  */
 class ServiceDetails extends React.Component<IServiceDetailsProps, {}> {
     public render() {
-        var requestHeaders = this.props.selectedDataHttpRequestMessage.payload.headers;
-        var responseHeaders = this.props.selectedDataHttpResponseMessage.payload.headers;
-            
         return (
             <table className="table table-details">
                 <thead>
@@ -125,8 +100,8 @@ class ServiceDetails extends React.Component<IServiceDetailsProps, {}> {
                 </thead>
                 <tbody>
                     <tr>
-                        <td><ServiceDetailsHeaders headers={requestHeaders} /></td>
-                        <td><ServiceDetailsHeaders headers={responseHeaders} /></td>
+                        <td><ServiceDetailsHeaders headers={this.props.requestHeaders} /></td>
+                        <td><ServiceDetailsHeaders headers={this.props.responseHeaders} /></td>
                     </tr>
                 </tbody>
             </table>
@@ -134,54 +109,39 @@ class ServiceDetails extends React.Component<IServiceDetailsProps, {}> {
     }
 }
 
-export class WebServices extends React.Component<{ request }, { selectedIndex: number }> {
-    constructor(props?) {
-        super(props);
+export interface IWebServicesProps {
+    requests: IRequestDetailWebServicesRequestState[];
+    selectedRequest: IRequestDetailWebServicesRequestState;
+}
 
-        this.state = {
-            selectedIndex: 0
-        };
-    }
+export interface IWebServicesDispatchProps {
+    onSelectRequest: (requestId: string) => void;
+}
 
-    private _requestSelected(index) {
-        this.setState({
-            selectedIndex: index
-        });
-    }
+interface IWebServicesCombinedProps extends IWebServicesProps, IWebServicesDispatchProps{
+}
 
+export class WebServices extends React.Component<IWebServicesCombinedProps, {}> {
     public render() {
-        var request = this.props.request;
+        if (this.props.requests.length > 0) {
+            const selectedRequestId = this.props.selectedRequest ? this.props.selectedRequest.id : '';
+            const requestHeaders: { [key:string]: string } = this.props.selectedRequest ? this.props.selectedRequest.requestHeaders : {};
+            const responseHeaders: { [key:string]: string } = this.props.selectedRequest ? this.props.selectedRequest.responseHeaders : {};
 
-        // get messages 
-        var payload = getMessages(request);
-        var dataHttpRequestMessages = payload.dataHttpRequest;
-        var dataHttpResponseMessages = payload.dataHttpResponse;
-        
-        var content = null;
-        if (dataHttpRequestMessages && dataHttpResponseMessages) {
-            var selectedDataHttpRequestMessage = dataHttpRequestMessages[this.state.selectedIndex];
-            var selectedDataHttpResponseMessage = dataHttpResponseMessages[this.state.selectedIndex];
-            
-            // intial processing of messages
-            dataHttpRequestMessages = dataHttpRequestMessages.sort(function(a, b) { return a.ordinal - b.ordinal; });
-            dataHttpResponseMessages = dataHttpResponseMessages.sort(function(a, b) { return a.ordinal - b.ordinal; });
-            
-            content = (
+            return (
                 <div className="tab-content tab-detail-holder"> 
                     <div className="tab-detail-body">
-                        <h3>{dataHttpRequestMessages.length} Requests</h3>
-                        <ServiceMessages onSelectedIndex={index => this._requestSelected(index)} selectedIndex={this.state.selectedIndex} dataHttpRequestMessages={dataHttpRequestMessages} dataHttpResponseMessages={dataHttpResponseMessages} />
+                        <h3>{this.props.requests.length} Requests</h3>
+                        <ServiceMessages onSelectRequest={requestId => this.props.onSelectRequest(requestId)} selectedRequestId={selectedRequestId} requests={this.props.requests} />
                     </div>
                     <div className="tab-detail-footer">
-                        <ServiceDetails  selectedDataHttpRequestMessage={selectedDataHttpRequestMessage} selectedDataHttpResponseMessage={selectedDataHttpResponseMessage} />
+                        <ServiceDetails requestHeaders={requestHeaders} responseHeaders={responseHeaders} />
                     </div> 
                 </div>
             );
         }
         else {
-            content = <div className="tab-section text-minor">Could not find any data.</div>;
+            return <div className="tab-section text-minor">Could not find any data.</div>;
         }
-
-        return content;
     }
 }

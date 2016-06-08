@@ -37,7 +37,7 @@ module.exports = {
 require('./components/request-detail-panel-execution');
 require('./components/request-detail-panel-messages');
 
-var WebServices = require('./components/RequestDetailPanelWebServices').WebServices;
+var WebServices = require('./containers/RequestDetailPanelWebServicesContainer');
 
 module.exports.registerTab({
     key: 'tab.webservices',
