@@ -1,9 +1,10 @@
+import { getRequest } from '../selectors/RequestDetailRequestSelectors';
 import { Request } from '../components/RequestDetailPanelRequest';
 
 import { connect } from 'react-redux';
 
-function mapStateToProps(state, ownProps) {
-    return ownProps;
+function mapStateToProps(state) {
+    return getRequest(state);
 }
 
 function mapDispatchToProps(dispatch) {
