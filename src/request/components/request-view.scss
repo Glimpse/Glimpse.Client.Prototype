@@ -421,6 +421,14 @@
     overflow: auto;
 }
 
+.tab-web-services {
+    display: flex;
+}
+
+.tab-web-services-table {
+    table-layout: fixed;
+}
+
 .tab-data {
     display: flex;
 }
