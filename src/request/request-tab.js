@@ -38,7 +38,7 @@ require('./components/request-detail-panel-execution');
 require('./components/request-detail-panel-webservices');
 require('./components/request-detail-panel-messages');
 
-var Request = require('./components/request-detail-panel-request').Request;
+var Request = require('./components/RequestDetailPanelRequest').Request;
 
 module.exports.registerTab({
     key: 'tab.request',
