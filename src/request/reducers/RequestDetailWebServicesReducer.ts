@@ -78,7 +78,8 @@ export function selectedRequestIdReducer(state: string = '', action: Action) {
     switch (action.type) {
         case selectRequestAction.type:
             return selectRequestAction.unwrap(action);
-        // TODO: Reset selected ID when selected request changes.
+        case requestDetailUpdateAction.type:
+            return '';
     }
 
     return state;
