@@ -484,6 +484,47 @@ $tabbed-panel-border-color: #cccccc;
     table-layout: fixed;
 }
 
+.tab-request {
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    height: 250px;
+}
+
+.tab-request-request {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.tab-request-separator {
+    background: gray;
+    flex: none;
+    width: 1px;
+}
+
+.tab-request-response {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.tab-request-headers {
+    > ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            margin-bottom: 5px;
+        }
+    }
+}
+
+.tab-request-header-key {
+    font-weight: bold;
+}
+
 .tab-data {
     display: flex;
 }

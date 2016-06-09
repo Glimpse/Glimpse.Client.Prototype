@@ -1,24 +1,8 @@
-'use strict';
-
-/*tslint:disable:no-var-requires */
-const messageProcessor = require('../util/request-message-processor');
-/*tslint:enable:no-var-requires */
+import { TabbedPanel } from './TabbedPanel';
+import { TabPanel } from './TabPanel';
 
 import _ = require('lodash');
 import React = require('react');
-
-const getPayloads = (function() {
-    const getItem = messageProcessor.getTypePayloadItem;
-
-    const options = {
-        'web-response': getItem,
-        'web-request': getItem
-    };
-
-    return function(request) {
-        return messageProcessor.getTypeStucture(request, options);
-    };
-})();
 
 interface IRequestUrlProps {
     url: string;
@@ -68,20 +52,25 @@ class RequestHeaders extends React.Component<IRequestHeadersProps, {}> {
 
 export interface IRequestProps {
     url: string;
-    requestHeaders: { [key: string]: string };
-    responseHeaders: { [key: string]: string };
+    request: {
+        body: string;
+        headers: { [key: string]: string }
+    };
+    response: {
+        body: string;
+        headers: { [key: string]: string };
+    };
 }
 
 export class Request extends React.Component<IRequestProps, {}> {
     public render() {
         let content;
-        if (this.props.url && this.props.requestHeaders && this.props.responseHeaders) {
+        if (this.props.url && this.props.request && this.props.response) {
             content = (
-                <div className='tab-content'>
-                    <div className='tab-section text-minor'>Web Request/Response</div>
-                    <RequestUrl url={this.props.url} />
-                    <RequestHeaders title='Request Headers' headers={this.props.requestHeaders} />
-                    <RequestHeaders title='Response Headers' headers={this.props.responseHeaders} />
+                <div className='tab-request'>
+                    { this.renderRequestResponse('tab-request-request', 'Request', this.props.request) }
+                    <div className='tab-request-separator' />
+                    { this.renderRequestResponse('tab-request-request', 'Response', this.props.response) }
                 </div>
             );
         }
@@ -90,5 +79,37 @@ export class Request extends React.Component<IRequestProps, {}> {
         }
 
         return content;
+    }
+
+    private renderRequestResponse(className: string, title: string, requestResponse: { body: string, headers: { [key: string]: string }}) {
+        return (
+            <div className='tab-request-request'>
+                <div>{title}</div>
+                <TabbedPanel>
+                    <TabPanel header='Headers'>
+                        { this.renderHeaders(requestResponse.headers) }
+                    </TabPanel>
+                    <TabPanel header='Body'>
+                        <div>{requestResponse.body}</div>
+                    </TabPanel>
+                </TabbedPanel>
+            </div>
+        );     
+    }
+
+    private renderHeaders(headers: { [key: string]: string}) {
+        return (
+            <div className='tab-request-headers'>
+                <ul>
+                    { _.map(headers, (value, key) => this.renderHeader(key, value)) }
+                </ul>
+            </div>
+        );
+    }
+
+    private renderHeader(key: string, value: string) {
+        return (
+            <li><span className='tab-request-header-key'>{key}: </span><span>{value}</span></li>
+        );
     }
 }
