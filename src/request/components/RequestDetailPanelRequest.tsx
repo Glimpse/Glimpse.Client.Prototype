@@ -9,11 +9,9 @@ function trainCase(key: string): string {
     let newKey = '';
 
     for(let i = 0; i < key.length; i++) {
-        if (i === 0 || key[i - 1] === '-') {
-            newKey += key[i].toUpperCase();
-        } else {
-            newKey += key[i];
-        }
+        newKey += (i === 0 || key[i - 1] === '-') 
+            ? key[i].toUpperCase()
+            : key[i];
     }
 
     return newKey;
