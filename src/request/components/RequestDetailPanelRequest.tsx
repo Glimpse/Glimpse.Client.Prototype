@@ -68,7 +68,7 @@ export class Request extends React.Component<IRequestProps, {}> {
 
     private renderHeader(key: string, value: string) {
         return (
-            <li><span className='tab-request-header-key'>{trainCase(key)}: </span><span>{value}</span></li>
+            <li key={key}><span className='tab-request-header-key'>{trainCase(key)}: </span><span>{value}</span></li>
         );
     }
 
