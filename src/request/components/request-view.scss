@@ -498,7 +498,7 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     flex: none;
     flex-direction: row;
-    padding: 10px 40px 0px 40px;
+    padding: 10px 40px 10px 40px;
     width: 100%;
 }
 
@@ -515,9 +515,9 @@ $tabbed-panel-border-color: #cccccc;
 }
 
 .tab-request-separator {
-    background: gray;
+    background: #ccc;
     flex: none;
-    margin: 0px 5px 0px 5px;
+    margin: 0px 10px 0px 10px;
     width: 1px;
 }
 
@@ -538,7 +538,7 @@ $tabbed-panel-border-color: #cccccc;
 .tab-request-body {
     display: flex;
     overflow: auto;
-    
+
     .hljs {
         white-space: normal;
     }

@@ -5,50 +5,18 @@ import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
 
-interface IRequestUrlProps {
-    url: string;
-}
+function trainCase(key: string): string {
+    let newKey = '';
 
-class RequestUrl extends React.Component<IRequestUrlProps, {}> {
-    public render() {
-        return (
-            <div>
-                <div className='tab-section tab-section-execution-url'>
-                    <div className='flex flex-row flex-inherit tab-section-header'>
-                        <div className='tab-title col-10'>Url</div>
-                    </div>
-                    <div>{this.props.url}</div>
-                </div>
-            </div>
-        );
+    for(let i = 0; i < key.length; i++) {
+        if (i === 0 || key[i - 1] === '-') {
+            newKey += key[i].toUpperCase();
+        } else {
+            newKey += key[i];
+        }
     }
-}
 
-interface IRequestHeadersProps {
-    headers: { [key: string]: string };
-    title: string;
-}
-
-class RequestHeaders extends React.Component<IRequestHeadersProps, {}> {
-    public render() {
-        return (
-            <div>
-                <div className='tab-section tab-section-execution-headers'>
-                    <div className='flex flex-row flex-inherit tab-section-header'>
-                        <div className='tab-title col-10'>{this.props.title}</div>
-                    </div>
-                    <div className='tab-section-listing'>
-                        {_.map(this.props.headers, function(value, key) {
-                            return (<section className='flex flex-row'>
-                                    <div className='col-2'>{key}</div>
-                                    <div className='col-8'>{value}</div>
-                                </section>);
-                        })}
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    return newKey;
 }
 
 export interface IRequestProps {
@@ -113,7 +81,7 @@ export class Request extends React.Component<IRequestProps, {}> {
 
     private renderHeader(key: string, value: string) {
         return (
-            <li><span className='tab-request-header-key'>{key}: </span><span>{value}</span></li>
+            <li><span className='tab-request-header-key'>{trainCase(key)}: </span><span>{value}</span></li>
         );
     }
 
