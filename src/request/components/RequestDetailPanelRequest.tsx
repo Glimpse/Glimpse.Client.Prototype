@@ -25,9 +25,9 @@ export class Request extends React.Component<IRequestProps, {}> {
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers) }
                         <div className='tab-request-separator' />
-                        { this.renderRequestResponse('Response', this.props.response) }
+                        { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
                     </div>
                 </div>
             );
@@ -39,17 +39,17 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, requestResponse: { body: string, headers: { [key: string]: string }}) {
+    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }) {
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-response-title'>{title}</div>
                 <br />
                 <TabbedPanel>
                     <TabPanel header='Headers'>
-                        { this.renderHeaders(requestResponse.headers) }
+                        { this.renderHeaders(headers) }
                     </TabPanel>
                     <TabPanel header='Body'>
-                        { this.renderBody(requestResponse.body) }
+                        { this.renderBody(body) }
                     </TabPanel>
                 </TabbedPanel>
             </div>

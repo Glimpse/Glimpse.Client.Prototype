@@ -1,3 +1,6 @@
+/**
+ * Converts strings of the form 'one-two-three' to 'One-Two-Three', also called 'train-case'.
+ */
 export function trainCase(value: string): string {
     if (value) {
         let newValue = '';
