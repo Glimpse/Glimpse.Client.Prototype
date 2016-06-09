@@ -1,21 +1,10 @@
 import { TabbedPanel } from './TabbedPanel';
 import { TabPanel } from './TabPanel';
+import { trainCase } from '../../lib/StringUtilities';
 
 import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
-
-function trainCase(key: string): string {
-    let newKey = '';
-
-    for(let i = 0; i < key.length; i++) {
-        newKey += (i === 0 || key[i - 1] === '-') 
-            ? key[i].toUpperCase()
-            : key[i];
-    }
-
-    return newKey;
-}
 
 export interface IRequestProps {
     url: string;
