@@ -437,6 +437,7 @@ $tabbed-panel-border-color: #cccccc;
     background: #fafafa;
     border-bottom: 1px solid $tabbed-panel-border-color;
     display: flex;
+    flex: none;
     flex-direction: row;
     padding: 5px 30px 0px 30px;
 }
@@ -467,6 +468,7 @@ $tabbed-panel-border-color: #cccccc;
 }
 
 .tabbed-panel-selected {
+    flex: none;
     padding: 10px 5px 5px 5px;
 }
 
@@ -488,28 +490,40 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     flex: none;
     flex-direction: row;
-    height: 250px;
+    width: 100%;
 }
 
-.tab-request-request {
+.tab-request-response {
+    box-sizing: border-box;
     display: flex;
-    flex: 1;
+    flex: none;
+    flex-direction: row;
+    padding: 10px 40px 0px 40px;
+    width: 100%;
+}
+
+.tab-request-response-panel {
+    display: flex;
+    flex: none;
     flex-direction: column;
+    width: 50%;
+}
+
+.tab-request-response-title {
+    font-family: 'Segoe UI', 'Selawik Semibold', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 175%;    
 }
 
 .tab-request-separator {
     background: gray;
     flex: none;
+    margin: 0px 5px 0px 5px;
     width: 1px;
 }
 
-.tab-request-response {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-}
-
 .tab-request-headers {
+    overflow: auto;
+
     > ul {
         list-style-type: none;
         margin: 0;
@@ -518,6 +532,15 @@ $tabbed-panel-border-color: #cccccc;
         > li {
             margin-bottom: 5px;
         }
+    }
+}
+
+.tab-request-body {
+    display: flex;
+    overflow: auto;
+    
+    .hljs {
+        white-space: normal;
     }
 }
 

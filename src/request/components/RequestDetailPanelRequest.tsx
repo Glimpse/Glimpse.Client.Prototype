@@ -2,6 +2,7 @@ import { TabbedPanel } from './TabbedPanel';
 import { TabPanel } from './TabPanel';
 
 import _ = require('lodash');
+import Highlight = require('react-highlight');
 import React = require('react');
 
 interface IRequestUrlProps {
@@ -68,9 +69,11 @@ export class Request extends React.Component<IRequestProps, {}> {
         if (this.props.url && this.props.request && this.props.response) {
             content = (
                 <div className='tab-request'>
-                    { this.renderRequestResponse('tab-request-request', 'Request', this.props.request) }
-                    <div className='tab-request-separator' />
-                    { this.renderRequestResponse('tab-request-request', 'Response', this.props.response) }
+                    <div className='tab-request-response'>
+                        { this.renderRequestResponse('Request', this.props.request) }
+                        <div className='tab-request-separator' />
+                        { this.renderRequestResponse('Response', this.props.response) }
+                    </div>
                 </div>
             );
         }
@@ -81,16 +84,17 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(className: string, title: string, requestResponse: { body: string, headers: { [key: string]: string }}) {
+    private renderRequestResponse(title: string, requestResponse: { body: string, headers: { [key: string]: string }}) {
         return (
-            <div className='tab-request-request'>
-                <div>{title}</div>
+            <div className='tab-request-response-panel'>
+                <div className='tab-request-response-title'>{title}</div>
+                <br />
                 <TabbedPanel>
                     <TabPanel header='Headers'>
                         { this.renderHeaders(requestResponse.headers) }
                     </TabPanel>
                     <TabPanel header='Body'>
-                        <div>{requestResponse.body}</div>
+                        { this.renderBody(requestResponse.body) }
                     </TabPanel>
                 </TabbedPanel>
             </div>
@@ -110,6 +114,14 @@ export class Request extends React.Component<IRequestProps, {}> {
     private renderHeader(key: string, value: string) {
         return (
             <li><span className='tab-request-header-key'>{key}: </span><span>{value}</span></li>
+        );
+    }
+
+    private renderBody(body: string) {
+        return (
+            <div className='tab-request-body'>
+                <Highlight className=''>{body}</Highlight>
+            </div>
         );
     }
 }
