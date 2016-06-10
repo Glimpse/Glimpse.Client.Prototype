@@ -19,6 +19,13 @@ describe('StringUtilities', () => {
             newValue.should.equal('');
         });
 
+        it('should return a value with only a dash', () => {
+            const newValue = trainCase('-');
+
+            should.exist(newValue);
+            newValue.should.equal('-');
+        });
+
         it('should convert a value with a leading dash', () => {
             const newValue = trainCase('-test');
 
@@ -66,6 +73,20 @@ describe('StringUtilities', () => {
 
             should.exist(newValue);
             newValue.should.equal('TEsT-VaLuE');
+        });
+
+        it('should ignore non-alpha characters in value', () => {
+            const newValue = trainCase('1');
+
+            should.exist(newValue);
+            newValue.should.equal('1');
+        });
+
+        it('should ignore non-alpha characters with dashes in value', () => {
+            const newValue = trainCase('1-1');
+
+            should.exist(newValue);
+            newValue.should.equal('1-1');
         });
     });
 });
