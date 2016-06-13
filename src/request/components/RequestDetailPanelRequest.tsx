@@ -8,6 +8,7 @@ import React = require('react');
 
 export interface IRequestProps {
     url: string;
+    middleware: { name: string, packageName: string }[],
     request: {
         body: string;
         headers: { [key: string]: string }
@@ -98,25 +99,23 @@ export class Request extends React.Component<IRequestProps, {}> {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Body-Parser</td>
-                            <td>Json Body Parser</td>                            
-                            <td>Header</td>
-                            <td>Cache-Control: private</td>
-                            <td />
-                        </tr>                        
-                        <tr>
-                            <td>2</td>
-                            <td>Body-Parser</td>
-                            <td>URL Encoded Body Parser</td>                            
-                            <td>Header</td>
-                            <td>Cache-Control: private</td>
-                            <td />
-                        </tr>                        
+                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow.packageName, middlewareRow.name)) }      
                     </tbody>
                 </table>
             </div>
+        );
+    }
+
+    private renderMiddlewareRow(ordinal: number, packageName: string, name: string) {
+        return (
+            <tr>
+                <td>{ordinal}</td>
+                <td>{packageName}</td>
+                <td>{name}</td>                            
+                <td>Header</td>
+                <td>Cache-Control: private</td>
+                <td />
+            </tr>
         );
     }
 }
