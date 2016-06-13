@@ -29,6 +29,7 @@ export class Request extends React.Component<IRequestProps, {}> {
                         <div className='tab-request-separator' />
                         { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
                     </div>
+                    { this.renderMiddleware() }
                 </div>
             );
         }
@@ -42,7 +43,7 @@ export class Request extends React.Component<IRequestProps, {}> {
     private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }) {
         return (
             <div className='tab-request-response-panel'>
-                <div className='tab-request-response-title'>{title}</div>
+                <div className='tab-request-title'>{title}</div>
                 <br />
                 <TabbedPanel>
                     <TabPanel header='Headers'>
@@ -76,6 +77,45 @@ export class Request extends React.Component<IRequestProps, {}> {
         return (
             <div className='tab-request-body'>
                 <Highlight className=''>{body}</Highlight>
+            </div>
+        );
+    }
+
+    private renderMiddleware() {
+        return (
+            <div className='tab-request-middleware'>
+                <div className='tab-request-title'>Middleware</div>
+                <br />
+                <table className='table table-bordered table-striped table-selectable tab-request-middleware-table'>
+                    <thead>
+                        <tr className='table-col-title-group'>
+                            <th width='10%'><span className='table-col-title'>Ordinal</span></th>
+                            <th width='20%'><span className='table-col-title'>Type</span></th>
+                            <th width='20%'><span className='table-col-title'>Name</span></th>
+                            <th width='10%'><span className='table-col-title'>Modify</span></th>
+                            <th width='20%'><span className='table-col-title'>Parameter</span></th>
+                            <th />
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Body-Parser</td>
+                            <td>Json Body Parser</td>                            
+                            <td>Header</td>
+                            <td>Cache-Control: private</td>
+                            <td />
+                        </tr>                        
+                        <tr>
+                            <td>2</td>
+                            <td>Body-Parser</td>
+                            <td>URL Encoded Body Parser</td>                            
+                            <td>Header</td>
+                            <td>Cache-Control: private</td>
+                            <td />
+                        </tr>                        
+                    </tbody>
+                </table>
             </div>
         );
     }
