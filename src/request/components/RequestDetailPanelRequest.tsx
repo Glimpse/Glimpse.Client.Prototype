@@ -8,7 +8,7 @@ import React = require('react');
 
 export interface IRequestProps {
     url: string;
-    middleware: { name: string, packageName: string }[],
+    middleware: { name: string, packageName: string, headers: { [key: string]: string } }[],
     request: {
         body: string;
         headers: { [key: string]: string }
@@ -99,21 +99,21 @@ export class Request extends React.Component<IRequestProps, {}> {
                         </tr>
                     </thead>
                     <tbody>
-                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow.packageName, middlewareRow.name)) }      
+                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow.packageName, middlewareRow.name, middlewareRow.headers)) }      
                     </tbody>
                 </table>
             </div>
         );
     }
 
-    private renderMiddlewareRow(ordinal: number, packageName: string, name: string) {
+    private renderMiddlewareRow(ordinal: number, packageName: string, name: string, headers: { [key: string]: string }) {
         return (
             <tr>
                 <td>{ordinal}</td>
                 <td>{packageName}</td>
                 <td>{name}</td>                            
                 <td>Header</td>
-                <td>Cache-Control: private</td>
+                <td>{this.renderHeaders(headers)}</td>
                 <td />
             </tr>
         );

@@ -82,9 +82,23 @@ function correlateMiddlewareMessages(startMessages: IMessageEnvelope<IMiddleware
     return messageStack[0].middleware;
 }
 
+function toMap<T, TResult>(values: T[], keySelector: (value: T) => string, valueSelector: (value: T) => TResult): { [key: string]: TResult } {
+
+    return _.reduce(
+        values, 
+        (result: { [key: string]: TResult }, value: T) => {
+            result[keySelector(value)] = valueSelector(value);
+
+            return result;
+        }, 
+        <{ [key: string]: TResult }>{});
+}
+
 function createMiddlewareState(messages: ICorrelatedMiddlewareMessages): IRequestDetailRequestMiddlewareState {
+    // NOTE: We ignore Express Router header modifications as they're likely actually modifications made by route middleware, not the Router itself.
+
     return {
-        headers: messages.endMessage ? messages.endMessage.payload.headers : {},
+        headers: messages.endMessage && messages.startMessage.payload.name !== 'router' ? toMap(messages.endMessage.payload.headers, header => header.name, header => header.value) : {},
         middleware: messages.middleware.map(middlewareMessages => createMiddlewareState(middlewareMessages)),
         name: messages.startMessage.payload.displayName || messages.startMessage.payload.name,
         packageName: messages.startMessage.payload.packageName
