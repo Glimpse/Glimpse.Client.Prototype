@@ -7,7 +7,7 @@ import { IWebRequestPayload, WebRequestType } from '../messages/IWebRequestPaylo
 import { IWebResponsePayload, WebResponseType } from '../messages/IWebResponsePayload';
 import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 
-import { Action } from 'redux';
+import { Action, combineReducers } from 'redux';
 import * as _ from 'lodash';
 
 const defaultMiddlewareState = [];
@@ -124,46 +124,58 @@ export function middlewareReducer(state: IRequestDetailRequestMiddlewareState[] 
     return state;
 }
 
-export function requestResponseReducer(state: IRequestDetailRequestState = defaultState, action: Action) {
-    switch (action.type) {
-        case requestDetailUpdateAction.type: {
-            const request = requestDetailUpdateAction.unwrap(action);
-            const requestMessage = getMessageWithPayload<IWebRequestPayload>(request, WebRequestType);
-            const responseMessage = getMessageWithPayload<IWebResponsePayload>(request, WebResponseType);
+function createRequestReducer<T>(defaultState: T, reducer: (state: T, requestPayload: IWebRequestPayload, responsePayload: IWebResponsePayload) => T): (state: T, action: Action) => T {
+    return (state: T = defaultState, action: Action) => {
+        switch (action.type) {
+            case requestDetailUpdateAction.type: {
+                const request = requestDetailUpdateAction.unwrap(action);
+                const requestMessage = getMessageWithPayload<IWebRequestPayload>(request, WebRequestType);
+                const responseMessage = getMessageWithPayload<IWebResponsePayload>(request, WebResponseType);
 
-            return {
-                url: requestMessage ? requestMessage.payload.url : undefined,
-                request: {
-                    body: requestMessage && requestMessage.payload.body && requestMessage.payload.body.content ? requestMessage.payload.body.content : '',
-                    headers: requestMessage ? requestMessage.payload.headers : undefined
-                },
-                response: {
-                    body: responseMessage && responseMessage.payload.body && responseMessage.payload.body.content ? responseMessage.payload.body.content : '',
-                    headers: responseMessage ? responseMessage.payload.headers : undefined
-                }
-            };
+                return reducer(
+                    state, 
+                    requestMessage ? requestMessage.payload : undefined,
+                    responseMessage ? responseMessage.payload : undefined);
+            }
         }
-    }
 
-    return state;
-}
-
-export function requestReducer(state: IRequestDetailRequestState = defaultState, action: Action) {
-    const newMiddleware = middlewareReducer(state.middleware, action);
-    const newRequestResponse = requestResponseReducer(state, action);
-
-    if ((state.middleware !== newMiddleware)
-        || (state.url !== newRequestResponse.url)
-        || (state.request !== newRequestResponse.request)
-        || (state.response !== newRequestResponse.response)) {
-        return {
-            middleware: newMiddleware,
-            url: newRequestResponse.url,
-            request: newRequestResponse.request,
-            response: newRequestResponse.response
-        };
-    }
-    else {
         return state;
     }
 }
+
+const urlReducer = createRequestReducer<string>(
+    '',
+    (state, request, response) => {
+        return request ? request.url : ''
+    });
+
+const webRequestReducer = createRequestReducer<{ body: string, headers: { [key: string]: string } }>(
+    {
+        body: '',
+        headers: {}
+    },
+    (state, request, response) => {
+        return {
+            body: request && request.body && request.body.content ? request.body.content : '',
+            headers: request && request.headers ? request.headers : {}
+        }
+    });
+
+const webResponseReducer = createRequestReducer<{ body: string, headers: { [key: string]: string } }>(
+    {
+        body: '',
+        headers: {}
+    },
+    (state, request, response) => {
+        return {
+            body: response && response.body && response.body.content ? response.body.content : '',
+            headers: response && response.headers ? response.headers : {}
+        }
+    });
+
+export const requestReducer = combineReducers({
+    middleware: middlewareReducer,
+    request: webRequestReducer,
+    response: webResponseReducer,
+    url: urlReducer
+});
