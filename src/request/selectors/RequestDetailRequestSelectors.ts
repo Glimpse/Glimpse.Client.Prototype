@@ -4,11 +4,15 @@ import { IRequestDetailRequestMiddlewareState } from '../stores/IRequestDetailRe
 
 import { createSelector } from 'reselect';
 
-const getRequestState = (state: IRequestState) => state.detail.request;
+const getMiddlewareState = (state: IRequestState) => state.detail.request.middleware;
+
+export const getUrl = (state: IRequestState) => state.detail.request.url;
+export const getRequest = (state: IRequestState) => state.detail.request.request;
+export const getResponse = (state: IRequestState) => state.detail.request.response;
 
 interface IFlattenedMiddleware {
     depth: number,
-    middleware: IRequestDetailRequestMiddlewareState
+    middleware: { name: string, packageName: string, headers: { [key: string]: string } }
 }
 
 function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareState[], middlewareArray: IFlattenedMiddleware[], depth: number): void {
@@ -16,7 +20,11 @@ function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareS
     middleware.forEach(middlewareItem => {
         middlewareArray.push({
             depth: depth,
-            middleware: middlewareItem
+            middleware: {
+                name: middlewareItem.name,
+                packageName: middlewareItem.packageName,
+                headers: middlewareItem.headers
+            }
         });
 
         flattenMiddlewareRecursive(middlewareItem.middleware, middlewareArray, depth + 1);
@@ -31,14 +39,9 @@ function flattenMiddleware(middleware: IRequestDetailRequestMiddlewareState[]): 
     return middlewareArray;
 }
 
-export const getRequest = createSelector(
-    getRequestState,
-    requestState => {
-        return {
-            url: requestState.url,
-            middleware: flattenMiddleware(requestState.middleware),
-            request: requestState.request,
-            response: requestState.response
-        }
+export const getMiddleware = createSelector(
+    getMiddlewareState,
+    middleware => {
+        return flattenMiddleware(middleware);
     }
 );
