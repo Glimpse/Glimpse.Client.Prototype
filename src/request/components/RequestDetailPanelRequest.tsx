@@ -121,7 +121,7 @@ export class Request extends React.Component<IRequestProps, {}> {
                 <td>{ordinal}</td>
                 <td>{this.renderName(middleware.middleware.name, middleware.depth)}</td>                            
                 <td>{middleware.middleware.packageName}</td>
-                <td>{_.size(middleware.middleware.headers) > 0 ? 'Header' : ''}</td>
+                <td>{_.size(middleware.middleware.headers) > 0 ? 'Header' : '-'}</td>
                 <td>{this.renderHeaders(middleware.middleware.headers)}</td>
                 <td />
             </tr>

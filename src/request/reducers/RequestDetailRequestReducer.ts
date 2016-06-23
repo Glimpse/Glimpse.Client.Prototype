@@ -10,9 +10,11 @@ import { requestDetailUpdateAction } from '../actions/RequestDetailActions';
 import { Action } from 'redux';
 import * as _ from 'lodash';
 
+const defaultMiddlewareState = [];
+
 const defaultState: IRequestDetailRequestState = {
     url: '',
-    middleware: [],
+    middleware: defaultMiddlewareState,
     request: {
         body: '',
         headers: {}
@@ -25,20 +27,24 @@ const defaultState: IRequestDetailRequestState = {
 
 // TODO: Consolidate this function into a utility function across reducers.
 function getMessages(request, messageType: string): IMessage[] {
-    const messageIds = request.types[messageType];
-    
-    if (messageIds) {
-        return messageIds.map(messageId => request.messages[messageId]);
+    if (request) {
+        const messageIds = request.types[messageType];
+        
+        if (messageIds) {
+            return messageIds.map(messageId => request.messages[messageId]);
+        }
     }
     
     return [];
 }
 
 function getMessageWithPayload<T>(request, messageType: string): IMessageEnvelope<T> {
-    const messageIds = request.types[messageType];
-    
-    if (messageIds && messageIds.length > 0) {
-        return request.messages[messageIds[0]];
+    if (request) {
+        const messageIds = request.types[messageType];
+        
+        if (messageIds && messageIds.length > 0) {
+            return request.messages[messageIds[0]];
+        }
     }
     
     return undefined;
@@ -105,33 +111,59 @@ function createMiddlewareState(messages: ICorrelatedMiddlewareMessages): IReques
     };
 }
 
-function updateRequestState(state: IRequestDetailRequestState, request): IRequestDetailRequestState {
-    if (request) {
-        const requestMessage = getMessageWithPayload<IWebRequestPayload>(request, WebRequestType);
-        const responseMessage = getMessageWithPayload<IWebResponsePayload>(request, WebResponseType);
-
-        return {
-            url: requestMessage ? requestMessage.payload.url : undefined,
-            middleware: correlateMiddlewareMessages(getMessages(request, MiddlewareStartType), getMessages(request, MiddlewareEndType)).map(messages => createMiddlewareState(messages)),
-            request: {
-                body: requestMessage && requestMessage.payload.body && requestMessage.payload.body.content ? requestMessage.payload.body.content : '',
-                headers: requestMessage ? requestMessage.payload.headers : undefined
-            },
-            response: {
-                body: responseMessage && responseMessage.payload.body && responseMessage.payload.body.content ? responseMessage.payload.body.content : '',
-                headers: responseMessage ? responseMessage.payload.headers : undefined
-            }
-        };
-    }
-
-    return defaultState;
+function updateMiddlewareState(request): IRequestDetailRequestMiddlewareState[] {
+    return correlateMiddlewareMessages(getMessages(request, MiddlewareStartType), getMessages(request, MiddlewareEndType)).map(messages => createMiddlewareState(messages));
 }
 
-export function requestReducer(state: IRequestDetailRequestState = defaultState, action: Action) {
+export function middlewareReducer(state: IRequestDetailRequestMiddlewareState[] = defaultMiddlewareState, action: Action): IRequestDetailRequestMiddlewareState[]  {
     switch (action.type) {
         case requestDetailUpdateAction.type:
-            return updateRequestState(state, requestDetailUpdateAction.unwrap(action));
+            return updateMiddlewareState(requestDetailUpdateAction.unwrap(action));
     }
 
     return state;
+}
+
+export function requestResponseReducer(state: IRequestDetailRequestState = defaultState, action: Action) {
+    switch (action.type) {
+        case requestDetailUpdateAction.type: {
+            const request = requestDetailUpdateAction.unwrap(action);
+            const requestMessage = getMessageWithPayload<IWebRequestPayload>(request, WebRequestType);
+            const responseMessage = getMessageWithPayload<IWebResponsePayload>(request, WebResponseType);
+
+            return {
+                url: requestMessage ? requestMessage.payload.url : undefined,
+                request: {
+                    body: requestMessage && requestMessage.payload.body && requestMessage.payload.body.content ? requestMessage.payload.body.content : '',
+                    headers: requestMessage ? requestMessage.payload.headers : undefined
+                },
+                response: {
+                    body: responseMessage && responseMessage.payload.body && responseMessage.payload.body.content ? responseMessage.payload.body.content : '',
+                    headers: responseMessage ? responseMessage.payload.headers : undefined
+                }
+            };
+        }
+    }
+
+    return state;
+}
+
+export function requestReducer(state: IRequestDetailRequestState = defaultState, action: Action) {
+    const newMiddleware = middlewareReducer(state.middleware, action);
+    const newRequestResponse = requestResponseReducer(state, action);
+
+    if ((state.middleware !== newMiddleware)
+        || (state.url !== newRequestResponse.url)
+        || (state.request !== newRequestResponse.request)
+        || (state.response !== newRequestResponse.response)) {
+        return {
+            middleware: newMiddleware,
+            url: newRequestResponse.url,
+            request: newRequestResponse.request,
+            response: newRequestResponse.response
+        };
+    }
+    else {
+        return state;
+    }
 }
