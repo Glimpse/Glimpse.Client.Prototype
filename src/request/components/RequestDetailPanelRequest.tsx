@@ -6,9 +6,18 @@ import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
 
+interface IFlattenedMiddleware {
+    depth: number;
+    middleware: { 
+        name: string, 
+        packageName: string, 
+        headers: { [key: string]: string }
+    };
+}
+
 export interface IRequestProps {
     url: string;
-    middleware: { name: string, packageName: string, headers: { [key: string]: string } }[],
+    middleware: IFlattenedMiddleware[],
     request: {
         body: string;
         headers: { [key: string]: string }
@@ -91,31 +100,54 @@ export class Request extends React.Component<IRequestProps, {}> {
                     <thead>
                         <tr className='table-col-title-group'>
                             <th width='10%'><span className='table-col-title'>Ordinal</span></th>
+                            <th width='25%'><span className='table-col-title'>Name</span></th>
                             <th width='20%'><span className='table-col-title'>Type</span></th>
-                            <th width='20%'><span className='table-col-title'>Name</span></th>
                             <th width='10%'><span className='table-col-title'>Modify</span></th>
-                            <th width='20%'><span className='table-col-title'>Parameter</span></th>
+                            <th width='25%'><span className='table-col-title'>Parameter</span></th>
                             <th />
                         </tr>
                     </thead>
                     <tbody>
-                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow.packageName, middlewareRow.name, middlewareRow.headers)) }      
+                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow)) }      
                     </tbody>
                 </table>
             </div>
         );
     }
 
-    private renderMiddlewareRow(ordinal: number, packageName: string, name: string, headers: { [key: string]: string }) {
+    private renderMiddlewareRow(ordinal: number, middleware: IFlattenedMiddleware) {
         return (
             <tr>
                 <td>{ordinal}</td>
-                <td>{packageName}</td>
-                <td>{name}</td>                            
-                <td>Header</td>
-                <td>{this.renderHeaders(headers)}</td>
+                <td>{this.renderName(middleware.middleware.name, middleware.depth)}</td>                            
+                <td>{middleware.middleware.packageName}</td>
+                <td>{_.size(middleware.middleware.headers) > 0 ? 'Header' : ''}</td>
+                <td>{this.renderHeaders(middleware.middleware.headers)}</td>
                 <td />
             </tr>
         );
+    }
+
+    private renderName(name: string, depth: number) {
+        return (
+            <div>
+                {this.renderIndent(depth)}<span>{name}</span>
+            </div>
+        )
+    }
+
+    private renderIndent(depth: number) {
+        if (depth > 0) {
+            const spans = [];
+
+            for (let i = 0; i < depth; i++) {
+                spans.push(<span className='tab-request-middleware-indent' />);
+            }
+
+            return spans;
+        }
+        else {
+            return null;
+        }
     }
 }
