@@ -548,6 +548,26 @@ $tabbed-panel-border-color: #cccccc;
     font-weight: bold;
 }
 
+.tab-request-params {
+    overflow: auto;
+}
+
+.tab-request-parameter-set {
+    > ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            margin-bottom: 5px;
+        }
+    }
+}
+
+.tab-request-parameter-key {
+    font-weight: bold;
+}
+
 .tab-data {
     display: flex;
 }

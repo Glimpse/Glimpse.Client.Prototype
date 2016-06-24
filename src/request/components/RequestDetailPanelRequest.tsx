@@ -11,6 +11,7 @@ export interface IRequestProps {
     url: string;
     request: {
         body: string;
+        formData: { [key: string]: string };
         headers: { [key: string]: string };
     };
     response: {
@@ -28,7 +29,7 @@ export class Request extends React.Component<IRequestProps, {}> {
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, parsedUrl.query) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, parsedUrl.query, this.props.request.formData) }
                         <div className='tab-request-separator' />
                         { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
                     </div>
@@ -42,7 +43,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }, query?: { [key: string]: string }) {
+    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }, query?: { [key: string]: string }, formData?: { [key: string]: string }) {
         const panels = [
             <TabPanel header='Headers'>
                 { this.renderHeaders(headers) }
@@ -52,10 +53,10 @@ export class Request extends React.Component<IRequestProps, {}> {
             </TabPanel>
         ];
 
-        if (!_.isEmpty(query)) {
+        if (!_.isEmpty(query) || !_.isEmpty(formData)) {
             panels.push(
-                <TabPanel header='Query'>
-                    { this.renderQuery(query) }
+                <TabPanel header='Params'>
+                    { this.renderParams(query, formData) }
                 </TabPanel>
             );
         }
@@ -95,7 +96,29 @@ export class Request extends React.Component<IRequestProps, {}> {
         );
     }
 
-    private renderQuery(query: { [key: string]: string }) {
-        return null;
+    private renderParams(query: { [key: string]: string }, formData: { [key: string]: string }) {
+        return (
+            <div className='tab-request-params'>
+                { !_.isEmpty(query) ? this.renderParameterSet('Query String', query) : null }
+                { !_.isEmpty(formData) ? this.renderParameterSet('Form Data', formData) : null }
+            </div>
+        );
+    }
+
+    private renderParameterSet(title: string, set: { [key: string]: string }) {
+        return (
+            <div className='tab-request-parameter-set'>
+                <div>{title}</div>
+                <ul>
+                    { _.map(set, (value, key) => this.renderParameter(key, value)) }
+                </ul>
+            </div>
+        );
+    }
+
+    private renderParameter(key: string, value: string) {
+        return (
+            <li key={key}><span className='tab-request-parameter-key'>{key}: </span><span>{value}</span></li>
+        );
     }
 }
