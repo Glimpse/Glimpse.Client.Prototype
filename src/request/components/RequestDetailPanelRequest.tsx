@@ -77,7 +77,13 @@ export class Request extends React.Component<IRequestProps, {}> {
         return (
             <div className='tab-request-headers'>
                 <ul>
-                    { _.map(headers, (value, key) => this.renderHeader(key, value)) }
+                    { 
+                        _(headers)
+                            .map((value, key) => { return { key: key, value: value }; })
+                            .sortBy(pair => pair.key)
+                            .map(pair => this.renderHeader(pair.key, pair.value))
+                            .value() 
+                    }
                 </ul>
             </div>
         );
@@ -111,7 +117,13 @@ export class Request extends React.Component<IRequestProps, {}> {
             <div className='tab-request-parameter-set'>
                 <div className='tab-request-parameter-title'>{title}</div>
                 <ul>
-                    { _.map(set, (value, key) => this.renderParameter(key, value)) }
+                    { 
+                        _(set)
+                            .map((value, key) => { return { key: key, value: value }; })
+                            .sortBy(pair => pair.key)
+                            .map(pair => this.renderParameter(pair.key, pair.value))
+                            .value() 
+                    }
                 </ul>
             </div>
         );

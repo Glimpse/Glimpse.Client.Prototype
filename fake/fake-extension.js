@@ -945,8 +945,8 @@ var generateMvcRequest = (function() {
                         payload.query = source.query;
                         payload.body = {
                             form: {
-                                key1: 'value1',
-                                key2: 'value2'
+                                keyTwo: 'value2',
+                                keyOne: 'value1'
                             }
                         };
 
