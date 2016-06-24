@@ -25,11 +25,12 @@ export class Request extends React.Component<IRequestProps, {}> {
         let content;
         if (this.props.url && this.props.request && this.props.response) {
             const parsedUrl = parseUrl(this.props.url, /* parse query string */ true);
+            const query = parsedUrl.query as { [key: string]: string };
 
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, parsedUrl.query, this.props.request.formData) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, query, this.props.request.formData) }
                         <div className='tab-request-separator' />
                         { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
                     </div>
@@ -45,20 +46,12 @@ export class Request extends React.Component<IRequestProps, {}> {
 
     private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }, query?: { [key: string]: string }, formData?: { [key: string]: string }) {
         const panels = [
-            <TabPanel header='Headers'>
-                { this.renderHeaders(headers) }
-            </TabPanel>,
-            <TabPanel header='Body'>
-                { this.renderBody(body) }
-            </TabPanel>
+            { header: 'Headers', renderContent: () => this.renderHeaders(headers) },
+            { header: 'Body', renderContent: () => this.renderBody(body) }
         ];
 
         if (!_.isEmpty(query) || !_.isEmpty(formData)) {
-            panels.push(
-                <TabPanel header='Params'>
-                    { this.renderParams(query, formData) }
-                </TabPanel>
-            );
+            panels.push({ header: 'Params', renderContent: () => this.renderParams(query, formData) });
         }
         
         return (
@@ -66,7 +59,15 @@ export class Request extends React.Component<IRequestProps, {}> {
                 <div className='tab-request-response-title'>{title}</div>
                 <br />
                 <TabbedPanel>
-                    { panels }
+                    { 
+                        panels.map(panel => {
+                            return (
+                                <TabPanel header={panel.header}>
+                                    { panel.renderContent() }
+                                </TabPanel>
+                            );
+                        }) 
+                    }
                 </TabbedPanel>
             </div>
         );     
