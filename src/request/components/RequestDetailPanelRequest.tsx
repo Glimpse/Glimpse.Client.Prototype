@@ -109,7 +109,7 @@ export class Request extends React.Component<IRequestProps, {}> {
     private renderParameterSet(title: string, set: { [key: string]: string }) {
         return (
             <div className='tab-request-parameter-set'>
-                <div>{title}</div>
+                <div className='tab-request-parameter-title'>{title}</div>
                 <ul>
                     { _.map(set, (value, key) => this.renderParameter(key, value)) }
                 </ul>

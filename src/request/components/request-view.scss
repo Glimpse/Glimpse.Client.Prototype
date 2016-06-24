@@ -552,7 +552,14 @@ $tabbed-panel-border-color: #cccccc;
     overflow: auto;
 }
 
+.tab-request-parameter-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
 .tab-request-parameter-set {
+    margin-bottom: 10px;
+
     > ul {
         list-style-type: none;
         margin: 0;
@@ -560,6 +567,7 @@ $tabbed-panel-border-color: #cccccc;
 
         > li {
             margin-bottom: 5px;
+            margin-left: 5px;
         }
     }
 }
