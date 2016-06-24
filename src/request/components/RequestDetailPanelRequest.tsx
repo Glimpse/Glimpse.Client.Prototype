@@ -5,12 +5,13 @@ import { trainCase } from '../../lib/StringUtilities';
 import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
+import parseUrl = require('url-parse');
 
 export interface IRequestProps {
     url: string;
     request: {
         body: string;
-        headers: { [key: string]: string }
+        headers: { [key: string]: string };
     };
     response: {
         body: string;
@@ -22,10 +23,12 @@ export class Request extends React.Component<IRequestProps, {}> {
     public render() {
         let content;
         if (this.props.url && this.props.request && this.props.response) {
+            const parsedUrl = parseUrl(this.props.url, /* parse query string */ true);
+
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, parsedUrl.query) }
                         <div className='tab-request-separator' />
                         { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
                     </div>
@@ -39,18 +42,30 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }) {
+    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }, query?: { [key: string]: string }) {
+        const panels = [
+            <TabPanel header='Headers'>
+                { this.renderHeaders(headers) }
+            </TabPanel>,
+            <TabPanel header='Body'>
+                { this.renderBody(body) }
+            </TabPanel>
+        ];
+
+        if (!_.isEmpty(query)) {
+            panels.push(
+                <TabPanel header='Query'>
+                    { this.renderQuery(query) }
+                </TabPanel>
+            );
+        }
+        
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-response-title'>{title}</div>
                 <br />
                 <TabbedPanel>
-                    <TabPanel header='Headers'>
-                        { this.renderHeaders(headers) }
-                    </TabPanel>
-                    <TabPanel header='Body'>
-                        { this.renderBody(body) }
-                    </TabPanel>
+                    { panels }
                 </TabbedPanel>
             </div>
         );     
@@ -78,5 +93,9 @@ export class Request extends React.Component<IRequestProps, {}> {
                 <Highlight className=''>{body}</Highlight>
             </div>
         );
+    }
+
+    private renderQuery(query: { [key: string]: string }) {
+        return null;
     }
 }
