@@ -14,7 +14,7 @@ export interface IRequestProps {
     };
     response: {
         body: string;
-        headers: { [key: string]: string };
+        headers: { [key: string]: string | string[] };
     };
 }
 
@@ -39,7 +39,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }) {
+    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string | string[] }) {
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-response-title'>{title}</div>
@@ -56,19 +56,32 @@ export class Request extends React.Component<IRequestProps, {}> {
         );     
     }
 
-    private renderHeaders(headers: { [key: string]: string}) {
+    private renderHeaders(headers: { [key: string]: string | string[]}) {
+        const headerArray = [];
+
+        _.forEach(headers, (value, key) => {
+            if (Array.isArray(value)) {
+                value.forEach((v, index) => {
+                    headerArray.push(this.renderHeader(key, index, v));
+                })
+            } 
+            else {
+                headerArray.push(this.renderHeader(key, 0, value));
+            }
+        });
+
         return (
             <div className='tab-request-headers'>
                 <ul>
-                    { _.map(headers, (value, key) => this.renderHeader(key, value)) }
+                    { headerArray }
                 </ul>
             </div>
         );
     }
 
-    private renderHeader(key: string, value: string) {
+    private renderHeader(key: string, index: number, value: string) {
         return (
-            <li key={key}><span className='tab-request-header-key'>{trainCase(key)}: </span><span>{value}</span></li>
+            <li key={key + index}><span className='tab-request-header-key'>{trainCase(key)}: </span><span>{value}</span></li>
         );
     }
 
