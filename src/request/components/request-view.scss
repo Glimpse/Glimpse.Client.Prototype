@@ -439,7 +439,7 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     flex: none;
     flex-direction: row;
-    padding: 5px 30px 0px 30px;
+    padding: 0px 30px 0px 0px;
 }
 
 .tabbed-panel-header {
@@ -452,7 +452,7 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     height: 23px;
     margin-bottom: -1px;
-    padding: 0px 5px 0px 5px;
+    padding: 0px 10px 0px 10px;
 }
 
 .tabbed-panel-header:hover {
@@ -531,6 +531,7 @@ $tabbed-panel-border-color: #cccccc;
 
         > li {
             margin-bottom: 5px;
+            margin-left: 20px;
         }
     }
 }
@@ -558,7 +559,7 @@ $tabbed-panel-border-color: #cccccc;
 }
 
 .tab-request-parameter-set {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 
     > ul {
         list-style-type: none;
@@ -567,7 +568,7 @@ $tabbed-panel-border-color: #cccccc;
 
         > li {
             margin-bottom: 5px;
-            margin-left: 5px;
+            margin-left: 20px;
         }
     }
 }
