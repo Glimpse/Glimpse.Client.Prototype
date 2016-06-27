@@ -2,6 +2,8 @@ import { TabbedPanel } from './TabbedPanel';
 import { TabPanel } from './TabPanel';
 import { trainCase } from '../../lib/StringUtilities';
 
+import requestConverter = require('../repository/converter/request-converter');
+
 import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
@@ -49,7 +51,7 @@ export class Request extends React.Component<IRequestProps, {}> {
                         { this.renderHeaders(headers) }
                     </TabPanel>
                     <TabPanel header='Body'>
-                        { this.renderBody(body) }
+                        { this.renderBody(body, headers) }
                     </TabPanel>
                 </TabbedPanel>
             </div>
@@ -72,11 +74,34 @@ export class Request extends React.Component<IRequestProps, {}> {
         );
     }
 
-    private renderBody(body: string) {
+    private renderBody(body: string, headers: { [key: string]: string }) {
+        const contentType = this.getContentTypeFromHeaders(headers);
+        const highlightClassName = this.getHighlightClassNameForContentType(contentType);
+
         return (
             <div className='tab-request-body'>
-                <Highlight className=''>{body}</Highlight>
+                <Highlight className={highlightClassName}>{body}</Highlight>
             </div>
         );
+    }
+
+    private getContentTypeFromHeaders(headers: { [key: string]: string }): string {
+        let contentType = undefined;
+
+        _.forEach(headers, (value, key) => {
+            if (key.toLowerCase() === 'content-type') {
+                contentType = value;
+                
+                return false;
+            }
+        });
+
+        return contentType;
+    }
+
+    private getHighlightClassNameForContentType(contentType: string): string {
+        const category = requestConverter.getContentTypeCategory(contentType);
+
+        return (category && category.highlight) || '';
     }
 }
