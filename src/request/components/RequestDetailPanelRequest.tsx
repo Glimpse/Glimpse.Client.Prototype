@@ -12,10 +12,12 @@ export interface IRequestProps {
     url: string;
     request: {
         body: string;
+        contentType: string;
         headers: { [key: string]: string }
     };
     response: {
         body: string;
+        contentType: string;
         headers: { [key: string]: string };
     };
 }
@@ -27,9 +29,9 @@ export class Request extends React.Component<IRequestProps, {}> {
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.contentType, this.props.request.headers) }
                         <div className='tab-request-separator' />
-                        { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
+                        { this.renderRequestResponse('Response', this.props.response.body, this.props.response.contentType, this.props.response.headers) }
                     </div>
                 </div>
             );
@@ -41,7 +43,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }) {
+    private renderRequestResponse(title: string, body: string, contentType: string, headers: { [key: string]: string }) {
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-response-title'>{title}</div>
@@ -51,7 +53,7 @@ export class Request extends React.Component<IRequestProps, {}> {
                         { this.renderHeaders(headers) }
                     </TabPanel>
                     <TabPanel header='Body'>
-                        { this.renderBody(body, headers) }
+                        { this.renderBody(body, contentType) }
                     </TabPanel>
                 </TabbedPanel>
             </div>
@@ -74,8 +76,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         );
     }
 
-    private renderBody(body: string, headers: { [key: string]: string }) {
-        const contentType = this.getContentTypeFromHeaders(headers);
+    private renderBody(body: string, contentType: string) {
         const highlightClassName = this.getHighlightClassNameForContentType(contentType);
 
         return (
@@ -83,20 +84,6 @@ export class Request extends React.Component<IRequestProps, {}> {
                 <Highlight className={highlightClassName}>{body}</Highlight>
             </div>
         );
-    }
-
-    private getContentTypeFromHeaders(headers: { [key: string]: string }): string {
-        let contentType = undefined;
-
-        _.forEach(headers, (value, key) => {
-            if (key.toLowerCase() === 'content-type') {
-                contentType = value;
-                
-                return false;
-            }
-        });
-
-        return contentType;
     }
 
     private getHighlightClassNameForContentType(contentType: string): string {
