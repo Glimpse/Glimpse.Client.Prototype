@@ -5,6 +5,7 @@ import { trainCase } from '../../lib/StringUtilities';
 import requestConverter = require('../repository/converter/request-converter');
 
 import _ = require('lodash');
+import classNames = require('classnames');
 import Highlight = require('react-highlight');
 import React = require('react');
 import parseUrl = require('url-parse');
@@ -14,7 +15,7 @@ interface IFlattenedMiddleware {
     middleware: { 
         name: string, 
         packageName: string, 
-        headers: { [key: string]: { value: string } }
+        headers: { [key: string]: { value: string, isCurrent: boolean } }
     };
 }
 
@@ -220,11 +221,17 @@ export class Request extends React.Component<IRequestProps, {}> {
                         _(headers)
                             .map((value, key) => { return { key: key, value: value }; })
                             .sortBy(pair => pair.key)
-                            .map(pair => this.renderHeader(pair.key, pair.value.value))
+                            .map(pair => this.renderMiddlewareHeader(pair.key, pair.value.value, pair.value.isCurrent))
                             .value() 
                     }
                 </ul>
             </div>
+        );
+    }
+
+    private renderMiddlewareHeader(key: string, value: string, isCurrent: boolean) {
+        return (
+            <li key={key}><span className='tab-request-middleware-header-key'>{trainCase(key)}: </span><span className={classNames({'tab-request-middleware-header-overwritten': !isCurrent})}>{value}</span></li>
         );
     }
 

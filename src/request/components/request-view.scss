@@ -597,6 +597,14 @@ $tabbed-panel-border-color: #cccccc;
     }
 }
 
+.tab-request-middleware-header-key {
+    font-weight: bold;
+}
+
+.tab-request-middleware-header-overwritten {
+    text-decoration: line-through;
+}
+
 .tab-data {
     display: flex;
 }
