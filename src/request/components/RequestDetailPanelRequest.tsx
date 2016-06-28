@@ -6,6 +6,10 @@ import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
 
+interface IRequestResponseHeaders {
+    [key: string]: string | string[];
+}
+
 export interface IRequestProps {
     url: string;
     request: {
@@ -14,7 +18,7 @@ export interface IRequestProps {
     };
     response: {
         body: string;
-        headers: { [key: string]: string | string[] };
+        headers: IRequestResponseHeaders;
     };
 }
 
@@ -39,7 +43,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string | string[] }) {
+    private renderRequestResponse(title: string, body: string, headers: IRequestResponseHeaders) {
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-response-title'>{title}</div>
@@ -56,7 +60,7 @@ export class Request extends React.Component<IRequestProps, {}> {
         );     
     }
 
-    private renderHeaders(headers: { [key: string]: string | string[]}) {
+    private renderHeaders(headers: IRequestResponseHeaders) {
         const headerArray = [];
 
         _.forEach(headers, (value, key) => {
