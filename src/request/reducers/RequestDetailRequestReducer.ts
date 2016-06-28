@@ -17,6 +17,7 @@ const defaultState: IRequestDetailRequestState = {
     middleware: defaultMiddlewareState,
     request: {
         body: '',
+        formData: {},
         headers: {}
     },
     response: {
@@ -149,14 +150,16 @@ const urlReducer = createRequestReducer<string>(
         return request ? request.url : ''
     });
 
-const webRequestReducer = createRequestReducer<{ body: string, headers: { [key: string]: string } }>(
+const webRequestReducer = createRequestReducer<{ body: string, formData: { [key: string]: string }, headers: { [key: string]: string } }>(
     {
         body: '',
+        formData: {},
         headers: {}
     },
     (state, request, response) => {
         return {
             body: request && request.body && request.body.content ? request.body.content : '',
+            formData: request && request.body && request.body.form ? request.body.form : {}, 
             headers: request && request.headers ? request.headers : {}
         }
     });

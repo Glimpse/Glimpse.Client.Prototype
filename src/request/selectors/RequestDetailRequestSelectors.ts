@@ -4,11 +4,11 @@ import { IRequestDetailRequestMiddlewareState } from '../stores/IRequestDetailRe
 
 import { createSelector } from 'reselect';
 
-const getMiddlewareState = (state: IRequestState) => state.detail.request.middleware;
+import * as _ from 'lodash';
 
+const getMiddlewareState = (state: IRequestState) => state.detail.request.middleware;
+export const getRequest = (state: IRequestState) => state.detail.request;
 export const getUrl = (state: IRequestState) => state.detail.request.url;
-export const getRequest = (state: IRequestState) => state.detail.request.request;
-export const getResponse = (state: IRequestState) => state.detail.request.response;
 
 interface IFlattenedMiddleware {
     depth: number,
@@ -45,3 +45,29 @@ export const getMiddleware = createSelector(
         return flattenMiddleware(middleware);
     }
 );
+
+function getContentTypeFromHeaders(headers: { [key: string]: string }): string {
+    let contentType = undefined;
+
+    _.forEach(headers, (value, key) => {
+        if (key.toLowerCase() === 'content-type') {
+            contentType = value;
+            
+            return false;
+        }
+    });
+
+    return contentType;
+}
+
+export const getRequestContentType = createSelector(
+    getRequest,
+    request => {
+        return getContentTypeFromHeaders(request.request.headers);
+    });
+
+export const getResponseContentType = createSelector(
+    getRequest,
+    request => {
+        return getContentTypeFromHeaders(request.response.headers);
+    });
