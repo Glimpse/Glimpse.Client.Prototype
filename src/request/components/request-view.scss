@@ -585,6 +585,18 @@ $tabbed-panel-border-color: #cccccc;
     margin-left: 15px;
 }
 
+.tab-request-middleware-headers {
+    > ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            margin-bottom: 5px;
+        }
+    }
+}
+
 .tab-data {
     display: flex;
 }

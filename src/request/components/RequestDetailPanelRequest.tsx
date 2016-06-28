@@ -14,7 +14,7 @@ interface IFlattenedMiddleware {
     middleware: { 
         name: string, 
         packageName: string, 
-        headers: { [key: string]: string }
+        headers: { [key: string]: { value: string } }
     };
 }
 
@@ -183,7 +183,7 @@ export class Request extends React.Component<IRequestProps, {}> {
                 <td>{this.renderName(middleware.middleware.name, middleware.depth)}</td>                            
                 <td>{middleware.middleware.packageName}</td>
                 <td>{_.size(middleware.middleware.headers) > 0 ? 'Header' : '-'}</td>
-                <td>{this.renderHeaders(middleware.middleware.headers)}</td>
+                <td>{this.renderMiddlewareHeaders(middleware.middleware.headers)}</td>
                 <td />
             </tr>
         );
@@ -210,6 +210,22 @@ export class Request extends React.Component<IRequestProps, {}> {
         else {
             return null;
         }
+    }
+
+        private renderMiddlewareHeaders(headers: { [key: string]: { value: string } }) {
+        return (
+            <div className='tab-request-middleware-headers'>
+                <ul>
+                    { 
+                        _(headers)
+                            .map((value, key) => { return { key: key, value: value }; })
+                            .sortBy(pair => pair.key)
+                            .map(pair => this.renderHeader(pair.key, pair.value.value))
+                            .value() 
+                    }
+                </ul>
+            </div>
+        );
     }
 
     private getHighlightClassNameForContentType(contentType: string): string {
