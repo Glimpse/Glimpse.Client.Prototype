@@ -2,6 +2,8 @@ import { TabbedPanel } from './TabbedPanel';
 import { TabPanel } from './TabPanel';
 import { trainCase } from '../../lib/StringUtilities';
 
+import requestConverter = require('../repository/converter/request-converter');
+
 import _ = require('lodash');
 import Highlight = require('react-highlight');
 import React = require('react');
@@ -11,11 +13,13 @@ export interface IRequestProps {
     url: string;
     request: {
         body: string;
+        contentType: string;
         formData: { [key: string]: string };
-        headers: { [key: string]: string };
+        headers: { [key: string]: string }
     };
     response: {
         body: string;
+        contentType: string;
         headers: { [key: string]: string };
     };
 }
@@ -30,9 +34,9 @@ export class Request extends React.Component<IRequestProps, {}> {
             content = (
                 <div className='tab-request'>
                     <div className='tab-request-response'>
-                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.headers, query, this.props.request.formData) }
+                        { this.renderRequestResponse('Request', this.props.request.body, this.props.request.contentType, this.props.request.headers, query, this.props.request.formData) }
                         <div className='tab-request-separator' />
-                        { this.renderRequestResponse('Response', this.props.response.body, this.props.response.headers) }
+                        { this.renderRequestResponse('Response', this.props.response.body, this.props.response.contentType, this.props.response.headers) }
                     </div>
                 </div>
             );
@@ -44,10 +48,10 @@ export class Request extends React.Component<IRequestProps, {}> {
         return content;
     }
 
-    private renderRequestResponse(title: string, body: string, headers: { [key: string]: string }, query?: { [key: string]: string }, formData?: { [key: string]: string }) {
+    private renderRequestResponse(title: string, body: string, contentType: string, headers: { [key: string]: string }, query?: { [key: string]: string }, formData?: { [key: string]: string }) {
         const panels = [
             { header: 'Headers', renderContent: () => this.renderHeaders(headers) },
-            { header: 'Body', renderContent: () => this.renderBody(body) }
+            { header: 'Body', renderContent: () => this.renderBody(body, contentType) }
         ];
 
         if (!_.isEmpty(query) || !_.isEmpty(formData)) {
@@ -95,10 +99,12 @@ export class Request extends React.Component<IRequestProps, {}> {
         );
     }
 
-    private renderBody(body: string) {
+    private renderBody(body: string, contentType: string) {
+        const highlightClassName = this.getHighlightClassNameForContentType(contentType);
+
         return (
             <div className='tab-request-body'>
-                <Highlight className=''>{body}</Highlight>
+                <Highlight className={highlightClassName}>{body}</Highlight>
             </div>
         );
     }
@@ -133,5 +139,11 @@ export class Request extends React.Component<IRequestProps, {}> {
         return (
             <li key={key}><span className='tab-request-parameter-key'>{key}: </span><span>{value}</span></li>
         );
+    }
+
+    private getHighlightClassNameForContentType(contentType: string): string {
+        const category = requestConverter.getContentTypeCategory(contentType);
+
+        return (category && category.highlight) || '';
     }
 }
