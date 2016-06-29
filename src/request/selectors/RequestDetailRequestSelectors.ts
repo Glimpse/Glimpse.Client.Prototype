@@ -29,8 +29,8 @@ function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareS
             headers: _.mapValues(middlewareItem.headers, value => { return { value: value.value, isCurrent: false }; })
         };
 
-        _.forEach(middleware.headers, (value, key) => {
-            currentHeaders[key] = middleware;
+        _.forEach(middlewareItem.headers, (value, key) => {
+            currentHeaders[key] = value.wasSet ? middleware : undefined;
         });
 
         middlewareArray.push({
@@ -49,7 +49,9 @@ function flattenMiddleware(middleware: IRequestDetailRequestMiddlewareState[]): 
     flattenMiddlewareRecursive(middleware, middlewareArray, currentHeaders, 0);
 
     _.forEach(currentHeaders, (value, key) => {
-        value.headers[key].isCurrent = true;
+        if (value) {
+            value.headers[key].isCurrent = true;
+        }
     });
 
     return middlewareArray;

@@ -84,11 +84,28 @@ function toMap<T, TResult>(values: T[], keySelector: (value: T) => string, value
         <{ [key: string]: TResult }>{});
 }
 
+function createMiddlewareHeaders(endMessage: IMessageEnvelope<IMiddlewareEndPayload>): { [key: string]: { value: string, wasSet: boolean } } {
+    if (endMessage && endMessage.payload.name !== 'router') {
+        return toMap(
+            endMessage.payload.headers,
+            header => header.name,
+            header => {
+                return {
+                    value: header.value,
+                    wasSet: header.op === 'set'
+                };
+            });
+    }
+    else {
+        return {};
+    }
+}
+
 function createMiddlewareState(messages: ICorrelatedMiddlewareMessages): IRequestDetailRequestMiddlewareState {
     // NOTE: We ignore Express Router header modifications as they're likely actually modifications made by route middleware, not the Router itself.
 
     return {
-        headers: messages.endMessage && messages.startMessage.payload.name !== 'router' ? toMap(messages.endMessage.payload.headers, header => header.name, header => { return { value: header.value, wasSet: true }; }) : {},
+        headers: createMiddlewareHeaders(messages.endMessage),
         middleware: messages.middleware.map(middlewareMessages => createMiddlewareState(middlewareMessages)),
         name: messages.startMessage.payload.displayName || messages.startMessage.payload.name,
         packageName: messages.startMessage.payload.packageName

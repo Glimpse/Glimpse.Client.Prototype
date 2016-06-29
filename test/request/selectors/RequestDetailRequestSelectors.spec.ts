@@ -59,7 +59,8 @@ describe('RequestDetailRequestSelectors', () => {
 
         it('should return a middleware if one was executed', () => {
             const state = createState([
-                createMiddleware('name', 'package', { name: { value: 'value', wasSet: true } })
+                createMiddleware('name1', 'package1', { 'set-header': { value: 'value', wasSet: true }, 'un-set-header': { value: 'value', wasSet: true } }),
+                createMiddleware('name2', 'package2', { 'set-header': { value: 'value', wasSet: true }, 'un-set-header': { value: 'value', wasSet: false } })
             ]);
             const middleware = getMiddleware(state);
 
@@ -68,12 +69,33 @@ describe('RequestDetailRequestSelectors', () => {
                 {
                     depth: 0,
                     middleware: {
-                        name: 'name',
-                        packageName: 'package',
+                        name: 'name1',
+                        packageName: 'package1',
                         headers: {
-                            name: {
+                            'set-header': {
+                                value: 'value',
+                                isCurrent: false
+                            },
+                            'un-set-header': {
+                                value: 'value',
+                                isCurrent: false
+                            }
+                        }
+                    }
+                },
+                {
+                    depth: 0,
+                    middleware: {
+                        name: 'name2',
+                        packageName: 'package2',
+                        headers: {
+                            'set-header': {
                                 value: 'value',
                                 isCurrent: true
+                            },
+                            'un-set-header': {
+                                value: 'value',
+                                isCurrent: false
                             }
                         }
                     }
