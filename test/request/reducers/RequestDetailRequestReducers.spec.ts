@@ -108,7 +108,10 @@ describe('RequestDetailRequestReducers', () => {
                     name: 'name',
                     packageName: 'package',
                     headers: {
-                        name: 'value'
+                        name: {
+                            value: 'value',
+                            wasSet: true
+                        }
                     },
                     middleware: []
                 }

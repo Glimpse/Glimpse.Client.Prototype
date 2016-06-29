@@ -39,7 +39,7 @@ describe('RequestDetailRequestSelectors', () => {
         };
     }
 
-    function createMiddleware(name: string, packageName: string, headers?: { [key: string]: string }, middleware?: IRequestDetailRequestMiddlewareState[]): IRequestDetailRequestMiddlewareState {
+    function createMiddleware(name: string, packageName: string, headers?: { [key: string]: { value: string, wasSet: boolean } }, middleware?: IRequestDetailRequestMiddlewareState[]): IRequestDetailRequestMiddlewareState {
         return {
             headers: headers || {},
             middleware: middleware || [],
@@ -59,7 +59,7 @@ describe('RequestDetailRequestSelectors', () => {
 
         it('should return a middleware if one was executed', () => {
             const state = createState([
-                createMiddleware('name', 'package', { name: 'value' })
+                createMiddleware('name', 'package', { name: { value: 'value', wasSet: true } })
             ]);
             const middleware = getMiddleware(state);
 
@@ -71,8 +71,11 @@ describe('RequestDetailRequestSelectors', () => {
                         name: 'name',
                         packageName: 'package',
                         headers: {
-                            name: 'value'
-                        }                    
+                            name: {
+                                value: 'value',
+                                isCurrent: true
+                            }
+                        }
                     }
                 }
             ]);

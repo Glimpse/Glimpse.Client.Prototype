@@ -1,5 +1,4 @@
 import { IRequestState } from '../stores/IRequestState';
-import { IRequestDetailRequestState } from '../stores/IRequestDetailRequestState';
 import { IRequestDetailRequestMiddlewareState } from '../stores/IRequestDetailRequestMiddlewareState';
 
 import { createSelector } from 'reselect';
@@ -10,16 +9,15 @@ const getMiddlewareState = (state: IRequestState) => state.detail.request.middle
 export const getRequest = (state: IRequestState) => state.detail.request;
 export const getUrl = (state: IRequestState) => state.detail.request.url;
 
-interface IMiddleware { 
-    name: string, 
-    packageName: string, 
-    headers: { [key: string]: { value: string, isCurrent: boolean } } 
+interface IMiddleware {
+    name: string;
+    packageName: string;
+    headers: { [key: string]: { value: string, isCurrent: boolean } };
 }
 
-
 interface IFlattenedMiddleware {
-    depth: number,
-    middleware: IMiddleware
+    depth: number;
+    middleware: IMiddleware;
 }
 
 function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareState[], middlewareArray: IFlattenedMiddleware[], currentHeaders: { [key: string]: IMiddleware }, depth: number): void {
@@ -28,7 +26,7 @@ function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareS
         const middleware = {
             name: middlewareItem.name,
             packageName: middlewareItem.packageName,
-            headers: _.mapValues(middlewareItem.headers, value => { return { value: value, isCurrent: false }; })
+            headers: _.mapValues(middlewareItem.headers, value => { return { value: value.value, isCurrent: false }; })
         };
 
         _.forEach(middleware.headers, (value, key) => {
@@ -70,7 +68,7 @@ function getContentTypeFromHeaders(headers: { [key: string]: string }): string {
     _.forEach(headers, (value, key) => {
         if (key.toLowerCase() === 'content-type') {
             contentType = value;
-            
+
             return false;
         }
     });
