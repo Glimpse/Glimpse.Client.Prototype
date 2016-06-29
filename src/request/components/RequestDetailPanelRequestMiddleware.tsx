@@ -87,7 +87,7 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
                         _(headers)
                             .map((value, key) => { return { key: key, value: value }; })
                             .sortBy(pair => pair.key)
-                            .map(pair => this.renderMiddlewareHeader(pair.key, pair.value.value, pair.value.isCurrent))
+                            .map(pair => pair.value.isCurrent ? this.renderCurrentHeader(pair.key, pair.value.value) : this.renderOverwrittenHeader(pair.key, pair.value.value))
                             .value() 
                     }
                 </ul>
@@ -95,9 +95,15 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
         );
     }
 
-    private renderMiddlewareHeader(key: string, value: string, isCurrent: boolean) {
+    private renderOverwrittenHeader(key: string, value: string) {
         return (
-            <li key={key}><span className='tab-request-middleware-header-key'>{trainCase(key)}: </span><span className={classNames({'tab-request-middleware-header-overwritten': !isCurrent})}>{value}</span></li>
+            <li key={key}><span className='tab-request-middleware-header-overwritten'>{trainCase(key) + ' : ' + value}</span></li>
+        );
+    }
+
+    private renderCurrentHeader(key: string, value: string) {
+        return (
+            <li key={key}><span className='tab-request-middleware-header-key'>{trainCase(key)}: </span><span className='tab-request-middleware-header-value'>{value}</span></li>
         );
     }
 }

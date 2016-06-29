@@ -549,6 +549,10 @@ $tabbed-panel-border-color: #cccccc;
     font-weight: bold;
 }
 
+.tab-request-header-value {
+    color: #225b7d;
+}
+
 .tab-request-params {
     overflow: auto;
 }
@@ -601,8 +605,16 @@ $tabbed-panel-border-color: #cccccc;
     font-weight: bold;
 }
 
+.tab-request-middleware-header-value {
+    color: #225b7d;
+}
+
 .tab-request-middleware-header-overwritten {
+    color: #b5b5b5;
     text-decoration: line-through;
+    text-decoration-color: #f6999e;
+    -moz-text-decoration-color: #f6999e;
+    -webkit-text-decoration-color: #f6999e;
 }
 
 .tab-data {
