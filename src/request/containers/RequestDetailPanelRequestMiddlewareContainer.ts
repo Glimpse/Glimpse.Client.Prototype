@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 
 function mapStateToProps(state) {
     return {
-        middleware: getMiddleware(state),
-    }
+        middleware: getMiddleware(state)
+    };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -14,7 +14,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export const RequestDetailPanelRequestMiddlewareContainer = connect(
+export const RequestDetailPanelRequestMiddlewareContainer = connect( /* tslint:disable-line: variable-name */
     mapStateToProps,
     mapDispatchToProps
 )(RequestMiddleware);

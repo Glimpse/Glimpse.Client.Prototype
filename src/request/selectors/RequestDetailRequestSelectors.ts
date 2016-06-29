@@ -23,19 +23,19 @@ interface IFlattenedMiddleware {
 function flattenMiddlewareRecursive(middleware: IRequestDetailRequestMiddlewareState[], middlewareArray: IFlattenedMiddleware[], currentHeaders: { [key: string]: IMiddleware }, depth: number): void {
 
     middleware.forEach(middlewareItem => {
-        const middleware = {
+        const m = {
             name: middlewareItem.name,
             packageName: middlewareItem.packageName,
             headers: _.mapValues(middlewareItem.headers, value => { return { value: value.value, isCurrent: false }; })
         };
 
         _.forEach(middlewareItem.headers, (value, key) => {
-            currentHeaders[key] = value.wasSet ? middleware : undefined;
+            currentHeaders[key] = value.wasSet ? m : undefined;
         });
 
         middlewareArray.push({
             depth: depth,
-            middleware: middleware
+            middleware: m
         });
 
         flattenMiddlewareRecursive(middlewareItem.middleware, middlewareArray, currentHeaders, depth + 1);

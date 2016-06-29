@@ -6,7 +6,6 @@ import { trainCase } from '../../lib/StringUtilities';
 import requestConverter = require('../repository/converter/request-converter');
 
 import _ = require('lodash');
-import classNames = require('classnames');
 import Highlight = require('react-highlight');
 import React = require('react');
 import parseUrl = require('url-parse');
@@ -60,36 +59,36 @@ export class Request extends React.Component<IRequestProps, {}> {
         if (!_.isEmpty(query) || !_.isEmpty(formData)) {
             panels.push({ header: 'Params', renderContent: () => this.renderParams(query, formData) });
         }
-        
+
         return (
             <div className='tab-request-response-panel'>
                 <div className='tab-request-title'>{title}</div>
                 <br />
                 <TabbedPanel>
-                    { 
+                    {
                         panels.map(panel => {
                             return (
                                 <TabPanel header={panel.header}>
                                     { panel.renderContent() }
                                 </TabPanel>
                             );
-                        }) 
+                        })
                     }
                 </TabbedPanel>
             </div>
-        );     
+        );
     }
 
     private renderHeaders(headers: { [key: string]: string}) {
         return (
             <div className='tab-request-headers'>
                 <ul>
-                    { 
+                    {
                         _(headers)
                             .map((value, key) => { return { key: key, value: value }; })
                             .sortBy(pair => pair.key)
                             .map(pair => this.renderHeader(pair.key, pair.value))
-                            .value() 
+                            .value()
                     }
                 </ul>
             </div>
@@ -115,8 +114,8 @@ export class Request extends React.Component<IRequestProps, {}> {
     private renderParams(query: { [key: string]: string }, formData: { [key: string]: string }) {
         return (
             <div className='tab-request-params'>
-                { !_.isEmpty(query) ? this.renderParameterSet('Query String', query) : null }
-                { !_.isEmpty(formData) ? this.renderParameterSet('Form Data', formData) : null }
+                { !_.isEmpty(query) ? this.renderParameterSet('Query String', query) : null }       /* tslint:disable-line:no-null-keyword */
+                { !_.isEmpty(formData) ? this.renderParameterSet('Form Data', formData) : null }    /* tslint:disable-line:no-null-keyword */
             </div>
         );
     }
@@ -126,12 +125,12 @@ export class Request extends React.Component<IRequestProps, {}> {
             <div className='tab-request-parameter-set'>
                 <div className='tab-request-parameter-title'>{title}</div>
                 <ul>
-                    { 
+                    {
                         _(set)
                             .map((value, key) => { return { key: key, value: value }; })
                             .sortBy(pair => pair.key)
                             .map(pair => this.renderParameter(pair.key, pair.value))
-                            .value() 
+                            .value()
                     }
                 </ul>
             </div>

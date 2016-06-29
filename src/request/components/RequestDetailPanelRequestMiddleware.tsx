@@ -3,19 +3,17 @@ import { trainCase } from '../../lib/StringUtilities';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import classNames = require('classnames');
-
 interface IFlattenedMiddleware {
     depth: number;
-    middleware: { 
-        name: string, 
-        packageName: string, 
+    middleware: {
+        name: string,
+        packageName: string,
         headers: { [key: string]: { value: string, isCurrent: boolean } }
     };
 }
 
 export interface IRequestMiddlewareProps {
-    middleware: IFlattenedMiddleware[],
+    middleware: IFlattenedMiddleware[];
 }
 
 export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, {}> {
@@ -36,7 +34,7 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
                         </tr>
                     </thead>
                     <tbody>
-                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow)) }      
+                        { this.props.middleware.map((middlewareRow, index) => this.renderMiddlewareRow(index + 1, middlewareRow)) }
                     </tbody>
                 </table>
             </div>
@@ -47,7 +45,7 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
         return (
             <tr>
                 <td>{ordinal}</td>
-                <td>{this.renderName(middleware.middleware.name, middleware.depth)}</td>                            
+                <td>{this.renderName(middleware.middleware.name, middleware.depth)}</td>
                 <td>{middleware.middleware.packageName}</td>
                 <td>{_.size(middleware.middleware.headers) > 0 ? 'Header' : '-'}</td>
                 <td>{this.renderMiddlewareHeaders(middleware.middleware.headers)}</td>
@@ -61,7 +59,7 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
             <div>
                 {this.renderIndent(depth)}<span>{name}</span>
             </div>
-        )
+        );
     }
 
     private renderIndent(depth: number) {
@@ -75,7 +73,7 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
             return spans;
         }
         else {
-            return null;
+            return null; /* tslint:disable-line:no-null-keyword */
         }
     }
 
@@ -83,12 +81,12 @@ export class RequestMiddleware extends React.Component<IRequestMiddlewareProps, 
         return (
             <div className='tab-request-middleware-headers'>
                 <ul>
-                    { 
+                    {
                         _(headers)
                             .map((value, key) => { return { key: key, value: value }; })
                             .sortBy(pair => pair.key)
                             .map(pair => pair.value.isCurrent ? this.renderCurrentHeader(pair.key, pair.value.value) : this.renderOverwrittenHeader(pair.key, pair.value.value))
-                            .value() 
+                            .value()
                     }
                 </ul>
             </div>
