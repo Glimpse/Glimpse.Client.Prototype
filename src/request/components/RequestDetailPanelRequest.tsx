@@ -114,8 +114,8 @@ export class Request extends React.Component<IRequestProps, {}> {
     private renderParams(query: { [key: string]: string }, formData: { [key: string]: string }) {
         return (
             <div className='tab-request-params'>
-                { !_.isEmpty(query) ? this.renderParameterSet('Query String', query) : null }       /* tslint:disable-line:no-null-keyword */
-                { !_.isEmpty(formData) ? this.renderParameterSet('Form Data', formData) : null }    /* tslint:disable-line:no-null-keyword */
+                { !_.isEmpty(query) ? this.renderParameterSet('Query String', query) : null     /* tslint:disable-line:no-null-keyword */ }
+                { !_.isEmpty(formData) ? this.renderParameterSet('Form Data', formData) : null  /* tslint:disable-line:no-null-keyword */ }
             </div>
         );
     }
@@ -139,7 +139,7 @@ export class Request extends React.Component<IRequestProps, {}> {
 
     private renderParameter(key: string, value: string) {
         return (
-            <li key={key}><span className='tab-request-parameter-key'>{key}: </span><span>{value}</span></li>
+            <li key={key}><span className='tab-request-parameter-key'>{key}: </span><span className='tab-request-parameter-value'>{value}</span></li>
         );
     }
 
