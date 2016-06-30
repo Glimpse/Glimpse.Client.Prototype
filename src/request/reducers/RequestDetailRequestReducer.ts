@@ -179,17 +179,19 @@ function getMediaType(contentType: string): string {
 }
 
 function getFormData(request: IWebRequestPayload): { [key: string]: string } {
-    if (request && request.body && request.body.form && !_.isEmpty(request.body.form)) {
-        return request.body.form;
-    }
+    if (request && request.body) {
+        if (request.body.form && !_.isEmpty(request.body.form)) {
+            return request.body.form;
+        }
 
-    if (request && request.body && request.body.content && request.headers) {
-        const mediaType = getMediaType(getValueAtKeyCaseInsensitive(request.headers, 'content-type'));
+        if (request.body.content && request.headers) {
+            const mediaType = getMediaType(getValueAtKeyCaseInsensitive(request.headers, 'content-type'));
 
-        if (mediaType.toLowerCase() === 'application/x-www-form-urlencoded') {
-            const formData = querystring.parse(request.body.content);
+            if (mediaType.toLowerCase() === 'application/x-www-form-urlencoded') {
+                const formData = querystring.parse(request.body.content);
 
-            return formData;
+                return formData;
+            }
         }
     }
 
