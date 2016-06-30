@@ -100,7 +100,7 @@ describe('RequestDetailRequestReducers', () => {
             const state = [];
             const request = createRequest([
                 createMiddlewareStart(1, 'one', 'name', 'package'),
-                createMiddlewareEnd(2, 'one', 'name', 'package', [ { name: 'name', op: 'set', value: 'value' }])
+                createMiddlewareEnd(2, 'one', 'name', 'package', [ { name: 'set-header', op: 'set', value: 'value' }, { name: 'not-set-header', op: 'unset', value: 'value' }])
             ]);
             const newState = middlewareReducer(state, createAction('request.detail.update', request));
 
@@ -110,7 +110,14 @@ describe('RequestDetailRequestReducers', () => {
                     name: 'name',
                     packageName: 'package',
                     headers: {
-                        name: 'value'
+                        'set-header': {
+                            value: 'value',
+                            wasSet: true
+                        },
+                        'not-set-header': {
+                            value: 'value',
+                            wasSet: false
+                        }
                     },
                     middleware: []
                 }
