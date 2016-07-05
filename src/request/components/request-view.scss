@@ -439,7 +439,7 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     flex: none;
     flex-direction: row;
-    padding: 5px 30px 0px 30px;
+    padding: 0px 30px 0px 0px;
 }
 
 .tabbed-panel-header {
@@ -452,7 +452,7 @@ $tabbed-panel-border-color: #cccccc;
     display: flex;
     height: 23px;
     margin-bottom: -1px;
-    padding: 0px 5px 0px 5px;
+    padding: 0px 10px 0px 10px;
 }
 
 .tabbed-panel-header:hover {
@@ -486,19 +486,22 @@ $tabbed-panel-border-color: #cccccc;
     table-layout: fixed;
 }
 
+$tab-request-value-color: #225b7d;
+$tab-request-value-strikethrough-color: #f6999e;
+
 .tab-request {
+    box-sizing: border-box;
     display: flex;
     flex: none;
-    flex-direction: row;
+    flex-direction: column;
+    padding: 10px 40px 10px 40px;
     width: 100%;
 }
 
 .tab-request-response {
-    box-sizing: border-box;
     display: flex;
     flex: none;
     flex-direction: row;
-    padding: 10px 40px 10px 40px;
     width: 100%;
 }
 
@@ -509,7 +512,7 @@ $tabbed-panel-border-color: #cccccc;
     width: 50%;
 }
 
-.tab-request-response-title {
+.tab-request-title {
     font-family: 'Segoe UI', 'Selawik Semibold', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 175%;    
 }
@@ -531,6 +534,7 @@ $tabbed-panel-border-color: #cccccc;
 
         > li {
             margin-bottom: 5px;
+            margin-left: 20px;
         }
     }
 }
@@ -546,6 +550,78 @@ $tabbed-panel-border-color: #cccccc;
 
 .tab-request-header-key {
     font-weight: bold;
+}
+
+.tab-request-header-value {
+    color: $tab-request-value-color;
+}
+
+.tab-request-params {
+    overflow: auto;
+}
+
+.tab-request-parameter-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.tab-request-parameter-set {
+    margin-bottom: 15px;
+
+    > ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            margin-bottom: 5px;
+            margin-left: 20px;
+        }
+    }
+}
+
+.tab-request-parameter-key {
+    font-weight: bold;
+}
+
+.tab-request-parameter-value {
+    color: $tab-request-value-color;
+}
+
+.tab-request-middleware {
+    flex: none;
+}
+
+.tab-request-middleware-indent {
+    margin-left: 15px;
+}
+
+.tab-request-middleware-headers {
+    > ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        > li {
+            margin-bottom: 5px;
+        }
+    }
+}
+
+.tab-request-middleware-header-key {
+    font-weight: bold;
+}
+
+.tab-request-middleware-header-value {
+    color: $tab-request-value-color;
+}
+
+.tab-request-middleware-header-overwritten {
+    color: #b5b5b5;
+    text-decoration: line-through;
+    text-decoration-color: $tab-request-value-strikethrough-color;
+    -moz-text-decoration-color: $tab-request-value-strikethrough-color;
+    -webkit-text-decoration-color: $tab-request-value-strikethrough-color;
 }
 
 .tab-data {
