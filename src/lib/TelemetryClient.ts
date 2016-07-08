@@ -12,20 +12,40 @@ import moment = require('moment');
 import uuid = require('node-uuid');
 
 /**
- * Copied from Glimpse.Node.Prototype src/glimpse.server/resources/TelemetryConfigResource.ts.
+ * Copied from Glimpse.Node.Prototype, src/glimpse.server/resources/TelemetryConfigResource.ts.
  *
- * Shape of telemetry config resource retrieved from the server.
+ *  Shape of telemetry config resource returned from the server.
  */
 export interface ITelemetryConfig {
+    /** flag indicating if sending telemetry from client is enabled or disabled. */
     enabled: boolean;
+
+    /** Application Insights endpoint URI for sending telemetry */
     uri: string;
+
+    /** Application Insights instrumentation key */
     instrumentationKey: string;
+
+    /** IP address of the glimpse client as observed by the glimpse server */
     clientIP: string;
+
+    /** unique ID for the machine hosting the server.  This is a SHA256 hash of the machine's mac address. */
     serverMachineId: string;
+
+    /** name of the application hosting the glimpse.server */
     serverAppName: string;
+
+    /** OS Platform where server is running */
     serverOSPlatform: string;
+
+    /** OS Release where server is running */
     serverOSRelease: string;
+
+    /** OS Type where server is running */
     serverOSType: string;
+
+    /** link to Microsoft privacy Policy. */
+    privacyPolicy: string;
 }
 
 /**
@@ -46,7 +66,10 @@ interface IMeasurements {
  * Common properties shared by all events passed to app insights
  */
 interface ICommonProperties extends IProperties {
+    /** unique identifier for this instance of the glimpse client. */
     sessionId: string;
+
+    /** unique identifier for the machine where the glimpser.server is running. */
     serverMachineId: string;
 }
 
@@ -54,23 +77,36 @@ interface ICommonProperties extends IProperties {
  * properties sent on ShellReady event. 
  */
 interface IShellReadyProperties extends ICommonProperties {
-    sessionId: string;
-    serverMachineId: string;
+    /** app name where server is running, as returned from the TelemetryConfigResource. */
     serverAppName: string;
+
+    /** OS platform where server is running, as returned from the TelemetryConfigResource. */
     serverOSPlatform: string;
+
+    /** OS Release where server is running, as returned from the TelemetryConfigResource. */
     serverOSRelease: string;
+
+    /** OS Type where server is running, as returned from the TelemetryConfigResource. */
     serverOSType: string;
+
+    /** this client's IP address as observed by the glimpse server. */
     clientIP: string;
+
+    /** unique identifier for this client stored in a browser cookie. */
+    clientCookieID: string;
 }
 
 /**
- *  Properties sent on RequestDetailSelected. 
+ *  Properties sent when a request detail is selected 
  */
 interface IRequestDetailSelectedProperties extends ICommonProperties {
-    sessionId: string;
-    serverMachineId: string;
+    /** ID of the current request */
     currentRequestId: string;
+
+    /** ID of the previous request */
     lastRequestId: string;
+
+    /** Name of the current tab being viewed. */
     currentTab: string;
 }
 
@@ -78,36 +114,49 @@ interface IRequestDetailSelectedProperties extends ICommonProperties {
  * Measurements sent on RequestDetailSelected event.
  */
 interface IRequestDetailSelectedMeasurements extends IMeasurements {
+
+    /** number of milliseconds spent viewing the previous request */
     lastRequestViewTimeMillis: number;
+
+    /** number of milliseconds spent viewing the previous tab */
     lastTabViewTimeMillis: number;
 }
 
 /**
- * Properties sent on RequestDetailClosed event.
+ * Properties sent  when user closes a request detail view.
  */
 interface IRequestDetailClosedProperties extends ICommonProperties {
-    sessionId: string;
-    serverMachineId: string;
+
+    /**  request ID when the request details tab closed */
     requestId: string;
+
+    /** tab name in use when the request details tab closed */
     tabName: string;
 }
 
 /**
- * Measurements sent on RequestDetailClosed event.
+ * Measurements sent when user closes a request detail view.
  */
 interface IRequestDetailClosedMeasurements extends IMeasurements {
+
+    /** number of milliseconds spent viewing the last viewed request */
     lastRequestViewTimeMillis: number;
+
+    /** number of milliseconds spent viewing the last viewed tab */
     lastTabViewTimeMillis: number;
 }
 
 /**
- * Properties sent on RequestDetailTabChanged event.
+ * Properties sent when user changes tab being viewed for a request.
  */
 interface IRequestDetailTabChangedProperties extends ICommonProperties {
-    sessionId: string;
-    serverMachineId: string;
+    /**  current request ID when the tab changes */
     currentRequestId: string;
+
+    /** Name of the previous tab being viewed. */
     lastTabName: string;
+
+    /** Name of the current tab being viewed. */
     tabName: string;
 }
 
@@ -115,6 +164,7 @@ interface IRequestDetailTabChangedProperties extends ICommonProperties {
  * Measurements sent on RequestDetailTabChanged
  */
 interface IRequestDetailTabChangedMeasurements extends IMeasurements {
+    /** number of milliseconds spent viewing the last viewed tab */
     lastTabViewMillis: number;
 }
 
@@ -129,7 +179,11 @@ interface ITelemetryEvent {
 
 /**
  * Class responsible for sending telemetry events.  It will register to be notified on various shell events
- * and send telemetry events through app insights when those events occur. 
+ * and send telemetry events through app insights when those events occur.
+ * 
+ * Microsoft values privacy.  For details, please see our privacy
+ * statement at http://go.microsoft.com/fwlink/?LinkId=521839&CLCID=0409.
+ * 
  */
 class TelemetryClient {
 
@@ -150,6 +204,7 @@ class TelemetryClient {
     private lastRequestChangeTime: moment.Moment;
     private currentTab: string = '';
     private lastTabChangeTime: moment.Moment;
+    private clientCookieId: string;
 
     // we'll queue telemetry events until the telemetry config is downloaded and app insights is configured.  
     private eventQueue: ITelemetryEvent[] = [];
@@ -157,6 +212,7 @@ class TelemetryClient {
     constructor() {
         this.sessionId = uuid.v4();
         const self = this;
+        this.setupClientCookieId();
         metadataRepository.registerListener((metadata) => {
 
             if (!metadata.resources || !metadata.resources['telemetry-config']) {
@@ -192,7 +248,7 @@ class TelemetryClient {
         }
         else {
 
-            /* Call downloadAndSetup to download full ApplicationInsights script from CDN and initialize it with instrumentation key */
+            // Call downloadAndSetup to download full ApplicationInsights script from CDN and initialize it with instrumentation key.
             appInsights.downloadAndSetup({
                 instrumentationKey: telemetryConfig.instrumentationKey,
                 endpointUrl: telemetryConfig.uri,
@@ -225,6 +281,14 @@ class TelemetryClient {
                 appInsights.trackEvent(event.name, event.properties, event.measurements);
             }
         }
+    }
+
+    /**
+     * read client ID from cookie, or generate a new ID & store it in a cookie.
+     */
+    private setupClientCookieId() {
+        // TODO:  when we move to new client, implement this.
+        this.clientCookieId = 'TODO';
     }
 
     /**
@@ -284,7 +348,9 @@ class TelemetryClient {
      */
     private getShellReadyProperties(props?: IShellReadyProperties): IShellReadyProperties {
         props = props || <IShellReadyProperties>{};
+
         props.sessionId = this.sessionId;
+        props.clientCookieID = this.clientCookieId;
 
         if (this.telemetryConfig) {
             props.serverMachineId = this.telemetryConfig.serverMachineId;
