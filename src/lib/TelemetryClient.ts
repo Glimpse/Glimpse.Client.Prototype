@@ -119,6 +119,9 @@ interface IRequestDetailSelectedProperties extends ICommonProperties {
 
     /** Name of the current tab being viewed. */
     currentTabName: string;
+
+    /** Name of the previous tab being viewed. */
+    lastTabName: string;
 }
 
 /**
@@ -374,12 +377,13 @@ class TelemetryClient {
     /**
      * retrieve the RequestDetailSelected properties.
      */
-    private getRequestDetailSelectedProperties(currentRequestId, lastRequestId, currentTabName): IRequestDetailSelectedProperties {
+    private getRequestDetailSelectedProperties(currentRequestId, lastRequestId, currentTabName, lastTabName): IRequestDetailSelectedProperties {
         const props: IRequestDetailSelectedProperties = {
             sessionId: this.sessionId,
             currentRequestId,
             lastRequestId,
-            currentTabName
+            currentTabName,
+            lastTabName
         };
         return props;
     }
@@ -458,7 +462,7 @@ class TelemetryClient {
             if (!this.currentTab) {
                 this.currentTab = TelemetryClient.defaultTab;
             }
-            const properties = this.getRequestDetailSelectedProperties(payload.requestId, this.currentRequestId, this.currentTab);
+            const properties = this.getRequestDetailSelectedProperties(payload.requestId, this.currentRequestId, this.currentTab, this.currentTab);
             const measurements = this.getRequestDetailSelectedMeasurements(this.markLastRequestViewMillis(), this.markLastTabViewMillis());
             this.currentRequestId = payload.requestId;
             this.queueOrSendEvent(TelemetryClient.requestDetailSelected, properties, measurements);
