@@ -149,14 +149,14 @@ gulp.task('clean-test', () => {
     return del(testSettings.output + '/**');
 });
 
-gulp.task('generateGlimpseClientVersion', (cb) => {
+gulp.task('generate-client-version', (cb) => {
     generateGlimpseVersionFile(cb);
 });
 
 // NOTE: was running in parallel but don't like the output
 //gulp.task('build', ['pages', 'bundle']);
 gulp.task('build', (cb) => {
-    runSequence('generateGlimpseClientVersion', 'pages', 'assets', 'bundle', cb);
+    runSequence('generate-client-version', 'pages', 'assets', 'bundle', cb);
 });
 
 gulp.task('build-dev', (cb) => {
