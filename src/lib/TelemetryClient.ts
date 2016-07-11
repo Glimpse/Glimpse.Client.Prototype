@@ -6,6 +6,7 @@ const appInsights = require('applicationinsights-js').AppInsights;
 const glimpse = require('glimpse');
 const metadataRepository = require('../shell/repository/metadata-repository');
 const request = require('superagent');
+const glimpseClientVersion = require('../../glimpseClientVersion');
 /* tslint:enable:no-var-requires */
 
 import moment = require('moment');
@@ -28,6 +29,9 @@ export interface ITelemetryConfig {
 
     /** IP address of the glimpse client as observed by the glimpse server */
     clientIP: string;
+
+    /** serverGlimpseVersion */
+    glimpseServerVersion: string;
 
     /** unique ID for the machine hosting the server.  This is a SHA256 hash of the machine's mac address. */
     serverMachineId: string;
@@ -68,15 +72,22 @@ interface IMeasurements {
 interface ICommonProperties extends IProperties {
     /** unique identifier for this instance of the glimpse client. */
     sessionId: string;
-
-    /** unique identifier for the machine where the glimpser.server is running. */
-    serverMachineId: string;
 }
 
 /**
  * properties sent on ShellReady event. 
  */
 interface IShellReadyProperties extends ICommonProperties {
+
+    /** version of the glimpse server */
+    glimpseServerVersion: string;
+
+    /** version of the glimpse client */
+    glimpseClientVersion: string;
+
+    /** unique identifier for the machine where the glimpser.server is running. */
+    serverMachineId: string;
+
     /** app name where server is running, as returned from the TelemetryConfigResource. */
     serverAppName: string;
 
@@ -107,7 +118,7 @@ interface IRequestDetailSelectedProperties extends ICommonProperties {
     lastRequestId: string;
 
     /** Name of the current tab being viewed. */
-    currentTab: string;
+    currentTabName: string;
 }
 
 /**
@@ -128,10 +139,10 @@ interface IRequestDetailSelectedMeasurements extends IMeasurements {
 interface IRequestDetailClosedProperties extends ICommonProperties {
 
     /**  request ID when the request details tab closed */
-    requestId: string;
+    lastRequestId: string;
 
     /** tab name in use when the request details tab closed */
-    tabName: string;
+    lastTabName: string;
 }
 
 /**
@@ -157,7 +168,7 @@ interface IRequestDetailTabChangedProperties extends ICommonProperties {
     lastTabName: string;
 
     /** Name of the current tab being viewed. */
-    tabName: string;
+    currentTabName: string;
 }
 
 /**
@@ -165,7 +176,7 @@ interface IRequestDetailTabChangedProperties extends ICommonProperties {
  */
 interface IRequestDetailTabChangedMeasurements extends IMeasurements {
     /** number of milliseconds spent viewing the last viewed tab */
-    lastTabViewMillis: number;
+    lastTabViewTimeMillis: number;
 }
 
 /**
@@ -205,11 +216,13 @@ class TelemetryClient {
     private currentTab: string = '';
     private lastTabChangeTime: moment.Moment;
     private clientCookieId: string;
+    private glimpseClientVersion: string;
 
     // we'll queue telemetry events until the telemetry config is downloaded and app insights is configured.  
     private eventQueue: ITelemetryEvent[] = [];
 
     constructor() {
+        this.glimpseClientVersion = glimpseClientVersion.version;
         this.sessionId = uuid.v4();
         const self = this;
         this.setupClientCookieId();
@@ -273,9 +286,6 @@ class TelemetryClient {
                 if (event.name === TelemetryClient.shellReady) {
                     this.getShellReadyProperties(<IShellReadyProperties>event.properties);
                 }
-                else if (!event.properties.serverMachineId) {
-                    this.tryAddServerMachineId(event.properties);
-                }
 
                 // send event through app insights API      
                 appInsights.trackEvent(event.name, event.properties, event.measurements);
@@ -289,17 +299,6 @@ class TelemetryClient {
     private setupClientCookieId() {
         // TODO:  when we move to new client, implement this.
         this.clientCookieId = 'TODO';
-    }
-
-    /**
-     * Attempt to add the server ID property.  This comes from the telemetryConfig,
-     * which is initialized asynchronously, so if the telemetry config is not
-     * available, they won't be added.
-     */
-    private tryAddServerMachineId(props: ICommonProperties) {
-        if (this.telemetryConfig) {
-            props.serverMachineId = this.telemetryConfig.serverMachineId;
-        }
     }
 
     /**
@@ -351,8 +350,10 @@ class TelemetryClient {
 
         props.sessionId = this.sessionId;
         props.clientCookieID = this.clientCookieId;
+        props.glimpseClientVersion = this.glimpseClientVersion;
 
         if (this.telemetryConfig) {
+            props.glimpseServerVersion = this.telemetryConfig.glimpseServerVersion;
             props.serverMachineId = this.telemetryConfig.serverMachineId;
             props.serverAppName = this.telemetryConfig.serverAppName;
             props.serverOSPlatform = this.telemetryConfig.serverOSPlatform;
@@ -360,6 +361,7 @@ class TelemetryClient {
             props.serverOSType = this.telemetryConfig.serverOSType;
         }
         else {
+            props.glimpseServerVersion = undefined;
             props.serverMachineId = undefined;
             props.serverAppName = undefined;
             props.serverOSPlatform = undefined;
@@ -372,15 +374,13 @@ class TelemetryClient {
     /**
      * retrieve the RequestDetailSelected properties.
      */
-    private getRequestDetailSelectedProperties(currentRequestId, lastRequestId, currentTab): IRequestDetailSelectedProperties {
+    private getRequestDetailSelectedProperties(currentRequestId, lastRequestId, currentTabName): IRequestDetailSelectedProperties {
         const props: IRequestDetailSelectedProperties = {
             sessionId: this.sessionId,
-            serverMachineId: undefined,
             currentRequestId,
             lastRequestId,
-            currentTab
+            currentTabName
         };
-        this.tryAddServerMachineId(props);
         return props;
     }
 
@@ -401,11 +401,9 @@ class TelemetryClient {
     private getRequestDetailClosedProperties(): IRequestDetailClosedProperties {
         const props: IRequestDetailClosedProperties = {
             sessionId: this.sessionId,
-            serverMachineId: undefined,
-            requestId: this.currentRequestId,
-            tabName: this.currentTab
+            lastRequestId: this.currentRequestId,
+            lastTabName: this.currentTab
         };
-        this.tryAddServerMachineId(props);
         return props;
     }
 
@@ -423,24 +421,22 @@ class TelemetryClient {
     /**
      * Retrieve RequestDetailTabChanged properties.
      */
-    public getRequestDetailTabChangedProperties(tabName, lastTabName): IRequestDetailTabChangedProperties {
+    public getRequestDetailTabChangedProperties(currentTabName, lastTabName): IRequestDetailTabChangedProperties {
         const props: IRequestDetailTabChangedProperties = {
             sessionId: this.sessionId,
-            serverMachineId: undefined,
             currentRequestId: this.currentRequestId,
             lastTabName,
-            tabName
+            currentTabName
         };
-        this.tryAddServerMachineId(props);
         return props;
     }
 
     /**
      * Retrieve RequestDetailTabChanged measurements.
      */
-    public getRequestDetailTabChangedMeasurements(lastTabViewMillis: number): IRequestDetailTabChangedMeasurements {
+    public getRequestDetailTabChangedMeasurements(lastTabViewTimeMillis: number): IRequestDetailTabChangedMeasurements {
         const props: IRequestDetailTabChangedMeasurements = {
-            lastTabViewMillis
+            lastTabViewTimeMillis
         };
         return props;
     }
