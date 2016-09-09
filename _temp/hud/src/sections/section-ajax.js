@@ -99,12 +99,15 @@ var render = function(details, opened) {
 var postRender = function() {
     ready = true;
 
-    for (var task in preRenderCache) {
+    preRenderCache.forEach(function(task) {
         task();
-    }
+    });
     preRenderCache = undefined;
 };
 
+function listenerNotification(method, uri, startTime, xhrObj) {
+    update(method, uri, new Date().getTime() - startTime, xhrObj.getResponseHeader('Content-Length'), xhrObj.status, xhrObj.statusText, new Date(), xhrObj.getResponseHeader('Content-Type'), xhrObj.getResponseHeader('X-Glimpse-ContextId'));
+}
 function registerListeners() {
     var open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, uri) {
@@ -114,12 +117,13 @@ function registerListeners() {
             var startTime = new Date().getTime();
             this.addEventListener('readystatechange', function() {
                     if (this.readyState == 4 && this.getResponseHeader('X-Glimpse-ContextId')) {
+                        // if we can render the data do so, otherwise save for later
                         if (ready) {
-                            update(method, uri, new Date().getTime() - startTime, this.getResponseHeader('Content-Length'), this.status, this.statusText, new Date(), this.getResponseHeader('Content-Type'), this.getResponseHeader('X-Glimpse-ContextId'));
+                            listenerNotification(method, uri, startTime, this);
                         }
                         else {
                             preRenderCache.push(function() {
-                                update(method, uri, new Date().getTime() - startTime, this.getResponseHeader('Content-Length'), this.status, this.statusText, new Date(), this.getResponseHeader('Content-Type'), this.getResponseHeader('_X-Glimpse-ContextId'));
+                                listenerNotification(method, uri, startTime, this);
                             })
                         }
                     }
@@ -132,7 +136,7 @@ function registerListeners() {
     var send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function() {
         if (this._uri){
-            this.setRequestHeader('__glimpse-isAjax', true);
+            this.setRequestHeader('X-Glimpse-IsAjax', true);
         }
 
         send.apply(this, arguments);

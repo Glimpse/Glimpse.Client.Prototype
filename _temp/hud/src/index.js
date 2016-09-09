@@ -23,9 +23,7 @@ function renderHolder() {
     var html = '<div class="glimpse"><a class="glimpse-icon" target="_blank" href="' + url + '"><div class="glimpse-icon-text">Glimpse</div></a><div class="glimpse-hud"></div></div>'
     $(html).appendTo('body');
 }
-$(function() {
-    renderHolder();
-});
+$(renderHolder);
 
 // only load things when we have the data ready to go
 repository.getData(function(details) {
